@@ -103,18 +103,27 @@ record(mbbiDirect, "${UUT}:${SITE}:ANATRG:GROUP_SRC1") {
 record(mbbiDirect, "${UUT}:${SITE}:ANATRG:GROUP_SRC2") {
 }
 
-record(mbboDirect, "${UUT}:${SITE}:ANATRG:GROUP_MASK1") {
-	field(DTYP, "stream")
-	field(OUT, "@anatrg.proto setAnaTrgGroupMask(${UUT}:${SITE}:ANATRG:GROUP_MASK2) ${SPORT}")
+record(mbboDirect, "${UUT}:${SITE}:ANATRG:GROUP_MASK:1") {
+	field(DTYP, "Soft Channel")
         field(VAL, "0")
         field(PINI, "YES")
+        field(FLNK, "${UUT}:${SITE}:ANATRG:GROUP_MASK:2 PP")
 }
 
-record(mbboDirect, "${UUT}:${SITE}:ANATRG:GROUP_MASK2") {
-	field(FLNK, "${UUT}:${SITE}:ANATRG:GROUP_MASK")
+record(mbboDirect, "${UUT}:${SITE}:ANATRG:GROUP_MASK:2") {
+        field(DTYP, "Soft Channel")
 	field(VAL, "0")
 	field(PINI, "YES")
+	field(FLNK, "${UUT}:${SITE}:ANATRG:GROUP_MASK:w PP")
 }
+
+record(bo, "${UUT}:${SITE}:ANATRG:GROUP_MASK:w") {
+        field(DTYP, "stream")
+        field(OUT, "@anatrg.proto setAnaTrgGroupMask(${UUT}:${SITE}:ANATRG:GROUP_MASK) ${SPORT}")
+        field(DISV, "1")
+        field(SDIS, "${UUT}:${SITE}:ANATRG:LOCK")
+}
+
 
 record(bo, "${UUT}:${SITE}:ANATRG:GROUP_MODE") {
 	field(DTYP, "stream")
@@ -181,17 +190,20 @@ record(bi, "${UUT}:${SITE}:ANATRG:LIVE:${CH}") {
 record(bo, "${UUT}:${SITE}:ANATRG:GROUP:${CH}") {
         field(DTYP, "Soft Channel")
         field(OUT,  "${UUT}:${SITE}:ANATRG:GROUP_MASK${BANK}.B${BX}")
-        field(FLNK, "${UUT}:${SITE}:ANATRG:GROUP:w")
+        field(FLNK, "${UUT}:${SITE}:ANATRG:GROUP:w PP")
         field(ZNAM, "0")
         field(ONAM, "1")
+        field(PINI, "YES")
+        field(VAL,  0)
 }
 
 record(bo, "${UUT}:${SITE}:ANATRG:GROUP:w") {
         field(DTYP, "Soft Channel")
-        field(FLNK, "${UUT}:${SITE}:ANATRG:GROUP_MASK1")
+        field(FLNK, "${UUT}:${SITE}:ANATRG:GROUP_MASK:1 PP")
         field(DISV, "1")
         field(SDIS, "${UUT}:${SITE}:ANATRG:LOCK")
 }
+
 
 
 

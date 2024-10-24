@@ -23,18 +23,19 @@ int ch_M[33];   	assign ch_M to {};
 double ch_L1[33]; 	assign ch_L1 to {};
 double ch_L2[33]; 	assign ch_L2 to {};
 double ch_H[33]; 	assign ch_H to {};
-
-int group_mask; 	assign group_mask to  "{uut}:{site}:ANATRG:GROUP_MASK";
-int group_mask2; 	assign group_mask2 to "{uut}:{site}:ANATRG:GROUP_MASK2";
+int group_ch[33];	assign group_ch to {};
 
 char* uut;
 char* site = "1";		// default site 1, should override
 int verbose = 0;
 
-char* pvfmt = "%s:%s:ANATRG:%02d:%%s";
+char* pvfmt = 		"%s:%s:ANATRG:%02d:%%s";
+char* grp_ch_fmt = 	"%s:%s:ANATRG:GROUP:%02d;";
 
 int ch;
 int nchan = 32;
+
+int group_ch_set = 0;
 
 %{
 #include <stdlib.h>
@@ -73,6 +74,9 @@ ss atd_group_set
 				
 				snprintf(pvname, sizeof(pvname), pvroot, "H");
 				pvAssign(ch_H[ch], pvname);
+
+				snprintf(pvname, sizeof(pvname), grp_ch_fmt, uut, site, ch);
+				pvAssign(group_ch[ch], pvname);
 			}		
 		}
 		
@@ -91,12 +95,12 @@ ss atd_group_set
 		} state all_SET_action
 
 		when(grp_all_SET){
-
-		} state grp_all_SET_action
+			group_ch_set = 1;
+		} state grp_all_action
 
 		when(grp_all_CLR){
-
-		} state grp_all_CLR_action
+			group_ch_set = 0;
+		} state grp_all_action
 	}
 
 	state all_SET_action {
@@ -123,26 +127,18 @@ ss atd_group_set
 		} state update
 	}
 
-	state grp_all_SET_action {
+	state grp_all_action {
 		entry {
-			if (verbose) printf("atd_group_set::grp_all_SET_action\n");
+			if (verbose) printf("atd_group_set::grp_all_action %s\n",
+							group_ch_set? "SET": "CLR");
 
-			group_mask =  0x0000ffff; pvPut(group_mask);
-			group_mask2 = 0x0000ffff; pvPut(group_mask2);
-			grp_all_SET = 0; pvPut(grp_all_SET);
-		}
-		when() {
-
-		} state update
-	}
-
-	state grp_all_CLR_action {
-		entry {
-			if (verbose) printf("atd_group_set::grp_all_CLR_action\n");
-
-			group_mask =  0; pvPut(group_mask);
-			group_mask2 = 0; pvPut(group_mask2);
-			grp_all_CLR = 0; pvPut(grp_all_CLR);
+			lock=1; pvPut(lock);
+			for (ch = 1; ch <= nchan; ++ch){
+				if (ch == nchan){
+					lock=0; pvPut(lock);
+				}
+				group_ch[ch] = group_ch_set; pvPut(group_ch[ch]);
+			}
 		}
 		when() {
 
