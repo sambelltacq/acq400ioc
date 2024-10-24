@@ -35,8 +35,6 @@ char* grp_ch_fmt = 	"%s:%s:ANATRG:GROUP:%02d;";
 int ch;
 int nchan = 32;
 
-int group_ch_set = 0;
-
 %{
 #include <stdlib.h>
 }%
@@ -95,11 +93,11 @@ ss atd_group_set
 		} state all_SET_action
 
 		when(grp_all_SET){
-			group_ch_set = 1;
+
 		} state grp_all_action
 
 		when(grp_all_CLR){
-			group_ch_set = 0;
+
 		} state grp_all_action
 	}
 
@@ -130,18 +128,23 @@ ss atd_group_set
 	state grp_all_action {
 		entry {
 			if (verbose) printf("atd_group_set::grp_all_action %s\n",
-							group_ch_set? "SET": "CLR");
+					grp_all_SET? "SET": "CLR");
 
 			lock=1; pvPut(lock);
 			for (ch = 1; ch <= nchan; ++ch){
 				if (ch == nchan){
 					lock=0; pvPut(lock);
 				}
-				group_ch[ch] = group_ch_set; pvPut(group_ch[ch]);
+				group_ch[ch] = grp_all_SET; pvPut(group_ch[ch]);
 			}
+
 		}
 		when() {
-
+			if (grp_all_SET){
+				grp_all_SET = 0; pvPut(grp_all_SET);
+			}else{
+				grp_all_CLR = 0; pvPut(grp_all_CLR);
+			}
 		} state update
 	}
 }
