@@ -30,7 +30,7 @@ char* site = "1";		// default site 1, should override
 int verbose = 0;
 
 char* pvfmt = 		"%s:%s:ANATRG:%02d:%%s";
-char* grp_ch_fmt = 	"%s:%s:ANATRG:GROUP:%02d;";
+char* grp_ch_fmt = 	"%s:%s:ANATRG:GROUP:%02d";
 
 int ch;
 int nchan = 32;
@@ -44,14 +44,16 @@ ss atd_group_set
 	state init
 	{
 		entry {
-			printf("atd_range_set R1002\n");
+			printf("atd_group_set R1003\n");
 
 			uut = macValueGet("uut"); 
 			if (macValueGet("site") != 0) site = macValueGet("site");
 			if (macValueGet("nchan") != 0 ) nchan = atoi(macValueGet("nchan"));
 			if (macValueGet("verbose") != 0) verbose = atoi(macValueGet("verbose"));
 			
-			if (verbose) printf("atd_range_set verbose:%d\n", verbose);
+			if (verbose) 
+				printf("atd_group_set::init site:%s nchan:%d verbose:%d\n", 
+					site, nchan, verbose);
 
 			for (ch = 1; ch <= nchan; ++ch){
 				char pvroot[80];
@@ -60,7 +62,8 @@ ss atd_group_set
 				snprintf(pvroot, sizeof(pvroot), pvfmt, uut, site, ch);
 				
 				snprintf(pvname, sizeof(pvname), pvroot, "M");
-				if (verbose>1 || (verbose && ch==0)) printf("%s\n", pvname);
+				if (verbose>1 || (verbose && ch==1)) 
+					printf("atd_group_set::init %s\n", pvname);
 				
 				pvAssign(ch_M[ch], pvname);
 				
@@ -75,6 +78,8 @@ ss atd_group_set
 
 				snprintf(pvname, sizeof(pvname), grp_ch_fmt, uut, site, ch);
 				pvAssign(group_ch[ch], pvname);
+				if (verbose>1 || (verbose && ch==1)) 
+					printf("atd_group_set::init %s\n", pvname);
 			}		
 		}
 		
@@ -86,7 +91,8 @@ ss atd_group_set
 	state update 
 	{
 		entry {
-			if (verbose) printf("atd_group_set::update\n");
+			if (verbose) 
+				printf("atd_group_set::update\n");
 		}
 		when(all_SET){
 
@@ -103,7 +109,8 @@ ss atd_group_set
 
 	state all_SET_action {
 		entry {
-			if (verbose) printf("atd_group_set::all_SET_action\n");
+			if (verbose) 
+				printf("atd_group_set::all_SET_action\n");
 
 			pvGet(all_M);
 			pvGet(all_L1);
@@ -127,7 +134,8 @@ ss atd_group_set
 
 	state grp_all_action {
 		entry {
-			if (verbose) printf("atd_group_set::grp_all_action %s\n",
+			if (verbose) 
+				printf("atd_group_set::grp_all_action %s\n",
 					grp_all_SET? "SET": "CLR");
 
 			lock=1; pvPut(lock);
@@ -135,6 +143,10 @@ ss atd_group_set
 				if (ch == nchan){
 					lock=0; pvPut(lock);
 				}
+				if (verbose > 1 || (verbose && ch == nchan))
+					printf("atd_group_set::grp_all_action" 
+							"ch:%d lock:%d\n", ch, lock);
+									
 				group_ch[ch] = grp_all_SET; pvPut(group_ch[ch]);
 			}
 
