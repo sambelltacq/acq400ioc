@@ -7,12 +7,13 @@ option +r;
 /* arrays of PV's are 1D L1[32], L2[32] */
 
 
-int all_M; 	assign all_M to  "{uut}:{site}:ANATRG:ALL:M";
+int all_M; 	assign all_M  to "{uut}:{site}:ANATRG:ALL:M";
 double all_L1; 	assign all_L1 to "{uut}:{site}:ANATRG:ALL:L1";
 double all_L2; 	assign all_L2 to "{uut}:{site}:ANATRG:ALL:L2";
 double all_H;	assign all_H  to "{uut}:{site}:ANATRG:ALL:H";
 
-int all_SET;	 assign all_SET     to "{uut}:{site}:ANATRG:ALL:SET";       monitor all_SET;
+int all_SET;	assign all_SET to "{uut}:{site}:ANATRG:ALL:SET";       monitor all_SET;
+int all_w;	assign all_w  to "{uut}:{site}:ANATRG:ALL:w";
 
 int lock;	assign lock to "{uut}:{site}:ANATRG:LOCK";
 
@@ -122,9 +123,10 @@ ss atd_group_set
 				ch_L1[ch] = all_L1; pvPut(ch_L1[ch]);
 				ch_L2[ch] = all_L2; pvPut(ch_L2[ch]);
 				ch_H[ch]  = all_H;  pvPut(ch_H[ch]);
-				lock=0; pvPut(lock);
 				ch_M[ch]  = all_M;  pvPut(ch_M[ch]);
+				lock=0; pvPut(lock);
 			}
+			all_w = 1; pvPut(all_w);
 			all_SET = 0; pvPut(all_SET);
 		}
 		when(){

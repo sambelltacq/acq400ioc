@@ -65,11 +65,17 @@ record(mbbo, "${UUT}:${SITE}:ANATRG:ALL:H") {
         field(VAL,  "1")
 }
 
+record(bo, "${UUT}:${SITE}:ANATRG:ALL:w") {
+        field(DTYP, "stream")
+        field(OUT,  "@anatrg.proto setAnaTrg(${UUT}:${SITE}:ANATRG:ALL,00) ${SPORT}")
+}
+
 record(bo, "${UUT}:${SITE}:ANATRG:ALL:SET") {
        field(DTYP, "Soft Channel")
        field(ZNAM, "off")
        field(ONAM, "on") 
 }
+
 record(bo, "${UUT}:${SITE}:ANATRG:GROUP:ALL:SET") {
        field(DTYP, "Soft Channel")
        field(ZNAM, "off")

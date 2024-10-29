@@ -25,6 +25,7 @@ make_site0_knobs() {
 	make_site_custom_knobs 0 common
 	make_site_custom_knobs 0 $(cat /proc/device-tree/chosen/compatible_model)
 	ln -s /usr/local/epics/scripts/set_burst_mode /etc/acq400/0/burst_mode
+	ln -s /dev/shm/role /etc/acq400/0/sync_role_status
 }
 
 
