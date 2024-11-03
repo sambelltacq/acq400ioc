@@ -1,27 +1,17 @@
-# ACQ426 gain master
+# ACQ423 : WORKTODO
 
 record (mbbo, "${UUT}:${SITE}:GAIN:${CH}") {	
 	field(DTYP, "Soft Channel")
 	field(NOBT, "3")	
-        field(ZRST, "+/-10V")
-        field(ONST, "+/-5V")
-        field(TWST, "+/-2V5")
-        field(THST, "0-10V")
-        field(FRST, "0-5V")
-        field(FVST, "")
-        field(SXST, "")
-        field(SVST  "")
-        field(ZRVL, "M10-10")
-        field(ONVL, "M5-5")
-        field(TWVL, "M2.5-2.5")
-        field(THVL, "0-10")
-        field(FRVL, "0-5")
-        field(FVVL, "")
-        field(SXVL, "")
-        field(SVVL, "")
+	field(ZRST, "+/-10V")
+	field(ONST, "+/-5V")
+	field(TWST, "0-10V")
+	field(THST, "0-5V")
+	field(ZRVL, "6")
+	field(ONVL, "2")
+	field(TWVL, "4")
+	field(THVL, "1")
 	field(VAL,  "0")
-        field(DISV, "1")
-        field(SDIS, "${UUT}:${SITE}:ACTIVE")	
 	field(FLNK, "${UUT}:${SITE}:GAIN:fan1")    	
 }
 

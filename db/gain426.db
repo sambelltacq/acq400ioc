@@ -1,0 +1,118 @@
+# ACQ426 gains
+
+record (mbbo, "${UUT}:${SITE}:GAIN:${CH}")	{
+	field(DTYP, "Soft Channel")
+	field(NOBT, "3")	
+	field(ZRST, "+/-10V")
+	field(ONST, "+/-5V")
+	field(TWST, "+/-2V5")
+	field(THST, "0-10V")
+	field(FRST, "0-5V")
+	field(FVST, "")
+	field(SXST, "")
+	field(SVST  "")
+	field(ZRVL, "M10-10")
+	field(ONVL, "M5-5")
+	field(TWVL, "M2.5-2.5")
+	field(THVL, "0-10")
+	field(FRVL, "0-5")
+	field(FVVL, "")
+	field(SXVL, "")
+	field(SVVL, "")	
+	field(PINI, "YES")
+	field(VAL, "0")
+        field(DISV, "1")
+        field(SDIS, "${UUT}:${SITE}:ACTIVE")
+        field(FLNK, "${UUT}:${SITE}:GAIN:${CH}:w PP")	
+}
+
+# M2.5-2.5 0-5 M5-5 0-6.25 M6.25-6.25 0-10 M10-10 0-12.5 M12.5-12.5 0-20 M20-20 0-25 M25-25 0-40 M40-40
+
+record (mbbo, "${UUT}:${SITE}:GAIN:${CH}:w")	{
+	field(DTYP, "stream")
+	field(OUT,  "@acq42x.proto setGain(${IX}) ${SPORT}")	
+	field(NOBT, "3")
+	field(DISV, "1")
+	field(SDIS, "${UUT}:${SITE}:GAIN:${CH}:s.PACT")
+	field(OMSL, "closed_loop")
+	field(DOL, "${UUT}:${SITE}:GAIN:${CH}.RVAL PP")
+	field(FLNK, "${UUT}:${SITE}:GAIN_CHANGES")		
+}
+
+record(bo, "${UUT}:${SITE}:ACTIVE"){
+        field(DTYP, "Soft Channel")
+        field(VAL,  "1")
+        field(PINI, "YES")
+}
+
+record (mbbi, "${UUT}:${SITE}:GAIN:${CH}:r") {
+	field(DTYP, "stream")
+	field(INP,  "@acq42x.proto getGain(${IX}) ${SPORT}")	
+	field(NOBT, "3")	
+        field(ZRST, "+/-10V")
+        field(ONST, "+/-5V")
+        field(TWST, "+/-2V5")
+        field(THST, "0-10V")
+        field(FRST, "0-5V")
+        field(FVST, "")
+        field(SXST, "")
+        field(SVST  "")
+        field(ZRVL, "M10-10")
+        field(ONVL, "M5-5")
+        field(TWVL, "M2.5-2.5")
+        field(THVL, "0-10")
+        field(FRVL, "0-5")
+        field(FVVL, "")
+        field(SXVL, "")
+        field(SVVL, "")
+	field(SCAN, "5 second")
+	
+	field(DISV, "1")
+	field(SDIS, "${UUT}:${SITE}:ACTIVE")
+	field(FLNK, "${UUT}:${SITE}:GAIN:${CH}:s")
+}
+
+record (mbbo, "${UUT}:${SITE}:GAIN:${CH}:s") {
+	field(DTYP, "Soft Channel")
+	field(NOBT, "3")	
+        field(ZRST, "+/-10V")
+        field(ONST, "+/-5V")
+        field(TWST, "+/-2V5")
+        field(THST, "0-10V")
+        field(FRST, "0-5V")
+        field(FVST, "")
+        field(SXST, "")
+        field(SVST  "")
+        field(ZRVL, "M10-10")
+        field(ONVL, "M5-5")
+        field(TWVL, "M2.5-2.5")
+        field(THVL, "0-10")
+        field(FRVL, "0-5")
+        field(FVVL, "")
+        field(SXVL, "")
+        field(SVVL, "")
+	field(OMSL, "closed_loop")	
+	field(DOL, "${UUT}:${SITE}:GAIN:${CH}:r NPP")	
+	field(OUT, "${UUT}:${SITE}:GAIN:${CH} PP")
+	field(FLNK, "${UUT}:${SITE}:GAIN:${CH}_f")
+}
+
+# force waveform record to rescale
+record(calc, "${UUT}:${SITE}:GAIN:${CH}_f") {
+	field(INPA, "${UUT}:${SITE}:GAIN:${CH}")
+# todo how to handle unipolar?	
+	field(CALC, "A==1? 10: A==2? 5: 0")
+}
+
+# and set the volts range in all associated WF records..
+record(aSub, "${UUT}:${SITE}:AI:WF:${CH}:V") {	
+	field(INPC,  "${UUT}:${SITE}:GAIN:${CH}_f")
+}
+record(aSub, "${UUT}:${SITE}:AI:TW:${CH}:V") {	
+	field(INPC,  "${UUT}:${SITE}:GAIN:${CH}_f")
+}
+
+record(dfanout, "${UUT}:${SITE}:GAIN:fan${FAN}") {
+	field(OUT${fan}, "${UUT}:${SITE}:GAIN:${CH} PP")
+}
+

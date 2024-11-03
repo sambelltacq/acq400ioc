@@ -529,7 +529,8 @@ load_400() {
             has_ch_gains=0
             LO=66000000;;
         $MT_ACQ426)
-            echo '# ACQ426 placeholder';;
+            gains="GX=fixed"
+            gain_file_pfx="gain426";;
         *)
             ;;
         esac;;
