@@ -1,0 +1,22 @@
+Terminator = LF;
+ExtraInput = Ignore;
+ReplyTimeout = 2500;
+
+# IIO values
+# M2.5-2.5 0-5 M5-5 0-6.25 M6.25-6.25 0-10 M10-10
+# Extended range: wait for later: 
+# 0-12.5 M12.5-12.5 0-20 M20-20 0-25 M25-25 0-40 M40-40
+setGain {
+        out "gain\$1 %{M10-10|M5-5|M2.5-2.5|0-10|0-5}";
+        in;
+}
+
+getGain {
+        out "gain\$1";
+        in "%{M10-10|M5-5|M2.5-2.5|0-10|0-5}";
+        @replytimeout {
+                disconnect;
+                wait 2000;
+                connect 1000;    
+        }                       
+}
