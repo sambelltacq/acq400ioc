@@ -11,6 +11,8 @@ record(ao, "${UUT}:${SITE}:AO:SLOW_SET:CH:${cid}") {
         field(HOPR, "2.4999")
         field(LOPR, "-2.5")
         field(EGU,  "V")
+        field(SDIS, "${UUT}:${SITE}:AWG:DIST")
+        field(DISV, "1")
 }
 
 record(dfanout, "${UUT}:${SITE}:AO:SLOW_SET:CH:ALL:f${fn}") {

@@ -292,98 +292,6 @@ acq480_div() {
 }
 
 
-load_AO() {
-        site=$1
-        mtype=$2
-        cprams=$3
-        nchan=0
-        maxcode=32768
-        type=SHORT
-        chg=0
-
-        case $mtype in
-        $MT_AO420|$MT_AO422)
-            if [ $site -ge 101 ]; then
-                nchan=2
-                dblr '"db/dac_mux.db","'${cprams},MUXNAME=DAC_MUX,mknob=dac_mux'"'
-                if [ -e /etc/acq400/$site/dac_mux_master ]; then
-                    dblr '"db/dac_mux.db","'${cprams},MUXNAME=DAC_MUX_MASTER,mknob=dac_mux_master'"'
-                fi
-            else
-                chg=1
-                nchan=$(cat /etc/acq400/$site/NCHAN)
-                dblr '"db/aoALL.db","'${cprams}'"'
-            fi
-            for ch in $(seq 1 $nchan)
-            do
-                dblr '"db/ao420fmc.db","'${cprams},cid=$ch,REFV=${HAS_ACQ427}'"'
-                echo "seq ao420_range_set \"UUT=${HOST},SITE=${site},CID=$ch\"" >>/tmp/st_post.cmd
-                # PINI fails to set VAL on AO record. set GAIN (attenuation) to 100%
-                echo "dbpf ${HOST}:${site}:AWG:G:${ch} 100" >> /tmp/st_post.cmd
-            done;;
-        $MT_AO4220)
-            maxcode=524288
-            type=LONG
-            nchan=4;
-            chg=1
-            dblr '"db/aoALL.db","'${cprams}'"'
-            for ch in $(seq 1 $nchan)
-            do
-                dblr '"db/ao420fmc.db","'${cprams},cid=$ch'"'
-                echo "seq ao420_range_set \"UUT=${HOST},SITE=${site},CID=$ch\"" >>/tmp/st_post.cmd
-                # PINI fails to set VAL on AO record. set GAIN (attenuation) to 100%
-                echo "dbpf ${HOST}:${site}:AWG:G:${ch} 100" >> /tmp/st_post.cmd
-            done;;
-        $MT_AO428)
-            maxcode=524288
-            type=LONG
-            nchan=8
-            for ch in $(seq 1 $nchan)
-            do
-                cid=$(printf "%02d" $ch)
-                dblr '"db/ao428elf.db","'${cprams},cid=$cid'"'
-            done
-            #echo 'dbLoadRecords("db/ao420fmc.db","'${cprams},cid=32'")'
-            ;;
-        $MT_AO424)
-            nchan=32
-            for ch in $(seq 1 $nchan)
-            do
-                cid=$(printf "%02d" $ch)
-                ch0=$((ch-1))
-                fn=$((ch0/8+1))
-                m8=$((ch0%8))
-                outx=$(echo $m8 | tr 01234567 ABCDEFGH)
-                dblr '"db/ao424fmc.db","'${cprams},cid=$cid,fn=$fn,outx=$outx'"'
-                echo "seq ao424_range_set \"UUT=${HOST},SITE=${site},CID=$cid\"" >>/tmp/st_post.cmd
-            done
-            dblr '"db/aoALL.db","'${cprams},SPORT=S${site}'"'
-            has_range=0
-            for kb in /etc/acq400/${site}/range[0-9]*
-            do
-                if [ -e $kb ]; then
-                    ix=${kb#*range}
-                    if [ "$ix" != "99" ]; then
-                        ch=$ix
-                        dblr '"db/ao424_range.db","'${cprams}',CH='$ch',IX='$ix',KNOB='${kb}'"'
-                    fi
-                    has_range=1
-                fi
-            done
-            if [ $has_range -ne 0 ]; then
-                dblr '"db/ao424_rangeM.db","'${cprams},SPORT=S${site}',CH='ALL'"'
-            fi;;
-        esac
-        if [ $nchan -gt 0 ]; then
-            let nchanp1="$nchan+1"
-            vmax=$(get_range $site)
-            eslo=$(echo $vmax $maxcode | awk '{ print $1/$2 }')
-            PRAMS="UUT=${HOST},SITE=${site}"
-            wprams="${PRAMS},size=${SIZE},type=${type},CHG=${chg}"
-            wprams="${wprams},maxcode=${maxcode},vmax=${vmax},eslo=${eslo}"
-            dblr \"db/calAO.db\",\"${wprams},nchanp1=${nchanp1}\"
-        fi
-}
 
 HAS_ACQ43X=0
 ACQ480_COUNT=0
@@ -623,10 +531,8 @@ load_400() {
     $MT_ACQ494)
         load_acq494 ${site} "${cprams}";;
     $MT_AO420|$MT_AO422|$MT_AO424|$MT_AO428|$MT_AO4220)
-        create_asyn_channel S${site}A 127.0.0.1:$((4220+${site}))
         has_rgm=1
-        load_AO $site $model $cprams
-        echo >>/tmp/st_post.cmd "seq calmonAO \"uut=${HOST},site=${site},verbose=${CALMON_VERBOSE:-0}\""
+        source ./scripts/load.AO $site $model $cprams
         let LO=66000000;;
 #   @@todo : different flavour of calmon for SAR ADC needed
     $MT_DIO482TD)
