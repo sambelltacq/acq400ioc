@@ -1,8 +1,6 @@
 # ao424fmc.db .. DC set only
 record(ao, "${UUT}:${SITE}:AO:SLOW_SET:CH:ALL") {
-        field(DTYP, "stream")
-        field(OUT, "@ao424.proto setSlowAll ${SPORT}")        
-        field(SCAN, "Passive")
+        field(DTYP, "Soft Channel")
         field(DESC, "Slow set AO ALL")        
         field(DRVL, "-10")
         field(DRVH, "+9.999")
@@ -11,6 +9,32 @@ record(ao, "${UUT}:${SITE}:AO:SLOW_SET:CH:ALL") {
         field(HOPR, "9.999")
         field(LOPR, "-10")
         field(EGU,  "V")
+        field(VAL,  "0")
+        field(PINI, "YES")
+        field(FLNK, "${UUT}:${SITE}:AO:SLOW_SET:CH:ALL:f0 PP")
+}
+
+record(fanout, "${UUT}:${SITE}:AO:SLOW_SET:CH:ALL:f0") {
+        field(LNK1, "${UUT}:${SITE}:AO:SLOW_SET:CH:ALL:f1")
+        field(LNK2, "${UUT}:${SITE}:AO:SLOW_SET:CH:ALL:f2")
+        field(LNK3, "${UUT}:${SITE}:AO:SLOW_SET:CH:ALL:f3")
+        field(LNK4, "${UUT}:${SITE}:AO:SLOW_SET:CH:ALL:f4")
+}
+record(dfanout, "${UUT}:${SITE}:AO:SLOW_SET:CH:ALL:f1") {
+        field(DOL,  "${UUT}:${SITE}:AO:SLOW_SET:CH:ALL")
+        field(OMSL, "closed_loop")
+}
+record(dfanout, "${UUT}:${SITE}:AO:SLOW_SET:CH:ALL:f2") {
+        field(DOL,  "${UUT}:${SITE}:AO:SLOW_SET:CH:ALL")
+        field(OMSL, "closed_loop")
+}
+record(dfanout, "${UUT}:${SITE}:AO:SLOW_SET:CH:ALL:f3") {
+        field(DOL,  "${UUT}:${SITE}:AO:SLOW_SET:CH:ALL")
+        field(OMSL, "closed_loop")
+}
+record(dfanout, "${UUT}:${SITE}:AO:SLOW_SET:CH:ALL:f4") {
+        field(DOL,  "${UUT}:${SITE}:AO:SLOW_SET:CH:ALL")
+        field(OMSL, "closed_loop")
 }
 
 record(ao, "${UUT}:${SITE}:OUTPUT_DELAY") {

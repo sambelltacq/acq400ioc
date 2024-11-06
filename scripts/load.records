@@ -350,7 +350,11 @@ load_AO() {
             for ch in $(seq 1 $nchan)
             do
                 cid=$(printf "%02d" $ch)
-                dblr '"db/ao424fmc.db","'${cprams},cid=$cid'"'
+                ch0=$((ch-1))
+                fn=$((ch0/8+1))
+                m8=$((ch0%8))
+                outx=$(echo $m8 | tr 01234567 ABCDEFGH)
+                dblr '"db/ao424fmc.db","'${cprams},cid=$cid,fn=$fn,outx=$outx'"'
                 echo "seq ao424_range_set \"UUT=${HOST},SITE=${site},CID=$cid\"" >>/tmp/st_post.cmd
             done
             dblr '"db/aoALL.db","'${cprams},SPORT=S${site}'"'

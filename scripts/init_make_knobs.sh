@@ -81,11 +81,11 @@ make_epics_knobs() {
 		make_caget_w $PV ${NU#*:} ${SITE}	
 	done	
 
-	for PV in $(egrep -e AWG $RLP)
+	for PV in $(egrep -e AWG -e AO:SLOW_SET $RLP | grep -v :f)
 	do
 		NU=${PV#*:}
 		case ${PV} in
-		*DIST|*ABO|*BURSTLEN)
+		*DIST|*ABO|*BURSTLEN|*SLOW_SET*)
 			make_caput $PV ${NU#*:} ${NU%%:*};;
 		*)
 			make_caget $PV ${NU#*:} ${NU%%:*};;

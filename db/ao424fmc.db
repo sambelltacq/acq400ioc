@@ -13,4 +13,9 @@ record(ao, "${UUT}:${SITE}:AO:SLOW_SET:CH:${cid}") {
         field(EGU,  "V")
 }
 
+record(dfanout, "${UUT}:${SITE}:AO:SLOW_SET:CH:ALL:f${fn}") {
+        field(OUT${outx}, "${UUT}:${SITE}:AO:SLOW_SET:CH:${cid} PP")
+}
+
+
 
