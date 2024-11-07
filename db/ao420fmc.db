@@ -16,24 +16,6 @@ record(ao, "${UUT}:${SITE}:AO:SLOW_SET:CH:${cid}") {
 }
 
 
-record(ao, "${UUT}:${SITE}:AO:SLOW_SET:CH:ALL") {
-        field(DTYP, "Soft Channel")
-        field(DESC, "Slow set AO ALL")
-        field(DRVL, "-10")
-        field(DRVH, "+9.999")
-        field(HOPR, "9.999")
-        field(LOPR, "-10")
-        field(EGU,  "V")
-        field(VAL,  "0")
-        field(PINI, "YES")
-        field(FLNK, "${UUT}:${SITE}:AO:SLOW_SET:CH:ALL:f1 PP")
-}
-
-record(dfanout, "${UUT}:${SITE}:AO:SLOW_SET:CH:ALL:f1") {
-        field(DOL,  "${UUT}:${SITE}:AO:SLOW_SET:CH:ALL")
-        field(OMSL, "closed_loop")
-        field(OUT${outx}, "${UUT}:${SITE}:AO:SLOW_SET:CH:${cid} PP")
-}
 
 record(bo, "${UUT}:${SITE}:AO:GAIN:CH:${cid}") {
 	field(DTYP, "stream")
@@ -128,6 +110,44 @@ record(bo, "${UUT}:${SITE}:AWG:DIST") {
         field(ONAM, "AWG")
         field(VAL,  "0")
         field(PINI, "YES")      
+}
+
+# we want a soft record WITH ESLO!
+record(ao, "${UUT}:${SITE}:AO:SLOW_SET:CH:ALL") {
+        field(DTYP, "dsSysfsAo")
+        field(OUT, "@/dev/null")
+        field(DTYP, "Soft Channel")
+        field(DESC, "Slow set AO ALL")
+        field(DRVL, "-10")
+        field(DRVH, "+9.999")
+        field(HOPR, "9.999")
+        field(LOPR, "-10")
+        field(LINR, "LINEAR")
+        field(ESLO, "0.076293945e-3")
+        field(EGU,  "V")
+        field(VAL,  "0")
+        field(PINI, "YES")
+        field(FLNK, "${UUT}:${SITE}:AO:SLOW_SET:CH:ALL:f1 PP")
+}
+
+record(dfanout, "${UUT}:${SITE}:AO:SLOW_SET:CH:ALL:f1") {
+        field(DOL,  "${UUT}:${SITE}:AO:SLOW_SET:CH:ALL")
+        field(OMSL, "closed_loop")
+        field(OUT${outx}, "${UUT}:${SITE}:AO:SLOW_SET:CH:${cid} PP")
+}
+
+record(bo, "${UUT}:${SITE}:AO:GAIN:CH:ALL") {
+        field(DTYP, "Soft Channel")
+        field(DESC, "AO GAIN")
+        field(ZNAM, "x1")
+        field(ONAM, "x2")
+        field(FLNK, "${UUT}:${SITE}:AO:GAIN:CH:ALL:f1 PP")
+}
+
+record(dfanout, "${UUT}:${SITE}:AO:GAIN:CH:ALL:f1") {
+        field(DOL,  "${UUT}:${SITE}:AO:GAIN:CH:ALL")
+        field(OMSL, "closed_loop")
+        field(OUT${outx}, "${UUT}:${SITE}:AO:GAIN:CH:${cid} PP")
 }
 
 
