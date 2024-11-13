@@ -34,7 +34,7 @@ record (mbbo, "${UUT}:${SITE}:GAIN:${CH}:w")	{
 	field(SDIS, "${UUT}:${SITE}:GAIN:${CH}:s.PACT")
 	field(OMSL, "closed_loop")
 	field(DOL, "${UUT}:${SITE}:GAIN:${CH}.RVAL PP")
-	field(FLNK, "${UUT}:${SITE}:GAIN_CHANGES")		
+	field(FLNK, "${UUT}:${SITE}:SCALE:${CH} PP")
 }
 
 record(bo, "${UUT}:${SITE}:ACTIVE"){
@@ -96,5 +96,12 @@ record(aSub, "${UUT}:${SITE}:AI:TW:${CH}:V") {
 
 record(dfanout, "${UUT}:${SITE}:GAIN:fan${FAN}") {
 	field(OUT${fan}, "${UUT}:${SITE}:GAIN:${CH} PP")
+}
+
+record(ai, "${UUT}:${SITE}:SCALE:${CH}") {
+        field(DTYP, "stream")
+        field(INP,  "@acq426.proto getScale(${IX}) ${SPORT}")
+        field(PINI, "YES")
+        field(FLNK, "${UUT}:${SITE}:GAIN_CHANGES")
 }
 

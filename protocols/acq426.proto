@@ -20,3 +20,9 @@ getGain {
                 connect 1000;    
         }                       
 }
+
+getScale {
+        out "scale\$1";
+        in "%f";
+}
+
