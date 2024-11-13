@@ -1,16 +1,16 @@
 # nchan deprecated, NCHAN preferred
 
 get_nchan() {
-    SITE=$1
-	if [ -e /etc/acq400/$SITE/active_chan ]; then
+        SITE=$1
+        if [ -e /etc/acq400/$SITE/active_chan ]; then
 		cat /etc/acq400/$SITE/active_chan
-    elif [ -e /etc/acq400/$SITE/NCHAN ]; then
-        cat /etc/acq400/$SITE/NCHAN
-    elif [ -e /etc/acq400/$SITE/nchan ]; then
-        cat /etc/acq400/$SITE/nchan
-    else
-        echo 4
-    fi
+        elif [ -e /etc/acq400/$SITE/NCHAN ]; then
+                cat /etc/acq400/$SITE/NCHAN
+        elif [ -e /etc/acq400/$SITE/nchan ]; then
+                cat /etc/acq400/$SITE/nchan
+        else
+                echo 4
+        fi
 }
 
 dblr() {
