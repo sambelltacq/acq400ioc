@@ -1,0 +1,79 @@
+/* seq calmon "uut=acq1001_315,site=1,nchan=32"
+ */
+
+program calmon426
+option +r;
+
+float ext_eslo[33]; 	assign ext_eslo to "{uut}:{site}:AI:CAL:ESLO";
+
+float scale[33];	assign scale to {};	// index from 1
+
+int has_ch_gains;	assign has_ch_gains to "{uut}:{site}:HAS_CH_GAINS";
+int data32;		assign data32 to "{uut}:{site}:data32";
+
+int gain_changes;	assign gain_changes to "{uut}:{site}:GAIN_CHANGES"; monitor gain_changes;
+int gain_changes0;
+
+
+%{
+#include <stdlib.h>
+}%
+
+char *uut;
+char *site;
+int verbose;
+int ch;
+int nchan = 32;
+char pvname[128];
+
+ss calmon {
+	state init {
+		entry {
+			if (macValueGet("site") != 0){
+				site = macValueGet("site");
+			}
+			if (macValueGet("nchan") != 0){
+				nchan = atoi(macValueGet("nchan"));
+			}
+			if (macValueGet("uut") != 0){
+				uut = macValueGet("uut");
+			}
+			printf("calmon426 R1000 uut:%s site:%s %d\n", uut, site, nchan);
+			if (macValueGet("verbose") != 0) verbose = atoi(macValueGet("verbose"));
+			
+			for (ch = 1; ch <= nchan; ++ch){
+				snprintf(pvname, 80, "%s:%s:SCALE:%02d", uut, site, ch);
+				pvAssign(scale[ch], pvname);
+			}
+		}
+		when() {
+			
+		} state update
+	}
+	
+	state wait_change {
+		when(gain_changes){
+			
+		} state settle
+	}
+	
+	state settle {
+		when(delay(3)){
+			
+		} state update
+	}
+	
+	state update {
+		entry {
+			for (ch = 1; ch <= nchan; ++ch){
+				pvGet(scale[ch]);
+				ext_eslo[ch] = scale[ch];
+			}
+			pvPut(ext_eslo);
+		}
+		when() {
+			
+		} state wait_change
+	}
+}
+
