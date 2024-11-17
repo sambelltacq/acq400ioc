@@ -1,0 +1,19 @@
+record(waveform, "${UUT}:0:STREAM_SUBSET_MASK") {
+        field(DTYP, "Soft Channel")
+        field(NELM, "${NCHAN}")
+        field(FTVL, "UCHAR")
+        field(DESC, "channel subset mask")
+        field(FLNK, "${UUT}:0:STREAM_SUBSET_MASK:w")
+}
+
+record(aSub, "${UUT}:0:STREAM_SUBSET_MASK:w") {
+        field(SNAM, "volts_to_raw_SHORT")
+
+        field(FTA,  "UCHAR")
+        field(NOA,  "${NCHAN}")
+        field(INPA, "${UUT}:0:STREAM_SUBSET_MASK")
+
+        field(FTF, "STRING")
+        field(NOF, "80")
+        field(INPF, "/etc/acq400/0/stream_subset")
+}
