@@ -373,44 +373,6 @@ ChannelMask createBitsetFromByteArray(unsigned char* bytes, int nbytes) {
     return ChannelMask(bitString);
 }
 
-long bitmask(aSubRecord* prec)
-{
-	unsigned char* channels = (unsigned char*)(prec->a);
-	int nchan = prec->noa;
-	const char *fname = (char *)prec->f;
-
-	ChannelMask cm = createBitsetFromByteArray(channels, nchan);
-
-	std::stack<unsigned char> nibbles;
-
-	unsigned char nibble = 0;
-	for (unsigned char ic = 0, bx = 0; ic < cm.size(); ++ic, ++bx){
-		nibble |= cm[ic]<<(bx%4);
-		if (bx%4 == 3){
-			nibbles.push(nibble);
-			nibble = 0;
-		}
-	}
-	if (nibble){
-		nibbles.push(nibble);
-	}
-
-	printf("bitmask fname:\"%s\"\n", fname);
-
-	FILE* fp = fopen(fname, "w");
-	if (fp == 0){
-		perror(fname);
-		exit(errno);
-	}
-	fprintf(fp, "0x");
-	for( ; !nibbles.empty(); nibbles.pop()){
-		fprintf(fp, "%x", nibbles.top());
-	}
-	fprintf(fp, "\n");
-	fclose(fp);
-	return 0;
-}
-
 long timebase(aSubRecord *prec) {
 	long pre = *(long*)prec->a;
 	long post = *(long*)prec->b;
@@ -612,7 +574,6 @@ static registryFunctionRef my_asub_Ref[] = {
        {"cart2pol_LONG", (REGISTRYFUNCTION) cart2pol<long>},
        {"cart2pol_SHORT", (REGISTRYFUNCTION) cart2pol<short>},
        {"boolarray2u32", (REGISTRYFUNCTION) boolarray2u32},
-       {"bitmask", (REGISTRYFUNCTION) bitmask},
        {"timebase", (REGISTRYFUNCTION) timebase},
        {"spectrum", (REGISTRYFUNCTION) spectrum<short, MAXS>},
        {"spectrum_LONG", (REGISTRYFUNCTION) spectrum<long, MAXL>},

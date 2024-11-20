@@ -75,3 +75,13 @@ getString {
 	out "\$1";
 	in "%10c";
 }
+
+setStreamSubsetMask {
+        out "stream_subset_mask %s";
+        in;
+}
+
+getStreamSubsetMask {
+        out "stream_subset_mask";
+        in "%s";
+}

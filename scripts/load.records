@@ -1013,7 +1013,7 @@ load_mb_base() {
     fi
     dblr '"db/sync_role.db","UUT='${HOST}',SPORT=S0R"'
     [ -e /etc/acq400/0/gpg_timescaler ] && load_gpg
-    dblr '"db/subset.db","UUT='${HOST}',NCHAN='$(cat /etc/acq400/0/NCHAN)'"'
+    dblr '"db/subset.db","UUT='${HOST}',NCHAN='$(cat /etc/acq400/0/NCHAN)',SPORT=S0"'
 }
 
 isRevA() {
