@@ -1,0 +1,3 @@
+record(calcout, "${UUT}:0:AO:STEP:CURSOR:c") {
+        field(INPB, "${UUT}:${SITE}:AO:STEP:${CH}.NORD")
+}
