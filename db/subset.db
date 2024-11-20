@@ -9,6 +9,8 @@ record(stringout, "${UUT}:0:STREAM_SUBSET_MASK") {
 record(stringout, "${UUT}:0:STREAM_SUBSET_MASK:w") {
         field(DTYP, "stream")
         field(OUT, "@acq400mb.proto setStreamSubsetMask ${SPORT}")
+        field(OMSL, "closed_loop")
+        field(DOL,  "${UUT}:0:STREAM_SUBSET_MASK")
         field(DESC, "channel subset mask 0xABCD CH01 is LSB")
         field(DISV, "1")
         field(SDIS, "${UUT}:0:STREAM_SUBSET_MASK:s.PACT")
