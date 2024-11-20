@@ -1,7 +1,30 @@
 record(stringout, "${UUT}:0:STREAM_SUBSET_MASK") {
-        field(DTYP, "stream")
-        field(OUT, "@acq400mb.proto setStreamSubsetMask $SPORT")
+        field(DTYP, "Soft Channel")
         field(VAL,  "none")
         field(PINI, "YES")
         field(DESC, "channel subset mask 0xABCD CH01 is LSB")
+        field(FLNK, "${UUT}:0:STREAM_SUBSET_MASK:w PP")
+}
+
+record(stringout, "${UUT}:0:STREAM_SUBSET_MASK:w") {
+        field(DTYP, "stream")
+        field(OUT, "@acq400mb.proto setStreamSubsetMask ${SPORT}")
+        field(DESC, "channel subset mask 0xABCD CH01 is LSB")
+        field(DISV, "1")
+        field(SDIS, "${UUT}:0:STREAM_SUBSET_MASK:s.PACT")
+}
+
+record(stringin, "${UUT}:0:STREAM_SUBSET_MASK:r") {
+        field(DTYP, "stream")
+        field(INP, "@acq400mb.proto getStreamSubsetMask ${SPORT}")
+        field(SCAN, "5 second")
+        field(DESC, "channel subset mask 0xABCD CH01 is LSB")
+        field(FLNK, "${UUT}:0:STREAM_SUBSET_MASK:s")
+}
+
+record(stringout, "${UUT}:0:STREAM_SUBSET_MASK:s") {
+        field(DTYP, "Soft Channel")
+        field(DOL,  "${UUT}:0:STREAM_SUBSET_MASK:r NPP")
+        field(OMSL, "closed_loop")
+        field(OUT,  "${UUT}:0:STREAM_SUBSET_MASK PP")
 }
