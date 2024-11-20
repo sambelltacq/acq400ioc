@@ -22,7 +22,9 @@ if [ "x$is_dac" = "xyes" ]; then
 
 DAC_STEP_SZ=${DAC_STEP_SZ:-65536}
 
-create_asyn_channel bqs 127.0.0.1:4237
+if [ ! -e /tmp/dac_step_first_time_done ]; then
+        create_asyn_channel bqs 127.0.0.1:4237
+fi
 
 nchan=$(cat /etc/acq400/$site/NCHAN)
 if [ $nchan -gt 8 ]; then

@@ -3,7 +3,7 @@ record(waveform, "${UUT}:0:STREAM_SUBSET_MASK") {
         field(NELM, "${NCHAN}")
         field(FTVL, "UCHAR")
         field(DESC, "channel subset mask")
-        field(FLNK, "${UUT}:0:STREAM_SUBSET_MASK:w")
+        field(FLNK, "${UUT}:0:STREAM_SUBSET_MASK:w PP")
 }
 
 record(aSub, "${UUT}:0:STREAM_SUBSET_MASK:w") {
@@ -14,6 +14,6 @@ record(aSub, "${UUT}:0:STREAM_SUBSET_MASK:w") {
         field(INPA, "${UUT}:0:STREAM_SUBSET_MASK")
 
         field(FTF, "STRING")
-        field(NOF, "80")
+        field(NOF, "1")
         field(INPF, "/etc/acq400/0/stream_subset_mask")
 }
