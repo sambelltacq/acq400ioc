@@ -1,5 +1,14 @@
-# dac_step: write a pre-programmed DAC value every tick.
+# dac_step: write a pre-programmed DAC value every tick (~20Hz).
 
+# STEP:${CH} is the DAC output pattern per step for ${CH}
+record(waveform, "${UUT}:${SITE}:AO:STEP:${CH}") {
+        field(DTYP, "Soft Channel")
+        field(FTVL, "FLOAT")
+        field(NELM, "${size}")
+}
+
+# BQ "Buffer Queue" hooks end of buffer (DMA DONE) notification aka Burst Complete
+# I/O Intr drives entire processing tree.
 record(longin, "${UUT}:0:BQ") {
         field(DTYP, "stream")
         field(INP, "@dac_step.proto getBQ ${BQS}")
@@ -7,6 +16,8 @@ record(longin, "${UUT}:0:BQ") {
         field(FLNK, "${UUT}:0:AO:STEP:CURSOR:c")
 }
 
+# CURSOR:c : increments CURSOR between limits.
+# the limit is set separately in dac_step1.db to be the FIRST STEP channel
 record(calcout, "${UUT}:0:AO:STEP:CURSOR:c") {
         field(DTYP, "Soft Channel")
         field(INPA, "${UUT}:0:AO:STEP:CURSOR")
@@ -15,6 +26,7 @@ record(calcout, "${UUT}:0:AO:STEP:CURSOR:c") {
         field(OUT,  "${UUT}:0:AO:STEP:CURSOR PP")
 }
 
+# CURSOR : indexes STEP:${CH} scan output pattern
 record(longout, "${UUT}:0:AO:STEP:CURSOR") {
         field(DTYP, "Soft Channel")
         field(DRVL, "0")
@@ -22,12 +34,7 @@ record(longout, "${UUT}:0:AO:STEP:CURSOR") {
         field(FLNK, "${UUT}:0:AO:STEP:f0")
 }
 
-record(waveform, "${UUT}:${SITE}:AO:STEP:${CH}") {
-        field(DTYP, "Soft Channel")
-        field(FTVL, "FLOAT")
-        field(NELM, "${size}")
-}
-
+# STEP:${CH}:i returns current STEP value from array indexed by CURSOR
 record(subArray, "${UUT}:${SITE}:AO:STEP:${CH}:i") {
         field(DTYP, "Soft Channel")
         field(FTVL, "FLOAT")
@@ -37,16 +44,20 @@ record(subArray, "${UUT}:${SITE}:AO:STEP:${CH}:i") {
         field(FLNK, "${UUT}:${SITE}:AO:STEP:${CH}:w")
 }
 
+# STEP:${CH}:w writes the value to the SLOW_SET actuator
 record(ao, "${UUT}:${SITE}:AO:STEP:${CH}:w") {
         field(DTYP, "Soft Channel")
         field(DOL,  "${UUT}:${SITE}:AO:STEP:${CH}:i")
         field(OMSL, "closed_loop")
         field(OUT,  "${UUT}:${SITE}:AO:SLOW_SET:CH:${CH} PP")
 }
+
+# ${UUT}:0:AO:STEP:f0 :: connects CURSOR to potentially multiple sites
 record(fanout, "${UUT}:0:AO:STEP:f0") {
         field(LNK${SITE}, "${UUT}:${SITE}:AO:STEP:f1")
 }
 
+# ${SITE}:AO:STEP:f1 connects update to individual channels (max:8)
 record(dfanout, "${UUT}:${SITE}:AO:STEP:f1") {
        field(DOL, "${UUT}:0:AO:STEP:CURSOR")
        field(OMSL, "closed_loop")

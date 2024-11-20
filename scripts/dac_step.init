@@ -1,13 +1,8 @@
 # source me please
-# dac_step : load up a dac_step systems
+# dac_step : load up a dac_step system
 
 echo '# dac_step site:'$site' store env to /tmp/dac_step.env'
 env > /tmp/dac_step.env
-
-DAC_STEP_SZ=${DAC_STEP_SZ:-65536}
-
-create_asyn_channel bqs 127.0.0.1:4237
-
 
 cha() {
         case $1 in
@@ -15,10 +10,26 @@ cha() {
         2) echo B;;
         3) echo C;;
         4) echo D;;
+        5) echo E;;
+        6) echo F;;
+        7) echo G;;
+        8) echo H;;
         *) echo X;;
         esac   
 }
-for ch in 1 2 3 4; do
+
+if [ "x$is_dac" = "xyes" ]; then
+
+DAC_STEP_SZ=${DAC_STEP_SZ:-65536}
+
+create_asyn_channel bqs 127.0.0.1:4237
+
+nchan=$(cat /etc/acq400/$site/NCHAN)
+if [ $nchan -gt 8 ]; then
+        nchan=8                         # single dfanout limited to 8 links
+fi
+
+for ch in $(seq $nchan); do
         dblr '"db/dac_step.db","'${cprams},CH=${ch},CHA=$(cha $ch),BQS=bqs,size=${DAC_STEP_SZ}'"'
         if [ ! -e /tmp/dac_step_first_time_done ]; then
                 dblr '"db/dac_step1.db","'${cprams},CH=${ch},BQS=bqs,size=${DAC_STEP_SZ}'"'
@@ -26,3 +37,6 @@ for ch in 1 2 3 4; do
         fi
 done
 
+else
+        echo '# dac_step site:'$site' not a dac .. not supported yet'
+fi

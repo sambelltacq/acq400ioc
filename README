@@ -238,4 +238,9 @@ export CB_QSIZE=4000
 # automated bufferlen comp for RTM. breaks 192ch, so make it an option
 #export RTM_BUFFER_MON=y
 
+# DAC_STEP: preprogam a WF record with DAC steps, to execute on BQ (Buffer Queue: assume 1 burst per buffer).
+# runs on all AO sites, max 8CH. DO possible but not supported.
+#export ACQ400_DAC_STEP=yes
+# WF Record length, default pre-allocation: 65536
+#export DAC_STEP_SZ=65536
 

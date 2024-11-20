@@ -417,6 +417,7 @@ load_400() {
     fi
 
     is_adc="no"
+    is_dac="no"
     has_ch_gains=0
     calmon="calmon"
     decim=1;
@@ -532,6 +533,7 @@ load_400() {
     $MT_ACQ494)
         load_acq494 ${site} "${cprams}";;
     $MT_AO420|$MT_AO422|$MT_AO424|$MT_AO428|$MT_AO4220)
+        is_dac=yes
         has_rgm=1
         source ./scripts/load.AO $site $model $cprams
         let LO=66000000;;
