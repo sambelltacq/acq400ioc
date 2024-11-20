@@ -6,6 +6,12 @@ record(waveform, "${UUT}:0:STREAM_SUBSET_MASK") {
         field(FLNK, "${UUT}:0:STREAM_SUBSET_MASK:w PP")
 }
 
+record(stringout, "${UUT}:0:STREAM_SUBSET_MASK:fn") {
+        field(DTYP, "Soft Channel")
+        field(VAL,  "/etc/acq400/0/stream_subset_mask")
+        field(PINI, "YES")
+}
+
 record(aSub, "${UUT}:0:STREAM_SUBSET_MASK:w") {
         field(SNAM, "bitmask")
 
@@ -15,5 +21,5 @@ record(aSub, "${UUT}:0:STREAM_SUBSET_MASK:w") {
 
         field(FTF, "STRING")
         field(NOF, "1")
-        field(INPF, "/etc/acq400/0/stream_subset_mask")
+        field(INPF, "${UUT}:0:STREAM_SUBSET_MASK:fn" )
 }
