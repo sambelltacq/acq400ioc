@@ -7,13 +7,6 @@ record(waveform, "${UUT}:${SITE}:AO:STEP:${CH}") {
         field(NELM, "${size}")
 }
 
-record(bo, "${UUT}:0:BQ:EN"){
-        field(DTYP, "Soft Channel")
-        field(ZNAM, "0")
-        field(ONAM, "1")
-        field(VAL, "0")
-        field(PINI, "YES")
-}
 
 record(bi, "${UUT}:${SITE}:AO:HAS_STEP") {
         field(VAL,  "1")
@@ -25,8 +18,6 @@ record(longin, "${UUT}:0:BQ") {
         field(INP, "@dac_step.proto getBQ ${BQS}")
         field(SCAN, "I/O Intr")
         field(FLNK, "${UUT}:0:AO:STEP:CURSOR:c")
-        field(DISV, "0")
-        field(SDIS, "${UUT}:0:BQ:EN")
 }
 
 # CURSOR:c : increments CURSOR between limits.
@@ -57,12 +48,22 @@ record(subArray, "${UUT}:${SITE}:AO:STEP:${CH}:i") {
         field(FLNK, "${UUT}:${SITE}:AO:STEP:${CH}:w")
 }
 
+record(bo, "${UUT}:${SITE}:AO:STEP:${CH}:EN"){
+        field(DTYP, "Soft Channel")
+        field(ZNAM, "0")
+        field(ONAM, "1")
+        field(VAL, "0")
+        field(PINI, "YES")
+}
+
 # STEP:${CH}:w writes the value to the SLOW_SET actuator
 record(ao, "${UUT}:${SITE}:AO:STEP:${CH}:w") {
         field(DTYP, "Soft Channel")
         field(DOL,  "${UUT}:${SITE}:AO:STEP:${CH}:i")
         field(OMSL, "closed_loop")
         field(OUT,  "${UUT}:${SITE}:AO:SLOW_SET:CH:${CH} PP")
+        field(DISV, "0")
+        field(SDIS, "${UUT}:${SITE}:AO:STEP:${CH}:EN")
 }
 
 # ${UUT}:0:AO:STEP:f0 :: connects CURSOR to potentially multiple sites
