@@ -5,7 +5,8 @@ program calmon426
 option +r;
 
 float ext_eslo[33]; 	assign ext_eslo to "{uut}:{site}:AI:CAL:ESLO";
-
+float eslo[33];		assign eslo to {};	// index from 1
+float eoff[33];		assign eoff to {};	// index from 1
 float scale[33];	assign scale to {};	// index from 1
 
 int has_ch_gains;	assign has_ch_gains to "{uut}:{site}:HAS_CH_GAINS";
@@ -25,6 +26,7 @@ int verbose;
 int ch;
 int nchan = 32;
 char pvname[128];
+char pvfield[100];
 
 ss calmon {
 	state init {
@@ -44,6 +46,14 @@ ss calmon {
 			for (ch = 1; ch <= nchan; ++ch){
 				snprintf(pvname, 80, "%s:%s:SCALE:%02d", uut, site, ch);
 				pvAssign(scale[ch], pvname);
+
+				snprintf(pvname, 80, "%s:%s:AI:CH:%02d", uut, site, ch);
+				snprintf(pvfield, 100, "%s.%s", pvname, "ESLO");
+				pvAssign(eslo[ch], pvfield);
+				if (ch==1) printf("assign %s\n",pvfield);
+
+				snprintf(pvfield, 100, "%s.%s", pvname, "EOFF");
+				pvAssign(eoff[ch], pvfield);
 			}
 		}
 		when() {
@@ -67,7 +77,8 @@ ss calmon {
 		entry {
 			for (ch = 1; ch <= nchan; ++ch){
 				pvGet(scale[ch]);
-				ext_eslo[ch] = scale[ch];
+				ext_eslo[ch] = eslo[ch] = scale[ch];
+				pvPut(eslo[ch]);
 			}
 			pvPut(ext_eslo);
 		}
