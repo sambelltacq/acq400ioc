@@ -149,4 +149,11 @@ record(dfanout, "${UUT}:${SITE}:AO:GAIN:CH:ALL:f1") {
         field(OUT${outx}, "${UUT}:${SITE}:AO:GAIN:CH:${cid} PP")
 }
 
+record(bi, "${UUT}:${SITE}:AO:HAS_STEP") {
+        field(DTYP, "Soft Channel")
+        field(ZNAM, "0")
+        field(ONAM, "1")
+        field(VAL,  "0")
+        field(PINI, "YES")
+}
 

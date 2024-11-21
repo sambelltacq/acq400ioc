@@ -7,6 +7,17 @@ record(waveform, "${UUT}:${SITE}:AO:STEP:${CH}") {
         field(NELM, "${size}")
 }
 
+record(bo, "${UUT}:0:BQ:EN"){
+        field(DTYP, "Soft Channel")
+        field(ZNAM, "0")
+        field(ONAM, "1")
+        field(VAL, "0")
+        field(PINI, "YES")
+}
+
+record(bi, "${UUT}:${SITE}:AO:HAS_STEP") {
+        field(VAL,  "1")
+}
 # BQ "Buffer Queue" hooks end of buffer (DMA DONE) notification aka Burst Complete
 # I/O Intr drives entire processing tree.
 record(longin, "${UUT}:0:BQ") {
@@ -14,6 +25,8 @@ record(longin, "${UUT}:0:BQ") {
         field(INP, "@dac_step.proto getBQ ${BQS}")
         field(SCAN, "I/O Intr")
         field(FLNK, "${UUT}:0:AO:STEP:CURSOR:c")
+        field(DISV, "0")
+        field(SDIS, "${UUT}:0:BQ:EN")
 }
 
 # CURSOR:c : increments CURSOR between limits.
