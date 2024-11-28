@@ -4,13 +4,14 @@
 program calmon426
 option +r;
 
+int data32;		assign data32 to "{uut}:{site}:data32"; monitor data32;
+
 float ext_eslo[33]; 	assign ext_eslo to "{uut}:{site}:AI:CAL:ESLO";
 float eslo[33];		assign eslo to {};	// index from 1
 float eoff[33];		assign eoff to {};	// index from 1
 float scale[33];	assign scale to {};	// index from 1
 
 int has_ch_gains;	assign has_ch_gains to "{uut}:{site}:HAS_CH_GAINS";
-int data32;		assign data32 to "{uut}:{site}:data32";
 
 int gain_changes;	assign gain_changes to "{uut}:{site}:GAIN_CHANGES"; monitor gain_changes;
 int gain_changes0;
@@ -25,8 +26,12 @@ char *site;
 int verbose;
 int ch;
 int nchan = 32;
-char pvname[128];
-char pvfield[100];
+char pvname[80];
+char pvfield[130];
+float wscale;              /* wordsize scale factor */
+
+float SCALE20 = 16;        /* ADI scaling assumes 20 bit, but we have 16 bit */
+float SCALE32 = 1.0/16;    /* convert 20 bit to 24 bit .. there's a /256 elsewhere */
 
 ss calmon {
 	state init {
@@ -48,11 +53,11 @@ ss calmon {
 				pvAssign(scale[ch], pvname);
 
 				snprintf(pvname, 80, "%s:%s:AI:CH:%02d", uut, site, ch);
-				snprintf(pvfield, 100, "%s.%s", pvname, "ESLO");
+				snprintf(pvfield, 130, "%s.%s", pvname, "ESLO");
 				pvAssign(eslo[ch], pvfield);
 				if (ch==1) printf("assign %s\n",pvfield);
 
-				snprintf(pvfield, 100, "%s.%s", pvname, "EOFF");
+				snprintf(pvfield, 130, "%s.%s", pvname, "EOFF");
 				pvAssign(eoff[ch], pvfield);
 			}
 		}
@@ -62,12 +67,13 @@ ss calmon {
 	}
 	
 	state wait_change {
-		when(gain_changes){
+		when(gain_changes || data32){
 			
 		} state settle
 	}
 	
 	state settle {
+
 		when(delay(3)){
 			
 		} state update
@@ -75,10 +81,17 @@ ss calmon {
 	
 	state update {
 		entry {
+			wscale = data32==0? SCALE20: SCALE32;
+
 			for (ch = 1; ch <= nchan; ++ch){
 				pvGet(scale[ch]);
-				ext_eslo[ch] = eslo[ch] = scale[ch];
+				ext_eslo[ch] = eslo[ch] = wscale * scale[ch];
 				pvPut(eslo[ch]);
+
+				if (verbose >1 || (verbose>0 && ch==1)){
+					printf("calmon426::update s:%s ch%d %s wscale:%.2g scale:%.3g eslo:%.3g\n",
+						site, ch, data32==0?"int16":"int32", wscale, scale[ch], eslo[ch]);
+				}
 			}
 			pvPut(ext_eslo);
 		}
@@ -87,4 +100,3 @@ ss calmon {
 		} state wait_change
 	}
 }
-
