@@ -41,6 +41,12 @@ record(bo, "${UUT}:${SITE}:ACTIVE"){
         field(DTYP, "Soft Channel")
         field(VAL,  "1")
         field(PINI, "YES")
+        field(DOL,  "${UUT}:0:ACTIVE")
+        field(OMSL, "closed_loop")
+}
+
+record(fanout, "${UUT}:0:ACTIVE:f"){
+        field(LNK${SITE}, "${UUT}:${SITE}:ACTIVE PP")
 }
 
 record (mbbi, "${UUT}:${SITE}:GAIN:${CH}:r") {
@@ -104,4 +110,6 @@ record(ai, "${UUT}:${SITE}:SCALE:${CH}") {
         field(PINI, "YES")
         field(FLNK, "${UUT}:${SITE}:GAIN_CHANGES")
 }
+
+
 

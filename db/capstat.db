@@ -1,0 +1,30 @@
+
+record(bi, "${UUT}:0:CAP_BUSY") {
+        field(DTYP, "stream")
+        field(INP,  "@capstat.proto getBusy ${SPORT}")
+        field(SCAN, "I/O Intr")
+        field(ZNAM, "0")
+        field(ONAM, "1")
+        field(FLNK, "${UUT}:0:ACTIVE:c PP")
+}
+
+record(calc, "${UUT}:0:ACTIVE:c") {
+        field(INPA, "${UUT}:0:CAP_BUSY")
+        field(CALC,  "A")
+        field(FLNK, "${UUT}:0:ACTIVE PP")
+}
+
+record(bo, "${UUT}:0:ACTIVE"){
+        field(DTYP, "Soft Channel")
+        field(VAL,  "1")
+        field(PINI, "YES")
+        field(DOL,  "${UUT}:0:ACTIVE:c")
+        field(OMSL, "closed_loop")
+        field(ZNAM, "0")
+        field(ONAM, "1")
+        field(FLNK,  "${UUT}:0:ACTIVE:f")
+}
+
+record(fanout, "${UUT}:0:ACTIVE:f"){
+
+}

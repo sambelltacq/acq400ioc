@@ -1350,6 +1350,9 @@ load_mb_stats()
         dblr '"db/_counter.db","'${sprams},lname=${stat}'"'
     done
     create_asyn_channel S0S 127.0.0.1:4220
+
+    create_asyn_channel SBSY 127.0.0.1:4243
+    dblr '"db/capstat.db","UUT='${HOST}',SPORT=SBSY"'
 }
 
 
