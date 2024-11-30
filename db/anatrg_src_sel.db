@@ -11,16 +11,17 @@ record(mbbo, "${UUT}:${SITE}:ANATRG:SRC_SEL")   {
         field(TWST, "ATD_GRP")
         field(THST, "")
         field(FLNK, "${UUT}:${SITE}:ANATRG:SRC_SEL:c PP")
-        field(DESC, "analog trigger mode")              
+        field(DESC, "analog trigger mode")
+        field(PINI, "YES")
 }
 
 record(calcout, "${UUT}:${SITE}:ANATRG:SRC_SEL:c") {
         field(INPA, "${UUT}:${SITE}:ANATRG:SRC_SEL")
         field(CALC, "A != 0 ? 3: 0")
         field(OCAL, "A == 2")
-        field(OUT,  "${UUT}:${SITE}:EVENT0:DX")
         field(OOPT, "Every Time")
         field(DOPT, "Use OCAL")
+        field(OUT,  "${UUT}:${SITE}:EVENT0:DX PP")
         field(FLNK, "${UUT}:0:SIG:EVENT_SRC:0:atd PP")
 }
 
@@ -33,5 +34,5 @@ record (mbbo, "${UUT}:0:SIG:EVENT_SRC:0:atd") {
         field(THST, "MOD")
         field(DOL,  "${UUT}:${SITE}:ANATRG:SRC_SEL:c")
         field(OMSL, "closed_loop")
-        field(OUT,  "${UUT}:0:SIG:EVENT_SRC:0")
+        field(OUT,  "${UUT}:0:SIG:EVENT_SRC:0 PP")
 }

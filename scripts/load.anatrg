@@ -30,11 +30,12 @@ make_anatrg() {
         echo "seq atd_range_set \"uut=${HOST},site=${site},nchan=${nchan},verbose=${ATD_VERBOSE:-0}\"" >>/tmp/st_post.cmd
         echo "seq atd_group_set \"uut=${HOST},site=${site},nchan=${nchan},verbose=${ATD_VERBOSE:-0}\"" >>/tmp/st_post.cmd
 
-	if [ "x$ANATRG_LOADED" = "x" ]; then
+	if [ "$ANATRG_LOADED" = "0" ]; then
 	       create_asyn_channel S14 127.0.0.1:4234
-	       dblr '"db/anatrg_src_sel.db","'uut=${HOST},site=${site}'"'
+	       dblr '"db/anatrg_src_sel.db","'UUT=${HOST},SITE=${site}'"'
+	       ANATRG_LOADED=1
 	fi
 }
 
 
-ANATRG_LOADED=1
+ANATRG_LOADED=0
