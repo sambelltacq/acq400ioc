@@ -125,24 +125,6 @@ record(bo, "${UUT}:${SITE}:ANATRG:GROUP_MASK:w") {
 }
 
 
-record(bo, "${UUT}:${SITE}:ANATRG:GROUP_MODE") {
-	field(DTYP, "stream")
-	field(OUT, "@anatrg.proto set_group_status_mode ${SPORT}")
-	#            1234567890123456789012345678901234567890
-	field(DESC, "CURRENT: trg if all members active NOW")
-	field(ZNAM, "CURRENT")
-	field(ONAM, "HISTORY")	
-}
-
-record(longout, "${UUT}:${SITE}:ANATRG:GROUP:FIRST_N") {
-	field(DTYP, "stream")
-	field(OUT, "@anatrg.proto set_group_first_n ${SPORT}")
-	field(DESC, "group trg if N mmbr active (0=ALL)")
-	field(DRVL, "0")
-	field(DRVH, "32")
-	field(VAL,  "0")
-	field(PINI, "YES")
-}
 
 record(bo, "${UUT}:${SITE}:ANATRG:RESET") {
 	field(ONAM, "ON")
