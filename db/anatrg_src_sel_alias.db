@@ -1,0 +1,1 @@
+alias("${UUT}:${MSITE}:ANATRG:SRC_SEL", "${UUT}:${SITE}:ANATRG:SRC_SEL")

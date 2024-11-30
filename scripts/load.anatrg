@@ -32,8 +32,10 @@ make_anatrg() {
 
 	if [ "$ANATRG_LOADED" = "0" ]; then
 	       create_asyn_channel S14 127.0.0.1:4234
+	       ANATRG_LOADED=${site}
 	       dblr '"db/anatrg_src_sel.db","'UUT=${HOST},SITE=${site}'"'
-	       ANATRG_LOADED=1
+	else
+	       dblr '"db/anatrg_src_sel_alias.db","'UUT=${HOST},SITE=${site},MSITE=${ANATRG_LOADED}'"'
 	fi
 }
 
