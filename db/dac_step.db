@@ -28,6 +28,14 @@ record(calcout, "${UUT}:0:AO:STEP:CURSOR:c") {
 #        field(INPB, "${UUT}:${SITE}:AO:STEP:${CH}.NORD")
         field(CALC, "A<B? A+1: A")
         field(OUT,  "${UUT}:0:AO:STEP:CURSOR PP")
+        field(DISV, "1")
+        field(SDIS, "${UUT}:0:AO:STEP:CURSOR_NOSTEP")
+}
+
+record(bo, "${UUT}:0:AO:STEP:CURSOR_NOSTEP") {
+	field(DTYP, "Soft Channel")
+	field(ZNAM, "STEP")
+	field(ONAM, "NOSTEP")
 }
 
 # CURSOR : indexes STEP:${CH} scan output pattern
@@ -69,6 +77,8 @@ record(ao, "${UUT}:${SITE}:AO:STEP:${CH}:w") {
 # ${UUT}:0:AO:STEP:f0 :: connects CURSOR to potentially multiple sites
 record(fanout, "${UUT}:0:AO:STEP:f0") {
         field(LNK${SITE}, "${UUT}:${SITE}:AO:STEP:f1")
+        field(DISV, "1")
+        field(SDIS, "${UUT}:0:AO:STEP:CURSOR_NOSTEP")
 }
 
 # ${SITE}:AO:STEP:f1 connects update to individual channels (max:8)
