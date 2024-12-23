@@ -51,6 +51,7 @@ acq400ioc_DBD += wr_clk_mon.dbd
 acq400ioc_DBD += badledfixer.dbd
 acq400ioc_DBD += mgt8_shot_cycle.dbd
 acq400ioc_DBD += acq400_judgement.dbd
+acq400ioc_DBD += dac_step.dbd
 acq400ioc_DBD += sodTimeout.dbd
 acq400ioc_DBD += select_awg_distributor.dbd
 acq400ioc_DBD += judge_win_clr_all.dbd
@@ -83,7 +84,7 @@ acq400ioc_LIBS += acq
 # acq400ioc_registerRecordDeviceDriver.cpp derives from acq400ioc.dbd
 acq400ioc_SRCS += acq400ioc_registerRecordDeviceDriver.cpp
 acq400ioc_SRCS += acq400_judgement.cpp
-
+acq400ioc_SRCS += dac_step.cpp
 
 #acq400ioc_SRCS += sncExample.st
 acq400ioc_SRCS += autoRepeat.st
