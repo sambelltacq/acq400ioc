@@ -10,19 +10,22 @@
 
 #include "asynPortDriver.h"
 
-#define PS_BQ		/* asynInt32,       r/o */
+#define PS_BQ	"BQ"	/* asynInt32,       r/o */
 
 class DacStep: public asynPortDriver {
 public:
 	static int factory(
 		const char *portName, int site, int nchan, int maxPoints, unsigned data_size);
 
+	virtual void task();
 	static int verbose;
 
 	const int site;
 	const int nchan;
 protected:
 	DacStep(const char *_portName, int _site, int _nchan, int _maxPoints, unsigned _data_size);
+
+	int P_BQ;
 };
 
 

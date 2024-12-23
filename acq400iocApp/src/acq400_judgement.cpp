@@ -44,7 +44,7 @@ using namespace std;
 
 static const char *driverName="acq400JudgementAsynPortDriver";
 
-void task_runner(void *drvPvt)
+static void task_runner(void *drvPvt)
 {
 	acq400Judgement *pPvt = (acq400Judgement *)drvPvt;
 	pPvt->task();

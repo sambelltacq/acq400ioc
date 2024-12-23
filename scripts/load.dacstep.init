@@ -1,0 +1,4 @@
+# load.dacstep.init
+# source me: no exec
+
+echo dacStepConfigure\(DS1, 5, 4, 2048, 2\)
