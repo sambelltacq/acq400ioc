@@ -1,4 +1,15 @@
 # load.dacstep.init
 # source me: no exec
 
-echo dacStepConfigure\(DS1, 5, 4, 2048, 2\)
+
+echo dacStepConfigure\(DS1, $ACQ400_DAC_STEP_SITE, 4, 2048, 2\)
+site=${ACQ400_DAC_STEP_SITE:-5}
+port=DS1
+model=$(cat /dev/acq400.${site}.knobs/module_type)
+case $model in
+$MT_AO420|$MT_AO422|$MT_AO424|$MT_AO428|$MT_AO4220)
+        is_dac=yes        
+        source ./scripts/dac_step.init;;
+*)
+        ;;
+esac

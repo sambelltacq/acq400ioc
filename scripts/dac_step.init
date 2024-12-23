@@ -1,6 +1,7 @@
 # source me please
 # dac_step : load up a dac_step system
 
+port=${port:-bqs}
 echo '# dac_step site:'$site' store env to /tmp/dac_step.env'
 env > /tmp/dac_step.env
 
@@ -22,8 +23,10 @@ if [ "x$is_dac" = "xyes" ]; then
 
 DAC_STEP_SZ=${DAC_STEP_SZ:-65536}
 
-if [ ! -e /tmp/dac_step_first_time_done ]; then
+if [ "$port" = "bqs"] && [ ! -e /tmp/dac_step_first_time_done ]; then
         create_asyn_channel bqs 127.0.0.1:4237
+else
+        cprams="UUT=${HOST},SITE=${site}"
 fi
 
 nchan=$(cat /etc/acq400/$site/NCHAN)
@@ -32,9 +35,9 @@ if [ $nchan -gt 8 ]; then
 fi
 
 for ch in $(seq $nchan); do
-        dblr '"db/dac_step.db","'${cprams},CH=${ch},CHA=$(cha $ch),BQS=bqs,size=${DAC_STEP_SZ}'"'
+        dblr '"db/dac_step.db","'${cprams},CH=${ch},CHA=$(cha $ch),BQS=${port},size=${DAC_STEP_SZ}'"'
         if [ ! -e /tmp/dac_step_first_time_done ]; then
-                dblr '"db/dac_step1.db","'${cprams},CH=${ch},BQS=bqs,size=${DAC_STEP_SZ}'"'
+                dblr '"db/dac_step1.db","'${cprams},CH=${ch},BQS=${port},size=${DAC_STEP_SZ}'"'
                 echo 1 > /tmp/dac_step_first_time_done
         fi
 done

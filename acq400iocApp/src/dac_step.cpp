@@ -35,7 +35,7 @@ static void task_runner(void *drvPvt)
 
 
 DacStep::DacStep(const char *_portName, int _site, int _nchan, int _maxPoints, unsigned _data_size):
-	asynPortDriver(portName,
+	asynPortDriver(_portName,
 /* maxAddr */		1,
 /* Interface mask */    asynEnumMask|asynInt32Mask|asynFloat64Mask|asynDrvUserMask,
 /* Interrupt mask */	asynEnumMask|asynInt32Mask|asynFloat64Mask,
@@ -71,6 +71,8 @@ void DacStep::task()
 		if (verbose > 1){
 			printf("%03d\n", ib);
 		}
+		setIntegerParam(P_BQ, ib);
+		callParamCallbacks(0);
 	}
 }
 

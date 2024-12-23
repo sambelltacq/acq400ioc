@@ -14,8 +14,10 @@ record(bi, "${UUT}:${SITE}:AO:HAS_STEP") {
 # BQ "Buffer Queue" hooks end of buffer (DMA DONE) notification aka Burst Complete
 # I/O Intr drives entire processing tree.
 record(longin, "${UUT}:0:BQ") {
-        field(DTYP, "stream")
-        field(INP, "@dac_step.proto getBQ ${BQS}")
+#        field(DTYP, "stream")
+#        field(INP, "@dac_step.proto getBQ ${BQS}")
+        field(DTYP, "asynInt32")
+        field(INP,  "@asyn(${BQS},0,10000)BQ")
         field(SCAN, "I/O Intr")
         field(FLNK, "${UUT}:0:AO:STEP:CURSOR:c")
 }
