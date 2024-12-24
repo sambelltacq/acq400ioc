@@ -123,7 +123,7 @@ acq400Judgement::acq400Judgement(const char* portName, int _nchan, int _nsam, co
 
 	/* Create the thread that computes the waveforms in the background */
 	status = (asynStatus)(epicsThreadCreate("acq400JudgementTask",
-			epicsThreadPriorityHigh,
+			epicsThreadPriorityHigh - acq400Judgement::nice,
 			epicsThreadGetStackSize(epicsThreadStackMedium),
 			(EPICSTHREADFUNC)::task_runner,
 			this) == NULL);
@@ -135,7 +135,7 @@ acq400Judgement::acq400Judgement(const char* portName, int _nchan, int _nsam, co
 
 int acq400Judgement::verbose = ::getenv_default("acq400Judgement_VERBOSE", 0);
 int acq400Judgement::stub_es = ::getenv_default("acq400Judgement_STUB_ES", 0);
-
+int acq400Judgement::nice    = ::getenv_default("acq400Judgement_NICE", 0);
 
 bool acq400Judgement::onCalculate(bool fail)
 {

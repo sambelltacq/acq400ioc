@@ -37,8 +37,8 @@ static void task_runner(void *drvPvt)
 DacStep::DacStep(const char *_portName, int _site, int _nchan, int _maxPoints, unsigned _data_size):
 	asynPortDriver(_portName,
 /* maxAddr */		1,
-/* Interface mask */    asynEnumMask|asynInt32Mask|asynFloat64Mask|asynDrvUserMask,
-/* Interrupt mask */	asynEnumMask|asynInt32Mask|asynFloat64Mask,
+/* Interface mask */    asynEnumMask|asynInt32Mask|asynFloat64Mask|asynDrvUserMask|asynInt16ArrayMask|asynInt32ArrayMask,
+/* Interrupt mask */	asynEnumMask|asynInt32Mask|asynFloat64Mask|asynInt16ArrayMask|asynInt32ArrayMask,
 /* asynFlags no block*/ 0,
 /* Autoconnect */       1,
 /* Default priority */  0,
@@ -48,10 +48,10 @@ DacStep::DacStep(const char *_portName, int _site, int _nchan, int _maxPoints, u
 	asynStatus status = asynSuccess;
 
 	createParam(PS_BQ,               asynParamInt32,         	&P_BQ);
-
+	createParam(PS_AO_STEP,	 	 asynParamInt16Array,           &P_AO_STEP);
 	/* Create the thread that handles the BQ feer background */
 	status = (asynStatus)(epicsThreadCreate("bq_feed",
-			epicsThreadPriorityHigh,
+			epicsThreadPriorityMax,
 			epicsThreadGetStackSize(epicsThreadStackMedium),
 			(EPICSTHREADFUNC)::task_runner,
 			this) == NULL);
@@ -94,7 +94,7 @@ void DacStep::task()
 		callParamCallbacks(0);
 
 		for (int ii = 0; ii < nchan; ++ii){
-			channels[ii] += (ii&1? -1: 1) * 50;
+			channels[ii] += (ii&1? -1: 1) * DacStep::step;
 		}
 		int rc = write(fs, channels, ssb);
 		if (rc != ssb){

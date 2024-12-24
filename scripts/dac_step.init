@@ -23,7 +23,7 @@ if [ "x$is_dac" = "xyes" ]; then
 
 DAC_STEP_SZ=${DAC_STEP_SZ:-65536}
 
-if [ "$port" = "bqs"] && [ ! -e /tmp/dac_step_first_time_done ]; then
+if [ "$port" = "bqs" ] && [ ! -e /tmp/dac_step_first_time_done ]; then
         create_asyn_channel bqs 127.0.0.1:4237
 else
         cprams="UUT=${HOST},SITE=${site}"

@@ -53,6 +53,7 @@ public:
 		const char *portName, int nchan, int maxPoints, unsigned data_size, const char* site_channels, int bursts_per_buffer, unsigned ndma);
 	static int verbose;
 	static int stub_es;
+	static int nice;
 	static const int _FIRST_SAM;
 	void task_get_params();
 	virtual void task();
