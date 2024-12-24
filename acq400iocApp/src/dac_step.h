@@ -19,6 +19,7 @@ public:
 
 	virtual void task();
 	static int verbose;
+	static int step;
 
 	const int site;
 	const int nchan;

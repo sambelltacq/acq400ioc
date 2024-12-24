@@ -61,18 +61,45 @@ DacStep::DacStep(const char *_portName, int _site, int _nchan, int _maxPoints, u
 	}
 }
 
+#define BQ_FNAME 	"/dev/acq400.0.bqf"
+#define DAC_STEP_FNAME	"/dev/acq400.5.dac_step"
+
+int DacStep::step = ::getenv_default("DACSTEP_STEP", 50);
+
 void DacStep::task()
 {
-	int fc = open("/dev/acq400.0.bq", O_RDONLY);
+	int fc = open(BQ_FNAME, O_RDONLY);
+	int fs = open(DAC_STEP_FNAME, O_WRONLY);
+
 	assert(fc >= 0);
+	assert(fs >= 0);
 	int ib;
 
+
+	short* channels = new short[nchan];
+	for (int ii = 0; ii < nchan; ++ii){
+		channels[ii] = 0;
+	}
+	const int ssb = nchan*sizeof(short);
+
+
 	while((ib = getBufferId(fc)) >= 0){
+
 		if (verbose > 1){
 			printf("%03d\n", ib);
 		}
 		setIntegerParam(P_BQ, ib);
+
+
 		callParamCallbacks(0);
+
+		for (int ii = 0; ii < nchan; ++ii){
+			channels[ii] += (ii&1? -1: 1) * 50;
+		}
+		int rc = write(fs, channels, ssb);
+		if (rc != ssb){
+			perror("DacStep::task() write failed");
+		}
 	}
 }
 
