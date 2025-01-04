@@ -36,7 +36,7 @@ static void task_runner(void *drvPvt)
 
 DacStep::DacStep(const char *_portName, int _site, int _nchan, int _maxPoints, unsigned _data_size):
 	asynPortDriver(_portName,
-/* maxAddr */		1,
+/* maxAddr */		_nchan+1,
 /* Interface mask */    asynEnumMask|asynInt32Mask|asynFloat64Mask|asynDrvUserMask|asynInt16ArrayMask|asynInt32ArrayMask,
 /* Interrupt mask */	asynEnumMask|asynInt32Mask|asynFloat64Mask|asynInt16ArrayMask|asynInt32ArrayMask,
 /* asynFlags no block*/ 0,
