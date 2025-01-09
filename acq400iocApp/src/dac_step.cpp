@@ -89,9 +89,9 @@ void DacStep::task()
 			printf("%03d\n", ib);
 		}
 		setIntegerParam(P_BQ, ib);
-
-
 		callParamCallbacks(0);
+
+#if 0
 
 		for (int ii = 0; ii < nchan; ++ii){
 			channels[ii] += (ii&1? -1: 1) * DacStep::step;
@@ -100,6 +100,7 @@ void DacStep::task()
 		if (rc != ssb){
 			perror("DacStep::task() write failed");
 		}
+#endif
 	}
 }
 

@@ -764,8 +764,12 @@ load_400() {
         AWG_DONE=y
     fi
 
-    if [ "$has_output" = "yes" ] && [ "x$ACQ400_DAC_STEP" = "xyes" ]; then
-        source ./scripts/dac_step.init
+    if [ "$has_output" = "yes" ]; then
+        if [ "x$ACQ400_DAC_STEP" = "xyes" ]; then
+                source ./scripts/dac_step.init
+        elif [ "x$ACQ400_DAC_STEP" = "xyes_apd" ]; then
+                source ./scripts/load.dac_step.init
+        fi
     fi
 
     if [ "x$model" = "x$MT_ACQ480" ]; then

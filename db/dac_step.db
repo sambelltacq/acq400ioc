@@ -14,12 +14,6 @@ record(bi, "${UUT}:${SITE}:AO:HAS_STEP") {
 # BQ "Buffer Queue" hooks end of buffer (DMA DONE) notification aka Burst Complete
 # I/O Intr drives entire processing tree.
 record(longin, "${UUT}:0:BQ") {
-#        field(DTYP, "stream")
-#        field(INP, "@dac_step.proto getBQ ${BQS}")
-        field(DTYP, "asynInt32")
-        field(INP,  "@asyn(${BQS},0,10000)BQ")
-        field(SCAN, "I/O Intr")
-        field(FLNK, "${UUT}:0:AO:STEP:CURSOR:c")
 }
 
 # CURSOR:c : increments CURSOR between limits.
@@ -27,9 +21,11 @@ record(longin, "${UUT}:0:BQ") {
 record(calcout, "${UUT}:0:AO:STEP:CURSOR:c") {
         field(DTYP, "Soft Channel")
         field(INPA, "${UUT}:0:AO:STEP:CURSOR")
-#        field(INPB, "${UUT}:${SITE}:AO:STEP:${CH}.NORD")
+        field(INPB, "${UUT}:${SITE}:AO:STEP:${CH}.NORD")
         field(CALC, "A<B? A+1: A")
         field(OUT,  "${UUT}:0:AO:STEP:CURSOR PP")
+        field(DISV, "1")
+        field(SDIS, "${UUT}:0:AO:STEP:CURSOR_NOSTEP")
 }
 
 record(bo, "${UUT}:0:AO:STEP:CURSOR_NOSTEP") {

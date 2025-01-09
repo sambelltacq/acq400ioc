@@ -20,28 +20,33 @@ cha() {
 }
 
 if [ "x$is_dac" = "xyes" ]; then
+        DAC_STEP_SZ=${DAC_STEP_SZ:-65536}
 
-DAC_STEP_SZ=${DAC_STEP_SZ:-65536}
-
-if [ "$port" = "bqs" ] && [ ! -e /tmp/dac_step_first_time_done ]; then
-        create_asyn_channel bqs 127.0.0.1:4237
-else
-        cprams="UUT=${HOST},SITE=${site}"
-fi
-
-nchan=$(cat /etc/acq400/$site/NCHAN)
-if [ $nchan -gt 8 ]; then
-        nchan=8                         # single dfanout limited to 8 links
-fi
-
-for ch in $(seq $nchan); do
-        dblr '"db/dac_step.db","'${cprams},CH=${ch},CHA=$(cha $ch),BQS=${port},size=${DAC_STEP_SZ}'"'
         if [ ! -e /tmp/dac_step_first_time_done ]; then
-                dblr '"db/dac_step1.db","'${cprams},CH=${ch},BQS=${port},size=${DAC_STEP_SZ}'"'
-                echo 1 > /tmp/dac_step_first_time_done
+                if [ "$port" = "bqs" ]; then
+                        create_asyn_channel bqs 127.0.0.1:4237
+                        dblr '"db/dac_step_sd.db","'${cprams},port=${port}'"'
+                else
+                        dblr '"db/dac_step_apd.db","'${cprams},port=${port}'"'
+                fi
         fi
-done
-
+       
+#        else
+#                cprams="UUT=${HOST},SITE=${site}"
+#        fi
+        
+        nchan=$(cat /etc/acq400/$site/NCHAN)
+        if [ $nchan -gt 8 ]; then
+                nchan=8                         # single dfanout limited to 8 links
+        fi
+        
+        for ch in $(seq $nchan); do
+                dblr '"db/dac_step.db","'${cprams},CH=${ch},CHA=$(cha $ch),size=${DAC_STEP_SZ}'"'
+                if [ ! -e /tmp/dac_step_first_time_done ]; then
+                        dblr '"db/dac_step1.db","'${cprams},CH=${ch},size=${DAC_STEP_SZ}'"'
+                        echo 1 > /tmp/dac_step_first_time_done
+                fi
+        done
 else
         echo '# dac_step site:'$site' not a dac .. not supported yet'
 fi

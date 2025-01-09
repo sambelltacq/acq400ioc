@@ -2,7 +2,8 @@
 # source me: no exec
 
 
-echo dacStepConfigure\(DS1, $ACQ400_DAC_STEP_SITE, 4, 2048, 2\)
+#echo dacStepConfigure\(DS1, $ACQ400_DAC_STEP_SITE, 4, 2048, 2\)
+echo dacStepConfigure\(DS1\)
 site=${ACQ400_DAC_STEP_SITE:-5}
 port=DS1
 model=$(cat /dev/acq400.${site}.knobs/module_type)

@@ -1,0 +1,9 @@
+# dac_step for StreamDevice ${port} is an AsynPortDriverHandle
+# BQ "Buffer Queue" hooks end of buffer (DMA DONE) notification aka Burst Complete
+# I/O Intr drives entire processing tree.
+record(longin, "${UUT}:0:BQ") {
+        field(DTYP, "asynInt32")
+        field(INP,  "@asyn(${port},0,10000)BQ")
+        field(SCAN, "I/O Intr")
+        field(FLNK, "${UUT}:0:AO:STEP:CURSOR:c")
+}
