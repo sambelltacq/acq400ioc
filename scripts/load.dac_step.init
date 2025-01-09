@@ -1,7 +1,7 @@
 # load.dac_step.init
 # source me: no exec
 
-
+if [ ! -e /tmp/dac_step_first_time_done ] ; then
 #echo dacStepConfigure\(DS1, $ACQ400_DAC_STEP_SITE, 4, 2048, 2\)
 echo dacStepConfigure\(DS1\)
 site=${ACQ400_DAC_STEP_SITE:-5}
@@ -14,3 +14,4 @@ $MT_AO420|$MT_AO422|$MT_AO424|$MT_AO428|$MT_AO4220)
 *)
         ;;
 esac
+fi

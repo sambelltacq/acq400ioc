@@ -69,10 +69,12 @@ int DacStep::step = ::getenv_default("DACSTEP_STEP", 50);
 void DacStep::task()
 {
 	int fc = open(BQ_FNAME, O_RDONLY);
-	int fs = open(DAC_STEP_FNAME, O_WRONLY);
-
 	assert(fc >= 0);
+
+/*
+	int fs = open(DAC_STEP_FNAME, O_WRONLY);
 	assert(fs >= 0);
+*/
 	int ib;
 
 
