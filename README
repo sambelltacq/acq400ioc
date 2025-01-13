@@ -240,7 +240,18 @@ export CB_QSIZE=4000
 
 # DAC_STEP: preprogam a WF record with DAC steps, to execute on BQ (Buffer Queue: assume 1 burst per buffer).
 # runs on all AO sites, max 8CH. DO possible but not supported.
-#export ACQ400_DAC_STEP=yes
 # WF Record length, default pre-allocation: 65536
 #export DAC_STEP_SZ=65536
+
+# DACSTEP
+# for STREAMDEVICE
+#export ACQ400_DAC_STEP=yes
+# for AsynPortDevice, "Little Hammer"
+export ACQ400_DAC_STEP=yes_apd
+# default is Site 5
+#export ACQ400_DAC_STEP_SITE=5
+# ESSENTIAL! : side effect of Judgement, but should that be disabled, we STILL need matched buffers..
+export RTM_BUFFER_MON=y
+export RTM_BUFFER_MON_VERBOSE=1
+export SIZE=20000
 
