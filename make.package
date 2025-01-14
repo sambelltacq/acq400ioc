@@ -78,6 +78,9 @@ fi
 
 DEFBR=epics7
 BR=$(git branch --show-current)
+if [ -z "$BR" ]; then
+	BR=epics7
+fi
 
 if [[ -n $(git status --porcelain) ]]; then
 	GS="dirty_"
@@ -85,7 +88,7 @@ else
 	GS=""
 fi
 
-if [ -z "$BR" ] || [ "$BR" = "epics7" ]; then
+if [ "$BR" = "epics7" ]; then
 	echo building default branch epics7, nothing to say
 	BC=$GS
 else
