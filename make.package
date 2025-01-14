@@ -85,7 +85,7 @@ else
 	GS=""
 fi
 
-if [ "$BR" = "epics7" ]; then
+if [ -z "$BR" ] || [ "$BR" = "epics7" ]; then
 	echo building default branch epics7, nothing to say
 	BC=$GS
 else
