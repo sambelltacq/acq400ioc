@@ -1,0 +1,171 @@
+# ao420fmc.db - DC set, gains, AWG gain and offset.
+record(ao, "${UUT}:${SITE}:AO:SLOW_SET:CH:${cid}") {
+        field(DTYP, "dsSysfsAo")
+        field(OUT, "@/dev/acq400.${SITE}.knobs/AO_0${cid}")
+        field(SCAN, "Passive")
+        field(DESC, "Slow set AO${cid}")
+        field(DRVL, "0")
+        field(DRVH, "+3.3")
+        field(EGUL, "0")
+        field(EGUF, "+3.3")
+        field(HOPR, "3.3")
+        field(LOPR, "0")
+        field(EGU,  "V")
+                        
+        field(LINR, "LINEAR")
+        # 3.3/65535
+        field(ESLO, "0.503547e-6")
+        field(EOFF, "0")
+        field(AOFF, "32768")
+        field(ASLO, "1")
+        field(SDIS, "${UUT}:${SITE}:AWG:DIST")
+        field(DISV, "1")
+}
+
+
+
+record(bo, "${UUT}:${SITE}:AO:GAIN:CH:${cid}") {
+	field(DTYP, "stream")
+        field(OUT, "@ao420fmc.proto setRange(${cid}) ${SPORT}")
+        field(SCAN, "Passive")
+        field(DESC, "AO GAIN")
+        field(ZNAM, "x1")
+        field(ONAM, "x1")
+}
+
+record(bo, "${UUT}:${SITE}:AO:REF"){
+	field(DTYP, "Soft Channel")
+        field(DESC, "AO REF")
+        field(ZNAM, "3.3V")
+        field(ONAM, "3.3V")
+	field(VAL,  "0")
+	field(PINI, "YES")
+	field(FLNK, "${UUT}:${SITE}:AO:REF:w")
+}
+
+record(bo, "${UUT}:${SITE}:AO:REF:w"){
+	field(ONAM, "1")
+	field(ZNAM, "0")
+	field(DESC, "")
+	field(DTYP, "dsSysfsBo")
+	field(OUT, "@/dev/acq400.${SITE}.knobs/dac_range_REF")
+	field(DISV, "1")
+	field(SDIS, "${UUT}:${SITE}:AO:REF:s.PACT")
+	field(DOL,  "${UUT}:${SITE}:AO:REF PP")
+	field(OMSL, "closed_loop")		
+}
+
+record(bi, "${UUT}:${SITE}:AO:REF:r") {
+	field(ONAM, "1")
+	field(ZNAM, "0")
+	field(DESC, "")
+	field(DTYP, "dsSysfsBi")
+	field(INP, "@/dev/acq400.${SITE}.knobs/dac_range_REF")
+	field(SCAN, "5 second")
+	field(FLNK, "${UUT}:${SITE}:AO:REF:s")
+}
+
+record(bo, "${UUT}:${SITE}:AO:REF:s") {
+	field(ONAM, "1")
+	field(ZNAM, "0")
+	field(DESC, "")
+	field(DTYP, "Soft Channel")
+	field(DOL,  "${UUT}:${SITE}:AO:REF:r NPP")
+	field(OMSL, "closed_loop")
+	field(OUT,  "${UUT}:${SITE}:AO:REF PP")
+}
+
+record(ao, "${UUT}:${SITE}:AWG:G:${cid}") {
+	field(DTYP, "dsSysfsAo")
+	field(OUT, "@/dev/acq400.${SITE}.knobs/G${cid}")
+	field(SCAN, "Passive")
+	field(DESC, "AWG GAIN adjust")
+        field(DRVL, "0.000")
+        field(DRVH, "99.997")
+        field(LINR, "LINEAR")
+# full scale: 32768        
+        field(ESLO, "0.003051757")
+	field(EOFF, "0")
+        field(PINI, "YES")
+        field(HOPR, "100.0")
+        field(LOPR, "0.000")
+        field(EGU,  "%")
+        field(VAL,  "99.997")	
+}
+
+record(ao, "${UUT}:${SITE}:AWG:D:${cid}") {
+	field(DTYP, "dsSysfsAo")
+	field(OUT, "@/dev/acq400.${SITE}.knobs/D${cid}")
+	field(SCAN, "Passive")
+	field(DESC, "AWG DC adjust")
+        field(DRVL, "-99.997")
+        field(DRVH, "99.997")
+        field(LINR, "LINEAR")
+# full scale: 32767	
+        field(ESLO, "0.003051851")
+	field(EOFF, "0")
+        field(HOPR, "100.0")
+        field(LOPR, "-100.0")
+        field(EGU,  "%")        
+        field(PINI, "YES")        	
+}
+
+record(bo, "${UUT}:${SITE}:AWG:DIST") {
+        field(DESC, "$placeholder")
+        field(DTYP, "Soft Channel")
+        field(ZNAM, "DC")
+        field(ONAM, "AWG")
+        field(VAL,  "0")
+        field(PINI, "YES")      
+}
+
+# we want a soft record WITH ESLO!
+record(ao, "${UUT}:${SITE}:AO:SLOW_SET:CH:ALL") {
+        field(DTYP, "dsSysfsAo")
+        field(OUT, "@/dev/null")
+        field(DESC, "Slow set AO ALL")
+        field(EGUL, "0")
+        field(EGUF, "+3.3")
+        field(HOPR, "3.3")
+        field(LOPR, "0")
+        field(EGU,  "V")
+                        
+        field(LINR, "LINEAR")
+        # 3.3/65535
+        field(ESLO, "0.503547e-6")
+        field(EOFF, "0")
+        field(AOFF, "32768")
+        field(ASLO, "1")
+        field(VAL,  "0")
+        field(PINI, "YES")
+        field(FLNK, "${UUT}:${SITE}:AO:SLOW_SET:CH:ALL:f1 PP")
+}
+
+record(dfanout, "${UUT}:${SITE}:AO:SLOW_SET:CH:ALL:f1") {
+        field(DOL,  "${UUT}:${SITE}:AO:SLOW_SET:CH:ALL")
+        field(OMSL, "closed_loop")
+        field(OUT${outx}, "${UUT}:${SITE}:AO:SLOW_SET:CH:${cid} PP")
+}
+
+record(bo, "${UUT}:${SITE}:AO:GAIN:CH:ALL") {
+        field(DTYP, "Soft Channel")
+        field(DESC, "AO GAIN")
+        field(ZNAM, "x1")
+        field(ONAM, "x1")
+        field(FLNK, "${UUT}:${SITE}:AO:GAIN:CH:ALL:f1 PP")
+}
+
+record(dfanout, "${UUT}:${SITE}:AO:GAIN:CH:ALL:f1") {
+        field(DOL,  "${UUT}:${SITE}:AO:GAIN:CH:ALL")
+        field(OMSL, "closed_loop")
+        field(OUT${outx}, "${UUT}:${SITE}:AO:GAIN:CH:${cid} PP")
+}
+
+record(bi, "${UUT}:${SITE}:AO:HAS_STEP") {
+        field(DTYP, "Soft Channel")
+        field(ZNAM, "0")
+        field(ONAM, "1")
+        field(VAL,  "0")
+        field(PINI, "YES")
+}
+
