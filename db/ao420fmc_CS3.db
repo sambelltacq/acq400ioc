@@ -16,7 +16,7 @@ record(ao, "${UUT}:${SITE}:AO:SLOW_SET:CH:${cid}") {
         # 3.3/65535
         field(ESLO, "0.503547e-6")
         field(EOFF, "0")
-        field(AOFF, "32768")
+        field(AOFF, "0")
         field(ASLO, "1")
         field(SDIS, "${UUT}:${SITE}:AWG:DIST")
         field(DISV, "1")
