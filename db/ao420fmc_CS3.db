@@ -124,6 +124,8 @@ record(ao, "${UUT}:${SITE}:AO:SLOW_SET:CH:ALL") {
         field(DTYP, "dsSysfsAo")
         field(OUT, "@/dev/null")
         field(DESC, "Slow set AO ALL")
+        field(DRVL, "0")
+        field(DRVH, "+3.3")
         field(EGUL, "0")
         field(EGUF, "+3.3")
         field(HOPR, "3.3")
@@ -134,7 +136,7 @@ record(ao, "${UUT}:${SITE}:AO:SLOW_SET:CH:ALL") {
         # 3.3/65535
         field(ESLO, "0.503547e-6")
         field(EOFF, "0")
-        field(AOFF, "32768")
+        field(AOFF, "0")
         field(ASLO, "1")
         field(VAL,  "0")
         field(PINI, "YES")
