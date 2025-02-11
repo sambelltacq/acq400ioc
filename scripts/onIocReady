@@ -6,12 +6,18 @@ sleep 1
 
 logger -t onIocReady 01
 
+if [ -e /etc/epics.d/complete ]; then
+	logger -t onIocReady "10 found /etc/epics.d/complete, drop out"
+	exit 0
+fi
+
 for file in /etc/epics.d/*; do
 	if [ -x $file ]; then
 		logger -t onIocReady run $file
-		$file
+		$file | logger -t $(basename $file)
 	fi
 done
+date > /etc/epics.d/complete
 
 logger -t onIocReady 99
 ) &
