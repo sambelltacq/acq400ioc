@@ -24,16 +24,50 @@
 
 #include "asynPortDriver.h"
 
-#define PS_NCHAN 		"NCHAN"				/* asynInt32, 		r/o */
-#define PS_NSAM			"NSAM"				/* asynInt32,       r/o */
+/* we're interested in a nominal INPUT data set
+ * raw[NSAM][NCHAN], 		but this may be extracted from a larger set:
+ * raw[SPB][NCHAN], 		picked out as
+ * raw[0:SPB:STRIDE][NCHAN]
+ * the OUTPUT data set:
+ * int32 MEAN_ALL[NCHAN]
+ */
 
+#define PS_NCHAN 		"NCHAN"				/* asynInt32, 	    r/o 	*/
+#define PS_NSAM			"NSAM"				/* asynInt32,       r/o 	*/
+#define PS_SPB			"SPB"                           /* asynInt32,       r/w		*/
+#define PS_STRIDE		"STRIDE"                        /* stride in samples */
+#define PS_MEAN_ALL		"MEAN_ALL"                      /* vector showing all mean values */
 
 void runTask(void *drvPvt);
 
 class SlowmonDriver: public asynPortDriver {
 
+
+protected:
+	int P_NCHAN;
+	int P_NSAM;
+	int P_SPB;
+	int P_STRIDE;
+	int P_MEAN_ALL;
+
+	int *mean;
+
+	const int nchan;
+	const int nsam;
+	const int spb;
+	const int stride;
+
+	epicsTimeStamp t0, t1;
+
+	static int nice;
+	static int stub_es;
+	static int verbose;
 public:
-	SlowmonDriver(const char *portName, int numChannels, int maxPoints, unsigned data_size);
+	SlowmonDriver(const char *portName, int _nchan, int _nsam, int _spb);
+
+	virtual void task();
+	//virtual void handle_buffer(int vbn) = 0;
+	virtual void handle_buffer(int ib);
 };
 
 

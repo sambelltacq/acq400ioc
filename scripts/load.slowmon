@@ -1,0 +1,16 @@
+
+
+NCHAN=$(get.site 0 NCHAN)
+
+BL=$(get.site 0 bufferlen)
+SSB=$(get.site 0 SSB)
+
+SPB=$((BL/SSB))
+DS=2
+
+
+echo slowmonDriverConfigure\(N1, ${NCHAN}, ${SPB}, ${DS}\)
+PRAMS="UUT=${HOST},PORT=N1,ADDR=0,TIMEOUT=0,NCHAN=${NCHAN},NCHAN1=$((NCHAN+1))"
+echo dbLoadRecords\(\"db/slowmonCommon.db\",\"${PRAMS}\"\)
+echo dbLoadRecords\(\"db/asynRecord.db\",\"P=${HOST}:,R=asyn:J1,PORT=J1,ADDR=0,OMAX=80,IMAX=80,TB3=0,TIB0=0\"\)
+echo dbLoadRecords\(\"db/asynRecord.db\",\"P=${HOST}:,R=asyn:J1,PORT=J1,ADDR=3,OMAX=80,IMAX=80,TB3=0,TIB0=0\"\)
