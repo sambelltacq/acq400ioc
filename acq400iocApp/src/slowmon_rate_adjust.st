@@ -12,7 +12,7 @@ int slowmon_fs;   assign slowmon_fs 	to "{uut}:0:SLOWMON:FS"; monitor slowmon_fs
 int slowmon_fin;  assign slowmon_fin 	to "{uut}:0:SLOWMON:FIN";
 int slowmon_fin_act;  assign slowmon_fin_act 	to "{uut}:0:SLOWMON:FIN:ACT"; 
 
-int nacc_nacc; 	  assign nacc_nacc 	to "{uut}:0:NACC:NACC";
+int nacc_nacc; 	  assign nacc_nacc 	to "{uut}:0:NACC:NACC"; monitor nacc_nacc;
 int nacc_start;	  assign nacc_start 	to "{uut}:0:NACC:START";
 int nacc_shr;	  assign nacc_shr 	to "{uut}:0:NACC:SHR";
 int nacc_pres;	  assign nacc_pres 	to "{uut}:0:NACC:PRES";
@@ -61,9 +61,11 @@ string sync_role0 = { "not set" };
 
 
 int slowmon_fs0 = -1;
+int nacc_nacc0 = 0;
 int fs;
 
 int verbose;
+
 
 ss slowmon_rate_adjust {
 	state init {
@@ -75,6 +77,9 @@ ss slowmon_rate_adjust {
 			pvGet(sync_role);
 			pvGet(intclk_hz);
 			pvGet(SLOWMON_FIN_MAX);
+			pvGet(nacc_nacc);
+			nacc_nacc0 = nacc_nacc;
+
 			if (macValueGet("verbose")){
 				printf("sync_role \"%s\"\n", sync_role);
 			}
@@ -86,7 +91,7 @@ ss slowmon_rate_adjust {
 		} state wait_change
 	} 
 	
-	state make_change {
+	state make_global_change {
 		entry {
 			if (verbose){
 				printf("make_change\n");
@@ -124,25 +129,36 @@ ss slowmon_rate_adjust {
 						printf("nacc_nacc %d   fs %d < %d\n", nacc_nacc, fs, nacc_pres * nacc_nacc * slowmon_fin);
 					}
 				}
+			}
 
-			}
-			for (nacc_shr = 0; 1<<nacc_shr < nacc_nacc; nacc_shr++){
-				;
-			}
-			/* this should be dynamic - based on records? but needs fs. maybe an independent sm? */
-			slowmon_fin_act = fs/(nacc_pres * nacc_nacc);
-			pvPut(slowmon_fin_act);
-			pvPut(nacc_shr);
-			pvPut(nacc_pres);
-			pvPut(nacc_nacc);
 			if (slowmon_fs > slowmon_fin){
 				slowmon_fs = slowmon_fin;
 				pvPut(slowmon_fs);
 			}
 			pvPut(slowmon_fin);
-			
+
+		} state make_nacc_change
+	}
+
+	state make_nacc_change {
+		entry {
+			if (verbose){
+				printf("wait_change\n");
+			}
+		}
+		when() {
+			for (nacc_shr = 0; 1<<nacc_shr < nacc_nacc; nacc_shr++){
+							;
+			}
+			slowmon_fin_act = fs/(nacc_pres * nacc_nacc);
+			pvPut(slowmon_fin_act);
+			pvPut(nacc_shr);
+			pvPut(nacc_pres);
+			pvPut(nacc_nacc);
+			nacc_nacc0 = nacc_nacc;
 		} state wait_change
 	}
+
 	state wait_change {
 		entry {
 			if (verbose){
@@ -153,7 +169,11 @@ ss slowmon_rate_adjust {
 			strcpy(sync_role0, sync_role);
 			fs = getfs(sync_role, intclk_hz);
 			slowmon_fs0 = slowmon_fs;
-		} state make_change
+		} state make_global_change
+
+		when(nacc_nacc != nacc_nacc0){
+
+		} state make_nacc_change
 		
 	}
 }
