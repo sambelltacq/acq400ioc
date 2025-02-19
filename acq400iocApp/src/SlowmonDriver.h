@@ -34,28 +34,30 @@
 
 #define PS_NCHAN 		"NCHAN"				/* asynInt32, 	    r/o 	*/
 #define PS_NSAM			"NSAM"				/* asynInt32,       r/o 	*/
-#define PS_SPB			"SPB"                           /* asynInt32,       r/w		*/
-#define PS_STRIDE		"STRIDE"                        /* stride in samples */
+#define PS_SSB			"SSB"				/* sample size bytes */
+#define PS_NSPAD		"NSPAD"				/* pseudo SPAD size (4 LW */
 #define PS_MEAN_ALL		"MEAN_ALL"                      /* vector showing all mean values */
+#define PS_SLOWMONMS		"SLOWMONMS"
 
 void runTask(void *drvPvt);
 
+template <class T>
 class SlowmonDriver: public asynPortDriver {
 
 
 protected:
 	int P_NCHAN;
 	int P_NSAM;
-	int P_SPB;
-	int P_STRIDE;
+	int P_SSB;
+	int P_NSPAD;
 	int P_MEAN_ALL;
+	int P_SLOWMONMS;
 
-	int *mean;
+	unsigned *mean;
 
 	const int nchan;
 	const int nsam;
-	const int spb;
-	const int stride;
+	unsigned slowmonms;
 
 	epicsTimeStamp t0, t1;
 
@@ -63,11 +65,16 @@ protected:
 	static int stub_es;
 	static int verbose;
 public:
-	SlowmonDriver(const char *portName, int _nchan, int _nsam, int _spb);
+	SlowmonDriver(const char *portName, int _nchan, int _nsam);
 
 	virtual void task();
 	//virtual void handle_buffer(int vbn) = 0;
-	virtual void handle_buffer(int ib);
+	virtual void handle_buffer();
+
+	static int ssb;
+	static const int nspad;
+
+	static void task_runner(void *drvPvt);
 };
 
 
