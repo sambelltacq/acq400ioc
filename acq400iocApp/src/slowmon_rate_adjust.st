@@ -129,6 +129,7 @@ ss slowmon_rate_adjust {
 			for (nacc_shr = 0; 1<<nacc_shr < nacc_nacc; nacc_shr++){
 				;
 			}
+			/* this should be dynamic - based on records? but needs fs. maybe an independent sm? */
 			slowmon_fin_act = fs/(nacc_pres * nacc_nacc);
 			pvPut(slowmon_fin_act);
 			pvPut(nacc_shr);

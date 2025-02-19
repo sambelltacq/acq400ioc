@@ -155,7 +155,7 @@ extern "C" {
 	static const iocshArg initArg0 = { "uut", iocshArgString };
 	static const iocshArg initArg1 = { "nchan", iocshArgInt };
 	static const iocshArg initArg2 = { "nsam", iocshArgInt };
-	static const iocshArg initArg3 = { "spb", iocshArgInt };
+	static const iocshArg initArg3 = { "data_size", iocshArgInt };
 	static const iocshArg * const initArgs[] = { &initArg0, &initArg1, &initArg2, &initArg3 };
 	static const iocshFuncDef initFuncDef = { "slowmonDriverConfigure", 4, initArgs };
 	static void initCallFunc(const iocshArgBuf *args)
