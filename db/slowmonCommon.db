@@ -1,2 +1,13 @@
 # slowmonCommon.db :: slowmon key params
 
+# make one
+record(waveform, "$(UUT):0:SLOWMON:MEAN") {
+    field(DTYP, "asynInt16ArrayIn")
+    field(INP,  "@asyn($(PORT),0,$(TIMEOUT))MEAN_ALL")
+    field(FTVL, "SHORT")            # @@todo
+    field(NELM, "$(NCHAN)")
+    #field(LOPR, "0")
+    #field(HOPR, "10")
+    #field(EGU,  "s")
+    field(SCAN, "I/O Intr")
+}

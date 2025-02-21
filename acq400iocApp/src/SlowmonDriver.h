@@ -32,8 +32,7 @@
  * int32 MEAN_ALL[NCHAN]
  */
 
-#define PS_NCHAN 		"NCHAN"				/* asynInt32, 	    r/o 	*/
-#define PS_NSAM			"NSAM"				/* asynInt32,       r/o 	*/
+#define PS_NCHAN 		"NCHAN"				/* asynInt32, 	    r/o 	*/			/* asynInt32,       r/o 	*/
 #define PS_SSB			"SSB"				/* sample size bytes */
 #define PS_NSPAD		"NSPAD"				/* pseudo SPAD size (4 LW */
 #define PS_MEAN_ALL		"MEAN_ALL"                      /* vector showing all mean values */
@@ -47,7 +46,6 @@ class SlowmonDriver: public asynPortDriver {
 
 protected:
 	int P_NCHAN;
-	int P_NSAM;
 	int P_SSB;
 	int P_NSPAD;
 	int P_MEAN_ALL;
@@ -56,7 +54,6 @@ protected:
 	unsigned *mean;
 
 	const int nchan;
-	const int nsam;
 	unsigned slowmonms;
 
 	epicsTimeStamp t0, t1;
@@ -65,7 +62,7 @@ protected:
 	static int stub_es;
 	static int verbose;
 public:
-	SlowmonDriver(const char *portName, int _nchan, int _nsam);
+	SlowmonDriver(const char *portName, int _nchan);
 
 	virtual void task();
 	//virtual void handle_buffer(int vbn) = 0;
