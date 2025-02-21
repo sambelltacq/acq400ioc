@@ -1241,7 +1241,11 @@ load_mb_sync() {
         esac
     done
 
-    disin=0; disout=1;
+    if grep -q CLKOUT /dev/acq400.0.knobs/module_role; then
+        disin=1; disout=0;
+    else
+        disin=0; disout=1;
+    fi
     for FUN in GPIO SYNC TRG TRGOUT CLKOUT
     do
         disa=0,thvl=15
