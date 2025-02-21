@@ -54,6 +54,7 @@ protected:
 	unsigned *mean;
 
 	const int nchan;
+	const int ssb;
 	unsigned slowmonms;
 
 	epicsTimeStamp t0, t1;
@@ -61,6 +62,7 @@ protected:
 	static int nice;
 	static int stub_es;
 	static int verbose;
+
 public:
 	SlowmonDriver(const char *portName, int _nchan);
 
@@ -68,7 +70,7 @@ public:
 	//virtual void handle_buffer(int vbn) = 0;
 	virtual void handle_buffer();
 
-	static int ssb;
+
 	static const int nspad;
 
 	static void task_runner(void *drvPvt);

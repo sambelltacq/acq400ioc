@@ -14,10 +14,9 @@
 
 #include <errno.h>
 
-#include <iocsh.h>
-#include <epicsExport.h>
-
+#include "acq400_asyn_common.h"
 #include "SlowmonDriver.h"
+
 
 #include <string>
 
@@ -43,6 +42,7 @@ static const char *driverName="SlowmonDriver";
 
 
 
+
 template <class T>
 SlowmonDriver<T>::SlowmonDriver(const char *portName, int _nchan):
 asynPortDriver(portName,
@@ -54,6 +54,7 @@ asynPortDriver(portName,
 /* Default priority */  0,
 /* Default stack size*/ 0),
 	nchan(_nchan),
+	ssb(_nchan*sizeof(T)),
 	slowmonms(100)
 {
 	asynStatus status = asynSuccess;
@@ -99,8 +100,6 @@ template <class T>
 int SlowmonDriver<T>::stub_es = ::getenv_default("SlowmonDriver_STUB_ES", 0);
 template <class T>
 int SlowmonDriver<T>::nice		= ::getenv_default("SlowmonDriver_NICE", 0);
-template <class T>
-int SlowmonDriver<T>::ssb     = 384;
 template <class T>
 const int SlowmonDriver<T>::nspad(4);
 
@@ -174,8 +173,10 @@ void SlowmonDriver<T>::task()
 	for (PosixPeriodTimer ppt(slowmonms);; ppt.wait_and_get_split(slowmonms)){
 		if (int rc = read(fc, mean, lenb) != lenb){
 			fprintf(stderr, "ERROR read() return %d != %d\n", rc, lenb);
+			continue;
 		}
-		//handle_buffer();
+		epicsTimeGetCurrent(&t1);
+		handle_buffer();
 	}
 }
 
@@ -184,8 +185,13 @@ typedef short RTYPE;
 template<>
 void SlowmonDriver<short>::handle_buffer()
 {
-	// @@todo do something with the SPAD timestamps
-	doCallbacksInt16Array((epicsInt16*)mean, nchan, P_MEAN_ALL, 0);
+	epicsInt16* mean16 = (epicsInt16*)mean;
+
+	if (epicsTimeDiffGreaterThan(t1, t0, 1)){
+		fprintf(stderr, "%s %d: %04x %04x %04x %04x\n",
+			__FUNCTION__, nchan, mean[0], mean[1], mean[2], mean[3]);
+	}
+	doCallbacksInt16Array(mean16, nchan, P_MEAN_ALL, 0);
 }
 
 template<>

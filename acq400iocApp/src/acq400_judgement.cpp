@@ -12,16 +12,10 @@
 #include <math.h>
 #include <algorithm>
 
-#include <epicsTypes.h>
-#include <epicsTime.h>
-#include <epicsThread.h>
-#include <epicsString.h>
-#include <epicsTimer.h>
-#include <epicsMutex.h>
-#include <epicsEvent.h>
-#include <iocsh.h>
 
+#include "acq400_asyn_common.h"
 #include "acq400_judgement.h"
+
 #include <epicsExport.h>
 
 #include <sys/types.h>
@@ -262,14 +256,6 @@ void acq400Judgement::task_get_params()
 
 }
 
-bool epicsTimeDiffLessThan(epicsTimeStamp& t1, epicsTimeStamp& t0, double tgts)
-{
-	epicsTime et1 = t1;
-	epicsTime et0 = t0;
-
-
-	return (et1 - et0) < tgts;
-}
 
 void acq400Judgement::task()
 {
