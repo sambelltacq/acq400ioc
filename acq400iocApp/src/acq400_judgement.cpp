@@ -25,9 +25,7 @@
 
 #include "acq-util.h"
 #include <bits/stdc++.h>
-#include <vector>
 
-#include <split2.h>
 
 using namespace std;
 #include "Buffer.h"
@@ -44,15 +42,7 @@ static void task_runner(void *drvPvt)
 	pPvt->task();
 }
 
-std::vector<int> csv2int(const char* _site_channels) {
-	std::vector<std::string> strings;
-	split2(_site_channels, strings, ',');
-	std::vector<int> vi;
-	for (std::string s: strings){
-		vi.push_back(stoi(s));
-	}
-	return vi;
-}
+
 
 /** abstract base class with Judgement common definitions. Use Judgement::factory() to instantiate a concrete class */
 acq400Judgement::acq400Judgement(const char* portName, int _nchan, int _nsam, const char* _site_channels, int _bursts_per_buffer):

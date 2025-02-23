@@ -2,11 +2,34 @@
 
 NCHAN=$(get.site 0 NCHAN)
 
-DS=2
-[ $(get.site 0 data32) -eq 1 ] && DS=4 
+eval $(get.site 0 aggregator)
+S1=${sites%,*}
+if [ $(get.site $S1 data32) -eq 1 ]; then
+echo '# judgement data32'
+    WSZ=4
+    MAXCODE=8388608
+#    CHDB=judgementChInt32.db
+else
+    echo '# judgement data16'
+    WSZ=2
+    MAXCODE=32768
+#    CHDB=judgementCh.db
+fi
 
-echo slowmonDriverConfigure\(SR1, ${NCHAN}, ${DS}\)
+SITE_NCHAN=""
+OIFS=$IFS; IFS=,; for site in $sites do
+        SITE_NCHAN=${SITE_NCHAN}$(get.site $site NCHAN),
+done; IFS=$OIFS
+
+echo slowmonDriverConfigure\(SR1, ${NCHAN}, $sites, ${SITE_NCHAN}, ${WSZ}\)
 PRAMS="UUT=${HOST},PORT=SR1,ADDR=0,TIMEOUT=0,NCHAN=${NCHAN},NCHAN1=$((NCHAN+1))"
 echo dbLoadRecords\(\"db/slowmonCommon.db\",\"${PRAMS}\"\)
 echo dbLoadRecords\(\"db/asynRecord.db\",\"P=${HOST}:,R=asyn:SR1,PORT=SR1,ADDR=0,OMAX=80,IMAX=80,TB3=0,TIB0=0\"\)
 echo dbLoadRecords\(\"db/asynRecord.db\",\"P=${HOST}:,R=asyn:SR1,PORT=SR1,ADDR=3,OMAX=80,IMAX=80,TB3=0,TIB0=0\"\)
+
+isite=0
+OIFS=$IFS; IFS=,; for site in $sites do
+        nchan=$(get.site $site NCHAN)
+        echo '#' dbloadRecords\(\"db/slowmonSite.db\",\"${PRAMS},ISITE=$isite,SITE=$site,NCHAN=${nchan}\"\)
+        isite=$((isite+1))
+done; IFS=$OIFS

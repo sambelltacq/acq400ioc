@@ -1,13 +1,54 @@
 # slowmonCommon.db :: slowmon key params
 
+record(longout, "$(UUT):0:SLOWMON:SLOWMONMS") {
+    field(DTYP, "asynInt32")
+    field(OUT,  "@asyn($(PORT),0,$(TIMEOUT))SLOWMONMS") 
+    field(DESC, "Set sample interval ms")
+    field(EGU,  "ms")
+    field(DRVH, "1000")
+    field(DRVL, "1")
+    field(PINI, "YES")
+    field(VAL,  "1")
+}
 # make one
-record(waveform, "$(UUT):0:SLOWMON:MEAN") {
+record(waveform, "$(UUT):0:SLOWMON:MEAN:RAW") {
     field(DTYP, "asynInt16ArrayIn")
-    field(INP,  "@asyn($(PORT),0,$(TIMEOUT))MEAN_ALL")
+    field(INP,  "@asyn($(PORT),0,$(TIMEOUT))MEAN_EGU")
     field(FTVL, "SHORT")            # @@todo
     field(NELM, "$(NCHAN)")
     #field(LOPR, "0")
     #field(HOPR, "10")
     #field(EGU,  "s")
     field(SCAN, "I/O Intr")
+}
+
+record(waveform, "$(UUT):0:SLOWMON:MEAN") {
+    field(DTYP, "asynFloat32ArrayIn")
+    field(INP,  "@asyn($(PORT),0,$(TIMEOUT))MEAN_EGU")
+    field(FTVL, "SHORT")            # @@todo
+    field(NELM, "$(NCHAN)")
+    #field(LOPR, "0")
+    #field(HOPR, "10")
+    #field(EGU,  "s")
+    field(SCAN, "I/O Intr")
+}
+
+record(waveform, "$(UUT):0:SLOWMON:ESLO") {
+    field(DTYP, "asynFloat32ArrayIn")
+    field(OUT,  "@asyn($(PORT),$(ISITE),$(TIMEOUT))ALL_ESLO")
+    field(FTVL, "FLOAT")            # @@todo
+    field(NELM, "$(NCHAN)")
+    #field(LOPR, "0")
+    #field(HOPR, "10")
+    field(EGU,  "V/bit")
+}
+
+record(waveform, "$(UUT):0:SLOWMON:EOFF") {
+    field(DTYP, "asynFloat32ArrayIn")
+    field(OUT,  "@asyn($(PORT),$(ISITE),$(TIMEOUT))ALL_EOFF")
+    field(FTVL, "FLOAT")            # @@todo
+    field(NELM, "$(NCHAN)")
+    #field(LOPR, "0")
+    #field(HOPR, "10")
+    field(EGU,  "V")
 }

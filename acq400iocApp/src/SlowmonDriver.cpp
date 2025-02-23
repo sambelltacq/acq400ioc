@@ -17,6 +17,7 @@
 #include "acq400_asyn_common.h"
 #include "SlowmonDriver.h"
 
+#include <split2.h>
 
 #include <string>
 
@@ -41,10 +42,8 @@ using namespace std;
 static const char *driverName="SlowmonDriver";
 
 
-
-
 template <class T>
-SlowmonDriver<T>::SlowmonDriver(const char *portName, int _nchan):
+SlowmonDriver<T>::SlowmonDriver(const char *portName, int _nchan, std::vector<int> _site_list, std::vector<int> _site_nchan):
 asynPortDriver(portName,
 /* maxAddr */		_nchan,    /* nchan from 0 */
 /* Interface mask */    asynEnumMask|asynInt32Mask|asynFloat64Mask|asynInt16ArrayMask|asynInt32ArrayMask|asynDrvUserMask,
@@ -54,6 +53,8 @@ asynPortDriver(portName,
 /* Default priority */  0,
 /* Default stack size*/ 0),
 	nchan(_nchan),
+	site_list(_site_list),
+	site_nchan(_site_nchan),
 	ssb(_nchan*sizeof(T)),
 	slowmonms(100)
 {
@@ -62,10 +63,17 @@ asynPortDriver(portName,
 	createParam(PS_NCHAN, 	asynParamInt32, 	&P_NCHAN);
 	createParam(PS_SSB,     asynParamInt32,         &P_SSB);
 	createParam(PS_NSPAD,   asynParamInt32,         &P_NSPAD);
-	createParam(PS_MEAN_ALL, asynParamInt32Array,   &P_MEAN_ALL);
+	createParam(PS_MEAN_RAW, asynParamInt32Array,   &P_MEAN_RAW);
+	createParam(PS_MEAN_EGU, asynParamInt32Array,   &P_MEAN_EGU);
 	createParam(PS_SLOWMONMS, asynParamInt32,   	&P_SLOWMONMS);
 
-	mean = new unsigned[nchan*sizeof(T)/sizeof(unsigned)+nspad];
+	createParam(PS_SITE_ESLO, asynParamFloat32Array, &P_SITE_ESLO);
+	createParam(PS_SITE_EOFF, asynParamFloat32Array, &P_SITE_EOFF);
+	createParam(PS_MEAN_ESLO, asynParamFloat32Array, &P_MEAN_ESLO);
+	createParam(PS_MEAN_EOFF, asynParamFloat32Array, &P_MEAN_EOFF);
+
+	raw_mean = new unsigned[nchan*sizeof(T)/sizeof(unsigned)+nspad];
+	cal_mean = new float[nchan];
 
 	if (status){
 		fprintf(stderr, "ERROR %s %d\n", __FUNCTION__, status);
@@ -83,6 +91,20 @@ asynPortDriver(portName,
 	if (status) {
 		printf("%s:%s: epicsThreadCreate failure\n", driverName, __FUNCTION__);
 		return;
+	}
+
+	set_eoff = new float[nchan];
+	set_eslo = new float[nchan];
+	/* make an obvious, incorrect, but reasonable default should ESLO/EOFF init not complete */
+	for (int ic = 0; ic < nchan; ++ic){
+		set_eslo[ic] = 1;
+		set_eoff[ic] = 0;
+	}
+	site_off = new int[nsites()];
+
+	for (int ii = 0, offset = 0; ii < nsites(); ++ii){
+		site_off[ii] = offset;
+		offset += site_nchan[ii];
 	}
 }
 
@@ -171,7 +193,7 @@ void SlowmonDriver<T>::task()
 	printf("%s slowmon ms: %d\n", __FUNCTION__, slowmonms);
 
 	for (PosixPeriodTimer ppt(slowmonms);; ppt.wait_and_get_split(slowmonms)){
-		if (int rc = read(fc, mean, lenb) != lenb){
+		if (int rc = read(fc, raw_mean, lenb) != lenb){
 			fprintf(stderr, "ERROR read() return %d != %d\n", rc, lenb);
 			continue;
 		}
@@ -185,20 +207,27 @@ typedef short RTYPE;
 template<>
 void SlowmonDriver<short>::handle_buffer()
 {
-	epicsInt16* mean16 = (epicsInt16*)mean;
+	epicsInt16* mean16 = (epicsInt16*)raw_mean;
 
+/*
 	if (epicsTimeDiffGreaterThan(t1, t0, 1)){
 		fprintf(stderr, "%s %d: %04x %04x %04x %04x\n",
 			__FUNCTION__, nchan, mean[0], mean[1], mean[2], mean[3]);
 	}
-	doCallbacksInt16Array(mean16, nchan, P_MEAN_ALL, 0);
+*/
+	for (int ic = 0; ic < nchan; ++ic){
+		cal_mean[ic] = raw_mean[ic]*set_eslo[ic] + set_eoff[ic];
+
+	}
+	doCallbacksFloat32Array(cal_mean, nchan, P_MEAN_EGU, 0);
+	doCallbacksInt16Array(mean16, nchan, P_MEAN_RAW, 0);
 }
 
 template<>
 void SlowmonDriver<unsigned>::handle_buffer()
 {
 	// @@todo do something with the SPAD timestamps
-	doCallbacksInt32Array((epicsInt32*)mean, nchan, P_MEAN_ALL, 0);
+	doCallbacksInt32Array((epicsInt32*)raw_mean, nchan, P_MEAN_RAW, 0);
 }
 
 template<class T>
@@ -206,6 +235,122 @@ void SlowmonDriver<T>::handle_buffer()
 {
 	assert(0);
 }
+
+template<class T>
+asynStatus SlowmonDriver<T>::writeInt32(asynUser *pasynUser, epicsInt32 value)
+{
+	int function = pasynUser->reason;
+	int addr;
+	asynStatus status = asynSuccess;
+	const char *paramName;
+	const char* functionName = "writeInt32";
+
+	status = parseAsynUser(pasynUser, &function, &addr, &paramName);
+	if (status != asynSuccess) return status;
+
+	asynPrint(pasynUser, ASYN_TRACEIO_DRIVER,
+				"%s:%s: function=%d, name=%s, value=%d\n",
+				driverName, functionName, function, paramName, value);
+
+	/* (1) Set the parameter in the parameter library. */
+	status = setIntegerParam(function, value);
+
+	if (function == P_SLOWMONMS){
+		slowmonms = value;
+		printf("slowmonms set %d\n", slowmonms);
+	}else{
+		/* All other parameters just get set in parameter list, no need to act on them here */
+	}
+	status = callParamCallbacks();
+
+	if (status){
+		epicsSnprintf(pasynUser->errorMessage, pasynUser->errorMessageSize,
+			"%s:%s: status=%d, function=%d, name=%s, value=%d",
+			driverName, functionName, status, function, paramName, value);
+	}else{
+		asynPrint(pasynUser, ASYN_TRACEIO_DRIVER,
+			"%s:%s: function=%d, name=%s, value=%d\n",
+			driverName, functionName, function, paramName, value);
+	}
+	return status;
+}
+
+int floatCopy(float* dst, const float* src, int nelems)
+{
+	memcpy(dst, src, nelems*sizeof(float));
+	return nelems;
+}
+
+template<class T>
+asynStatus SlowmonDriver<T>::writeFloat32Array(asynUser *pasynUser, epicsFloat32 *value,
+                                        size_t nElements)
+{
+	int function = pasynUser->reason;
+	int addr;
+	asynStatus status = asynSuccess;
+	const char *paramName;
+	const char* functionName = "writeFloat32Array";
+
+
+	status = parseAsynUser(pasynUser, &function, &addr, &paramName);
+	if (status != asynSuccess) return status;
+
+	asynPrint(pasynUser, ASYN_TRACEIO_DRIVER,
+				"%s:%s: function=%d, name=%s, value=%p\n",
+				driverName, functionName, function, paramName, value);
+
+	assert(addr >= 0 && addr < nsites());
+
+	float* dst = 0;
+
+	if (function == P_SITE_ESLO){
+		dst = set_eslo + site_off[addr];
+
+	}else if (function == P_SITE_EOFF){
+		dst = set_eoff + site_off[addr];
+	}else{
+		return asynPortDriver::writeFloat32Array(pasynUser, value, nElements);
+	}
+
+	floatCopy(dst, value, nElements);
+	return status;
+}
+
+template<class T>
+asynStatus SlowmonDriver<T>::readFloat32Array(asynUser *pasynUser, epicsFloat32 *value,
+	                                        size_t nElements, size_t *nIn)
+{
+	int function = pasynUser->reason;
+	int addr;
+	asynStatus status = asynSuccess;
+	const char *paramName;
+	const char* functionName = "writeFloat32Array";
+
+
+	status = parseAsynUser(pasynUser, &function, &addr, &paramName);
+	if (status != asynSuccess) return status;
+
+	asynPrint(pasynUser, ASYN_TRACEIO_DRIVER,
+				"%s:%s: function=%d, name=%s, value=%p\n",
+				driverName, functionName, function, paramName, value);
+
+	assert(addr >= 0 && addr < nsites());
+
+	float* src = 0;
+
+	if (function == P_MEAN_ESLO){
+		src = set_eslo + site_off[addr];
+	}else if (function == P_MEAN_EOFF){
+		src = set_eoff + site_off[addr];
+	}else{
+		return asynPortDriver::readFloat32Array(pasynUser, value, nElements, nIn);
+	}
+
+	*nIn = floatCopy(value, src, nElements);
+
+	return status;
+}
+
 
 
 extern "C" {
@@ -215,15 +360,20 @@ extern "C" {
 	  * \param[in] nchan number of channels in array
 	  * \param[in] data_size 2|4 bytes
 	  */
-	int slowmonDriverConfigure(const char *portName, int nchan, unsigned data_size)
+	int slowmonDriverConfigure(const char *portName, int nchan, const char *_sites, const char *_site_nchan, unsigned data_size)
 	{
 		//return MultiChannelScope::factory(portName, nchan, maxPoints, data_size);
 		printf("pgmwashere R1005\n");
 		printf("%s, %s, %d, %d\n", __FUNCTION__, portName, nchan, data_size);
+
+
+		std::vector<int> sitelist = csv2int(_sites);
+		std::vector<int> site_nchan = csv2int(_site_nchan);
+
 		if (data_size == 2){
-			new SlowmonDriver<short>(portName, nchan);
+			new SlowmonDriver<short>(portName, nchan, sitelist, site_nchan);
 		}else{
-			new SlowmonDriver<int>(portName, nchan);
+			new SlowmonDriver<int>(portName, nchan, sitelist, site_nchan);
 		}
 
 		return 0;
@@ -233,12 +383,14 @@ extern "C" {
 
 	static const iocshArg initArg0 = { "port", iocshArgString };
 	static const iocshArg initArg1 = { "nchan", iocshArgInt };
-	static const iocshArg initArg2 = { "data_size", iocshArgInt };
-	static const iocshArg * const initArgs[] = { &initArg0, &initArg1, &initArg2};
-	static const iocshFuncDef initFuncDef = { "slowmonDriverConfigure", 3, initArgs };
+	static const iocshArg initArg2 = { "sites", iocshArgString };
+	static const iocshArg initArg3 = { "site_nchan", iocshArgString };
+	static const iocshArg initArg4 = { "data_size", iocshArgInt };
+	static const iocshArg * const initArgs[] = { &initArg0, &initArg1, &initArg2, &initArg3, &initArg4};
+	static const iocshFuncDef initFuncDef = { "slowmonDriverConfigure", 4, initArgs };
 	static void initCallFunc(const iocshArgBuf *args)
 	{
-		slowmonDriverConfigure(args[0].sval, args[1].ival, args[2].ival);
+		slowmonDriverConfigure(args[0].sval, args[1].ival, args[2].sval, args[3].sval, args[4].ival);
 	}
 
 	void slowmonDriverRegister(void)
