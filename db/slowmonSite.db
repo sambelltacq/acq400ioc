@@ -1,0 +1,21 @@
+# create EOFF and ESLO record per site.
+
+record(waveform, "$(UUT):$(SITE):SLOWMON:ESLO") {
+    field(DTYP, "asynFloat32ArrayOut")
+    field(OUT,  "@asyn($(PORT),$(ISITE),$(TIMEOUT))SITE_ESLO")
+    field(FTVL, "FLOAT")            # @@todo
+    field(NELM, "$(NCHAN)")
+    #field(LOPR, "0")
+    #field(HOPR, "10")
+    field(EGU,  "V/bit")
+}
+
+record(waveform, "$(UUT):$(SITE):SLOWMON:EOFF") {
+    field(DTYP, "asynFloat32ArrayOut")
+    field(OUT,  "@asyn($(PORT),$(ISITE),$(TIMEOUT))SITE_EOFF")
+    field(FTVL, "FLOAT")            # @@todo
+    field(NELM, "$(NCHAN)")
+    #field(LOPR, "0")
+    #field(HOPR, "10")
+    field(EGU,  "V")
+}
