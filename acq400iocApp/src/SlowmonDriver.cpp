@@ -46,8 +46,8 @@ template <class T>
 SlowmonDriver<T>::SlowmonDriver(const char *portName, int _nchan, std::vector<int> _site_list, std::vector<int> _site_nchan):
 asynPortDriver(portName,
 /* maxAddr */		_nchan,    /* nchan from 0 */
-/* Interface mask */    asynEnumMask|asynInt32Mask|asynFloat64Mask|asynInt16ArrayMask|asynInt32ArrayMask|asynDrvUserMask,
-/* Interrupt mask */	asynEnumMask|asynInt32Mask|asynFloat64Mask|asynInt16ArrayMask|asynInt32ArrayMask,
+/* Interface mask */    asynEnumMask|asynInt32Mask|asynFloat64Mask|asynInt16ArrayMask|asynInt32ArrayMask|asynFloat32ArrayMask|asynDrvUserMask,
+/* Interrupt mask */	asynEnumMask|asynInt32Mask|asynFloat64Mask|asynInt16ArrayMask|asynInt32ArrayMask|asynFloat32ArrayMask,
 /* asynFlags no block*/ 0,
 /* Autoconnect */       1,
 /* Default priority */  0,
