@@ -35,7 +35,7 @@ record(waveform, "$(UUT):0:SLOWMON:MEAN") {
 
 record(waveform, "$(UUT):0:SLOWMON:ESLO") {
     field(DTYP, "asynFloat32ArrayIn")
-    field(OUT,  "@asyn($(PORT),$(ISITE),$(TIMEOUT))ALL_ESLO")
+    field(INP,  "@asyn($(PORT),$(ISITE),$(TIMEOUT))ALL_ESLO")
     field(FTVL, "FLOAT")            # @@todo
     field(NELM, "$(NCHAN)")
     #field(LOPR, "0")
@@ -45,7 +45,7 @@ record(waveform, "$(UUT):0:SLOWMON:ESLO") {
 
 record(waveform, "$(UUT):0:SLOWMON:EOFF") {
     field(DTYP, "asynFloat32ArrayIn")
-    field(OUT,  "@asyn($(PORT),$(ISITE),$(TIMEOUT))ALL_EOFF")
+    field(INP,  "@asyn($(PORT),$(ISITE),$(TIMEOUT))ALL_EOFF")
     field(FTVL, "FLOAT")            # @@todo
     field(NELM, "$(NCHAN)")
     #field(LOPR, "0")

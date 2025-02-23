@@ -17,18 +17,18 @@ else
 fi
 
 SITE_NCHAN=""
-OIFS=$IFS; IFS=,; for site in $sites do
+OIFS=$IFS; IFS=,; for site in $sites; do
         SITE_NCHAN=${SITE_NCHAN}$(get.site $site NCHAN),
 done; IFS=$OIFS
 
-echo slowmonDriverConfigure\(SR1, ${NCHAN}, $sites, ${SITE_NCHAN}, ${WSZ}\)
+echo slowmonDriverConfigure\(SR1, ${NCHAN}, "$sites", "${SITE_NCHAN}", ${WSZ}\)
 PRAMS="UUT=${HOST},PORT=SR1,ADDR=0,TIMEOUT=0,NCHAN=${NCHAN},NCHAN1=$((NCHAN+1))"
 echo dbLoadRecords\(\"db/slowmonCommon.db\",\"${PRAMS}\"\)
 echo dbLoadRecords\(\"db/asynRecord.db\",\"P=${HOST}:,R=asyn:SR1,PORT=SR1,ADDR=0,OMAX=80,IMAX=80,TB3=0,TIB0=0\"\)
 echo dbLoadRecords\(\"db/asynRecord.db\",\"P=${HOST}:,R=asyn:SR1,PORT=SR1,ADDR=3,OMAX=80,IMAX=80,TB3=0,TIB0=0\"\)
 
 isite=0
-OIFS=$IFS; IFS=,; for site in $sites do
+OIFS=$IFS; IFS=,; for site in $sites; do
         nchan=$(get.site $site NCHAN)
         echo '#' dbloadRecords\(\"db/slowmonSite.db\",\"${PRAMS},ISITE=$isite,SITE=$site,NCHAN=${nchan}\"\)
         isite=$((isite+1))
