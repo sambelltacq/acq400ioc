@@ -31,6 +31,6 @@ isite=0
 PRAMS="UUT=${HOST},TIMEOUT=0"
 OIFS=$IFS; IFS=,; for site in $sites; do
         nchan=$(get.site $site NCHAN)
-        echo dbloadRecords\(\"db/slowmonSite.db\",\"${PRAMS},ADDR=$isite,SITE=$site,NCHAN=${nchan}\"\)
+        echo dbLoadRecords\(\"db/slowmonSite.db\",\"${PRAMS},ADDR=$isite,SITE=$site,NCHAN=${nchan}\"\)
         isite=$((isite+1))
 done; IFS=$OIFS
