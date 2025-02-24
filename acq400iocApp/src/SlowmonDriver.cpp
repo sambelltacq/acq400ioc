@@ -42,6 +42,8 @@ using namespace std;
 static const char *driverName="SlowmonDriver";
 
 
+#define TRACE do { if (trace) fprintf(stderr, "%s %d\n", __FUNCTION__, __LINE__); } while (0)
+
 template <class T>
 SlowmonDriver<T>::SlowmonDriver(const char *portName, int _nchan, std::vector<int> _site_list, std::vector<int> _site_nchan):
 asynPortDriver(portName,
@@ -79,6 +81,8 @@ asynPortDriver(portName,
 		fprintf(stderr, "ERROR %s %d\n", __FUNCTION__, status);
 	}
 
+	TRACE;
+
 	memset(&t0, 0, sizeof(t0));
 	memset(&t1, 0, sizeof(t1));
 
@@ -106,6 +110,7 @@ asynPortDriver(portName,
 		site_off[ii] = offset;
 		offset += site_nchan[ii];
 	}
+	TRACE;
 }
 
 
@@ -119,12 +124,13 @@ void SlowmonDriver<T>::task_runner(void *drvPvt)
 template <class T>
 int SlowmonDriver<T>::verbose = ::getenv_default("SlowmonDriver_VERBOSE", 0);
 template <class T>
+int SlowmonDriver<T>::trace = ::getenv_default("SlowmonDriver_TRACE", 0);
+template <class T>
 int SlowmonDriver<T>::stub_es = ::getenv_default("SlowmonDriver_STUB_ES", 0);
 template <class T>
 int SlowmonDriver<T>::nice		= ::getenv_default("SlowmonDriver_NICE", 0);
 template <class T>
 const int SlowmonDriver<T>::nspad(4);
-
 
 
 class PosixPeriodTimer {
@@ -192,14 +198,20 @@ void SlowmonDriver<T>::task()
 
 	printf("%s slowmon ms: %d\n", __FUNCTION__, slowmonms);
 
-	for (PosixPeriodTimer ppt(slowmonms);; ppt.wait_and_get_split(slowmonms)){
+	unsigned iter = 0;
+	TRACE;
+	for (PosixPeriodTimer ppt(slowmonms);; ppt.wait_and_get_split(slowmonms), ++iter){
 		if (int rc = read(fc, raw_mean, lenb) != lenb){
 			fprintf(stderr, "ERROR read() return %d != %d\n", rc, lenb);
 			continue;
 		}
+		if (verbose && iter < 10){
+			fprintf(stderr, "%s %d lenb:%d\n", __FUNCTION__, iter, lenb);
+		}
 		epicsTimeGetCurrent(&t1);
 		handle_buffer();
 	}
+	TRACE;
 }
 
 typedef short RTYPE;
@@ -245,6 +257,7 @@ asynStatus SlowmonDriver<T>::writeInt32(asynUser *pasynUser, epicsInt32 value)
 	const char *paramName;
 	const char* functionName = "writeInt32";
 
+	TRACE;
 	status = parseAsynUser(pasynUser, &function, &addr, &paramName);
 	if (status != asynSuccess) return status;
 
@@ -272,6 +285,7 @@ asynStatus SlowmonDriver<T>::writeInt32(asynUser *pasynUser, epicsInt32 value)
 			"%s:%s: function=%d, name=%s, value=%d\n",
 			driverName, functionName, function, paramName, value);
 	}
+	TRACE;
 	return status;
 }
 
@@ -285,13 +299,13 @@ template<class T>
 asynStatus SlowmonDriver<T>::writeFloat32Array(asynUser *pasynUser, epicsFloat32 *value,
                                         size_t nElements)
 {
-	int function = pasynUser->reason;
+	int function;
 	int addr;
 	asynStatus status = asynSuccess;
 	const char *paramName;
 	const char* functionName = "writeFloat32Array";
 
-
+	TRACE;
 	status = parseAsynUser(pasynUser, &function, &addr, &paramName);
 	if (status != asynSuccess) return status;
 
@@ -305,14 +319,15 @@ asynStatus SlowmonDriver<T>::writeFloat32Array(asynUser *pasynUser, epicsFloat32
 
 	if (function == P_SITE_ESLO){
 		dst = set_eslo + site_off[addr];
-
 	}else if (function == P_SITE_EOFF){
 		dst = set_eoff + site_off[addr];
 	}else{
 		return asynPortDriver::writeFloat32Array(pasynUser, value, nElements);
 	}
 
+	printf("writeFloat32Array %s f:%d a:%d n:%lu %p\n", paramName, function, addr, nElements, dst);
 	floatCopy(dst, value, nElements);
+	TRACE;
 	return status;
 }
 
@@ -320,13 +335,13 @@ template<class T>
 asynStatus SlowmonDriver<T>::readFloat32Array(asynUser *pasynUser, epicsFloat32 *value,
 	                                        size_t nElements, size_t *nIn)
 {
-	int function = pasynUser->reason;
+	int function;
 	int addr;
 	asynStatus status = asynSuccess;
 	const char *paramName;
 	const char* functionName = "writeFloat32Array";
 
-
+	TRACE;
 	status = parseAsynUser(pasynUser, &function, &addr, &paramName);
 	if (status != asynSuccess) return status;
 
@@ -339,15 +354,21 @@ asynStatus SlowmonDriver<T>::readFloat32Array(asynUser *pasynUser, epicsFloat32 
 	float* src = 0;
 
 	if (function == P_MEAN_ESLO){
-		src = set_eslo + site_off[addr];
+		src = set_eslo;
 	}else if (function == P_MEAN_EOFF){
+		src = set_eoff;
+	}else if (function == P_SITE_ESLO){
+		src = set_eslo + site_off[addr];
+	}else if (function == P_SITE_EOFF){
 		src = set_eoff + site_off[addr];
 	}else{
 		return asynPortDriver::readFloat32Array(pasynUser, value, nElements, nIn);
 	}
 
-	*nIn = floatCopy(value, src, nElements);
+	printf("readFloat32Array %s f:%d a:%d n:%lu %p\n", paramName, function, addr, nElements, src);
 
+	*nIn = floatCopy(value, src, nElements);
+	TRACE;
 	return status;
 }
 
@@ -364,7 +385,7 @@ extern "C" {
 	{
 		//return MultiChannelScope::factory(portName, nchan, maxPoints, data_size);
 		printf("pgmwashere R1005\n");
-		printf("%s, %s, %d, %d\n", __FUNCTION__, portName, nchan, data_size);
+		printf("%s, %s, %d, sites:%s site_nchan:%s data_size:%d\n", __FUNCTION__, portName, nchan, _sites, _site_nchan, data_size);
 
 
 		std::vector<int> sitelist = csv2int(_sites);
@@ -387,7 +408,7 @@ extern "C" {
 	static const iocshArg initArg3 = { "site_nchan", iocshArgString };
 	static const iocshArg initArg4 = { "data_size", iocshArgInt };
 	static const iocshArg * const initArgs[] = { &initArg0, &initArg1, &initArg2, &initArg3, &initArg4};
-	static const iocshFuncDef initFuncDef = { "slowmonDriverConfigure", 4, initArgs };
+	static const iocshFuncDef initFuncDef = { "slowmonDriverConfigure", 5, initArgs };
 	static void initCallFunc(const iocshArgBuf *args)
 	{
 		slowmonDriverConfigure(args[0].sval, args[1].ival, args[2].sval, args[3].sval, args[4].ival);

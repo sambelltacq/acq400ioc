@@ -87,6 +87,7 @@ protected:
 	static int nice;
 	static int stub_es;
 	static int verbose;
+	static int trace;
 
 	int nsites() { return site_list.size(); }
 
