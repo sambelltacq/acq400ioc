@@ -86,16 +86,6 @@ asynPortDriver(portName,
 	memset(&t0, 0, sizeof(t0));
 	memset(&t1, 0, sizeof(t1));
 
-	/* Create the thread that computes the waveforms in the background */
-	status = (asynStatus)(epicsThreadCreate("SlowmonTask",
-			epicsThreadPriorityHigh - SlowmonDriver::nice,
-			epicsThreadGetStackSize(epicsThreadStackMedium),
-			(EPICSTHREADFUNC)task_runner,
-			this) == NULL);
-	if (status) {
-		printf("%s:%s: epicsThreadCreate failure\n", driverName, __FUNCTION__);
-		return;
-	}
 
 	set_eoff = new float[nchan];
 	set_eslo = new float[nchan];
@@ -111,6 +101,17 @@ asynPortDriver(portName,
 		offset += site_nchan[ii];
 	}
 	TRACE;
+
+	/* Create the thread that computes the waveforms in the background */
+	status = (asynStatus)(epicsThreadCreate("SlowmonTask",
+			epicsThreadPriorityHigh - SlowmonDriver::nice,
+			epicsThreadGetStackSize(epicsThreadStackMedium),
+			(EPICSTHREADFUNC)task_runner,
+			this) == NULL);
+	if (status) {
+		printf("%s:%s: epicsThreadCreate failure\n", driverName, __FUNCTION__);
+		return;
+	}
 }
 
 
