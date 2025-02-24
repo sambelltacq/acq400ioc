@@ -28,8 +28,9 @@ echo dbLoadRecords\(\"db/asynRecord.db\",\"P=${HOST}:,R=asyn:SR1,PORT=SR1,ADDR=0
 echo dbLoadRecords\(\"db/asynRecord.db\",\"P=${HOST}:,R=asyn:SR1,PORT=SR1,ADDR=3,OMAX=80,IMAX=80,TB3=0,TIB0=0\"\)
 
 isite=0
+PRAMS="UUT=${HOST},TIMEOUT=0"
 OIFS=$IFS; IFS=,; for site in $sites; do
         nchan=$(get.site $site NCHAN)
-        echo '#' dbloadRecords\(\"db/slowmonSite.db\",\"${PRAMS},ISITE=$isite,SITE=$site,NCHAN=${nchan}\"\)
+        echo dbloadRecords\(\"db/slowmonSite.db\",\"${PRAMS},ADDR=$isite,SITE=$site,NCHAN=${nchan}\"\)
         isite=$((isite+1))
 done; IFS=$OIFS

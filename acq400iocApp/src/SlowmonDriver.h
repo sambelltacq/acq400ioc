@@ -53,6 +53,7 @@ void runTask(void *drvPvt);
 template <class T>
 class SlowmonDriver: public asynPortDriver {
 
+	void member_init();
 
 protected:
 	int P_NCHAN;

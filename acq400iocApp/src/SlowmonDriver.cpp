@@ -60,6 +60,7 @@ asynPortDriver(portName,
 	ssb(_nchan*sizeof(T)),
 	slowmonms(100)
 {
+	member_init();
 	asynStatus status = asynSuccess;
 
 	createParam(PS_NCHAN, 	asynParamInt32, 	&P_NCHAN);
@@ -83,6 +84,23 @@ asynPortDriver(portName,
 
 	TRACE;
 
+
+
+	/* Create the thread that computes the waveforms in the background */
+	status = (asynStatus)(epicsThreadCreate("SlowmonTask",
+			epicsThreadPriorityHigh - SlowmonDriver::nice,
+			epicsThreadGetStackSize(epicsThreadStackMedium),
+			(EPICSTHREADFUNC)task_runner,
+			this) == NULL);
+	if (status) {
+		printf("%s:%s: epicsThreadCreate failure\n", driverName, __FUNCTION__);
+		return;
+	}
+}
+
+template <class T>
+void SlowmonDriver<T>::member_init()
+{
 	memset(&t0, 0, sizeof(t0));
 	memset(&t1, 0, sizeof(t1));
 
@@ -101,20 +119,7 @@ asynPortDriver(portName,
 		offset += site_nchan[ii];
 	}
 	TRACE;
-
-	/* Create the thread that computes the waveforms in the background */
-	status = (asynStatus)(epicsThreadCreate("SlowmonTask",
-			epicsThreadPriorityHigh - SlowmonDriver::nice,
-			epicsThreadGetStackSize(epicsThreadStackMedium),
-			(EPICSTHREADFUNC)task_runner,
-			this) == NULL);
-	if (status) {
-		printf("%s:%s: epicsThreadCreate failure\n", driverName, __FUNCTION__);
-		return;
-	}
 }
-
-
 template <class T>
 void SlowmonDriver<T>::task_runner(void *drvPvt)
 {
@@ -229,8 +234,12 @@ void SlowmonDriver<short>::handle_buffer()
 	}
 */
 	for (int ic = 0; ic < nchan; ++ic){
-		cal_mean[ic] = raw_mean[ic]*set_eslo[ic] + set_eoff[ic];
-
+//		cal_mean[ic] = raw_mean[ic]*set_eslo[ic] + set_eoff[ic];
+		cal_mean[ic] = raw_mean[ic];
+		if (verbose > 1 && ic < 2){
+			fprintf(stderr, "%s [%d] cal %.0f = raw %04x\n",
+				__FUNCTION__, ic, cal_mean[ic], raw_mean[ic]);
+		}
 	}
 	doCallbacksFloat32Array(cal_mean, nchan, P_MEAN_EGU, 0);
 	doCallbacksInt16Array(mean16, nchan, P_MEAN_RAW, 0);
