@@ -2,6 +2,7 @@
 
 (
 sleep 1
+mkdir -p /etc/epics.d
 /usr/local/epics/scripts/wait_ioc_ready
 
 logger -t onIocReady 01
