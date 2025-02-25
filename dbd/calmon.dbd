@@ -6,6 +6,8 @@ registrar(calmonBOLORegistrar)
 registrar(calmon480Registrar)
 registrar(v2f_calRegistrar)
 registrar(calmonSC32Registrar)
+registrar(calmonSlowmonRegistrar)
+
 
 
 

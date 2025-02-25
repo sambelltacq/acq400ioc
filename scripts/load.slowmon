@@ -22,15 +22,21 @@ OIFS=$IFS; IFS=,; for site in $sites; do
 done; IFS=$OIFS
 
 echo slowmonDriverConfigure\(SR1, ${NCHAN}, \"$sites\", \"${SITE_NCHAN}\", ${WSZ}\)
-PRAMS="UUT=${HOST},PORT=SR1,ADDR=0,TIMEOUT=0,NCHAN=${NCHAN},NCHAN1=$((NCHAN+1))"
+PRAMS0="UUT=${HOST},PORT=SR1,TIMEOUT=0"
+PRAMS="$PRAMS0,ADDR=0,NCHAN=${NCHAN},NCHAN1=$((NCHAN+1))"
 echo dbLoadRecords\(\"db/slowmonCommon.db\",\"${PRAMS}\"\)
 echo dbLoadRecords\(\"db/asynRecord.db\",\"P=${HOST}:,R=asyn:SR1,PORT=SR1,ADDR=0,OMAX=80,IMAX=80,TB3=0,TIB0=0\"\)
 echo dbLoadRecords\(\"db/asynRecord.db\",\"P=${HOST}:,R=asyn:SR1,PORT=SR1,ADDR=3,OMAX=80,IMAX=80,TB3=0,TIB0=0\"\)
 
 isite=0
-PRAMS="UUT=${HOST},TIMEOUT=0"
-OIFS=$IFS; IFS=,; for site in $sites; do
+
+for site in $(echo $sites | tr , \  ); do
         nchan=$(get.site $site NCHAN)
-        echo dbLoadRecords\(\"db/slowmonSite.db\",\"${PRAMS},ADDR=$isite,SITE=$site,NCHAN=${nchan}\"\)
+        echo dbLoadRecords\(\"db/slowmonSite.db\",\"${PRAMS0},ADDR=$isite,SITE=$site,NCHAN=${nchan}\"\)
         isite=$((isite+1))
-done; IFS=$OIFS
+done;
+
+for site in $(echo $sites | tr , \  ); do
+        echo seq calmonSlowmon \"uut=${HOST},site=${site},verbose=1\"
+        break
+done

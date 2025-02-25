@@ -98,6 +98,8 @@ asynPortDriver(portName,
 	}
 }
 
+const float V1 = 1.0/32768;
+
 template <class T>
 void SlowmonDriver<T>::member_init()
 {
@@ -109,7 +111,7 @@ void SlowmonDriver<T>::member_init()
 	set_eslo = new float[nchan];
 	/* make an obvious, incorrect, but reasonable default should ESLO/EOFF init not complete */
 	for (int ic = 0; ic < nchan; ++ic){
-		set_eslo[ic] = 1;
+		set_eslo[ic] = V1;
 		set_eoff[ic] = 0;
 	}
 	site_off = new int[nsites()];
@@ -234,11 +236,10 @@ void SlowmonDriver<short>::handle_buffer()
 	}
 */
 	for (int ic = 0; ic < nchan; ++ic){
-//		cal_mean[ic] = raw_mean[ic]*set_eslo[ic] + set_eoff[ic];
-		cal_mean[ic] = raw_mean[ic];
+		cal_mean[ic] = mean16[ic]*set_eslo[ic] + set_eoff[ic];
 		if (verbose > 1 && ic < 2){
 			fprintf(stderr, "%s [%d] cal %.0f = raw %04x\n",
-				__FUNCTION__, ic, cal_mean[ic], raw_mean[ic]);
+				__FUNCTION__, ic, cal_mean[ic], mean16[ic]);
 		}
 	}
 	doCallbacksFloat32Array(cal_mean, nchan, P_MEAN_EGU, 0);

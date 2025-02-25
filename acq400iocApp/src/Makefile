@@ -103,6 +103,7 @@ acq400ioc_SRCS += calmon426.st
 acq400ioc_SRCS += calmonBOLO.st
 acq400ioc_SRCS += calmon480.st
 acq400ioc_SRCS += calmonSC32.st
+acq400ioc_SRCS += calmonSlowmon.st
 acq400ioc_SRCS += setMB_ClockMonitor.st
 acq400ioc_SRCS += v2f_cal.st
 acq400ioc_SRCS += pvmirror.st
