@@ -37,6 +37,5 @@ for site in $(echo $sites | tr , \  ); do
 done;
 
 for site in $(echo $sites | tr , \  ); do
-        echo seq calmonSlowmon \"uut=${HOST},site=${site},verbose=1\"
-        break
+        echo seq calmonSlowmon \"uut=${HOST},site=${site},verbose=${calmonSlowmon_VERBOSE}\"
 done

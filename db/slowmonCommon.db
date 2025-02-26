@@ -10,10 +10,20 @@ record(longout, "$(UUT):0:SLOWMON:SLOWMONMS") {
     field(PINI, "YES")
     field(VAL,  "1000")
 }
+
+record(longout, "$(UUT):0:SLOWMON:EN") {
+    field(DTYP, "asynInt32")
+    field(OUT,  "@asyn($(PORT),0,$(TIMEOUT))MEAN_EN") 
+    field(DESC, "Set sample interval ms")
+    field(DRVL, "0")
+    field(DRVH, "1")
+    field(PINI, "YES")
+    field(VAL,  "0")
+}
 # make one
 record(waveform, "$(UUT):0:SLOWMON:MEAN:RAW") {
     field(DTYP, "asynInt16ArrayIn")
-    field(INP,  "@asyn($(PORT),0,$(TIMEOUT))MEAN_EGU")
+    field(INP,  "@asyn($(PORT),0,$(TIMEOUT))MEAN_RAW")
     field(FTVL, "SHORT")            # @@todo
     field(NELM, "$(NCHAN)")
     #field(LOPR, "0")

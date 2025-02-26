@@ -42,7 +42,7 @@ using namespace std;
 static const char *driverName="SlowmonDriver";
 
 
-#define TRACE do { if (trace) fprintf(stderr, "%s %d\n", __FUNCTION__, __LINE__); } while (0)
+#define TRACE do { if (trace) fprintf(stderr, "TRACE %s %d\n", __FUNCTION__, __LINE__); } while (0)
 
 template <class T>
 SlowmonDriver<T>::SlowmonDriver(const char *portName, int _nchan, std::vector<int> _site_list, std::vector<int> _site_nchan):
@@ -58,7 +58,8 @@ asynPortDriver(portName,
 	site_list(_site_list),
 	site_nchan(_site_nchan),
 	ssb(_nchan*sizeof(T)),
-	slowmonms(100)
+	slowmonms(100),
+	enable(0)
 {
 	member_init();
 	asynStatus status = asynSuccess;
@@ -74,6 +75,7 @@ asynPortDriver(portName,
 	createParam(PS_SITE_EOFF, asynParamFloat32Array, &P_SITE_EOFF);
 	createParam(PS_MEAN_ESLO, asynParamFloat32Array, &P_MEAN_ESLO);
 	createParam(PS_MEAN_EOFF, asynParamFloat32Array, &P_MEAN_EOFF);
+	createParam(PS_MEAN_EN,   asynParamInt32,   	 &P_MEAN_EN);
 
 	raw_mean = new unsigned[nchan*sizeof(T)/sizeof(unsigned)+nspad];
 	cal_mean = new float[nchan];
@@ -194,6 +196,25 @@ const int PosixPeriodTimer::NANO  = 1000000000;
 const int PosixPeriodTimer::MICRO =    1000000;
 
 template <class T>
+void SlowmonDriver<T>::task_wait_params()
+{
+	int retries = 0;
+	asynStatus rc;
+	epicsInt32 _enable;
+	do {
+		sleep(1);
+		rc = getIntegerParam(P_MEAN_EN, &_enable);
+		TRACE;
+	} while (rc == asynParamUndefined && ++retries < 5);
+
+	if (rc != asynSuccess){
+		reportGetParamErrors(rc, P_NCHAN, 0, "task()");
+		fprintf(stderr, "ERROR P_ES_SPREAD %d rc %d\n", P_MEAN_EN, rc);
+		exit(1);
+	};
+}
+
+template <class T>
 void SlowmonDriver<T>::task()
 {
 	int fc = open("/dev/acq400.0.subr", O_RDONLY);
@@ -202,22 +223,29 @@ void SlowmonDriver<T>::task()
 	const int lenw = ssb/sizeof(unsigned)+nspad;
 	const int lenb = lenw*sizeof(unsigned);
 
+	task_wait_params();
 	epicsTimeGetCurrent(&t0);
 
 	printf("%s slowmon ms: %d\n", __FUNCTION__, slowmonms);
 
 	unsigned iter = 0;
+
 	TRACE;
-	for (PosixPeriodTimer ppt(slowmonms);; ppt.wait_and_get_split(slowmonms), ++iter){
-		if (int rc = read(fc, raw_mean, lenb) != lenb){
+	for (PosixPeriodTimer ppt(slowmonms);;
+			ppt.wait_and_get_split(enable? slowmonms: 1000), ++iter){
+		if (!enable){
+			if (verbose) fprintf(stderr, "%s IDLE\n", __FUNCTION__);
+			continue;
+		} else if (int rc = read(fc, raw_mean, lenb) != lenb){
 			fprintf(stderr, "ERROR read() return %d != %d\n", rc, lenb);
 			continue;
+		}else{
+			if (verbose && iter < 10){
+				fprintf(stderr, "%s %d lenb:%d\n", __FUNCTION__, iter, lenb);
+			}
+			epicsTimeGetCurrent(&t1);
+			handle_buffer();
 		}
-		if (verbose && iter < 10){
-			fprintf(stderr, "%s %d lenb:%d\n", __FUNCTION__, iter, lenb);
-		}
-		epicsTimeGetCurrent(&t1);
-		handle_buffer();
 	}
 	TRACE;
 }
@@ -266,38 +294,22 @@ asynStatus SlowmonDriver<T>::writeInt32(asynUser *pasynUser, epicsInt32 value)
 	int addr;
 	asynStatus status = asynSuccess;
 	const char *paramName;
-	const char* functionName = "writeInt32";
 
 	TRACE;
 	status = parseAsynUser(pasynUser, &function, &addr, &paramName);
 	if (status != asynSuccess) return status;
 
-	asynPrint(pasynUser, ASYN_TRACEIO_DRIVER,
-				"%s:%s: function=%d, name=%s, value=%d\n",
-				driverName, functionName, function, paramName, value);
-
-	/* (1) Set the parameter in the parameter library. */
-	status = setIntegerParam(function, value);
-
 	if (function == P_SLOWMONMS){
 		slowmonms = value;
-		printf("slowmonms set %d\n", slowmonms);
+		printf("%s() slowmonms set %d\n", __FUNCTION__, slowmonms);
+	}else if (function == P_MEAN_EN){
+		enable = value;
+		printf("%s() enable set %d\n", __FUNCTION__, enable);
 	}else{
+
 		/* All other parameters just get set in parameter list, no need to act on them here */
 	}
-	status = callParamCallbacks();
-
-	if (status){
-		epicsSnprintf(pasynUser->errorMessage, pasynUser->errorMessageSize,
-			"%s:%s: status=%d, function=%d, name=%s, value=%d",
-			driverName, functionName, status, function, paramName, value);
-	}else{
-		asynPrint(pasynUser, ASYN_TRACEIO_DRIVER,
-			"%s:%s: function=%d, name=%s, value=%d\n",
-			driverName, functionName, function, paramName, value);
-	}
-	TRACE;
-	return status;
+	return asynPortDriver::writeInt32(pasynUser, value);
 }
 
 int floatCopy(float* dst, const float* src, int nelems)
@@ -350,7 +362,7 @@ asynStatus SlowmonDriver<T>::readFloat32Array(asynUser *pasynUser, epicsFloat32 
 	int addr;
 	asynStatus status = asynSuccess;
 	const char *paramName;
-	const char* functionName = "writeFloat32Array";
+	float* src = 0;
 
 	TRACE;
 	status = parseAsynUser(pasynUser, &function, &addr, &paramName);
@@ -358,11 +370,14 @@ asynStatus SlowmonDriver<T>::readFloat32Array(asynUser *pasynUser, epicsFloat32 
 
 	asynPrint(pasynUser, ASYN_TRACEIO_DRIVER,
 				"%s:%s: function=%d, name=%s, value=%p\n",
-				driverName, functionName, function, paramName, value);
+				driverName, __FUNCTION__, function, paramName, value);
+
+	printf("%s():%d %s f:%d a:%d n:%lu %p\n", __FUNCTION__, __LINE__,
+				paramName, function, addr, nElements, src);
 
 	assert(addr >= 0 && addr < nsites());
 
-	float* src = 0;
+
 
 	if (function == P_MEAN_ESLO){
 		src = set_eslo;
@@ -376,7 +391,8 @@ asynStatus SlowmonDriver<T>::readFloat32Array(asynUser *pasynUser, epicsFloat32 
 		return asynPortDriver::readFloat32Array(pasynUser, value, nElements, nIn);
 	}
 
-	printf("readFloat32Array %s f:%d a:%d n:%lu %p\n", paramName, function, addr, nElements, src);
+	printf("%s():%d %s f:%d a:%d n:%lu %p\n", __FUNCTION__, __LINE__,
+					paramName, function, addr, nElements, src);
 
 	*nIn = floatCopy(value, src, nElements);
 	TRACE;

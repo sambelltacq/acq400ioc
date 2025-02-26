@@ -45,6 +45,8 @@
 #define PS_MEAN_ESLO		"ALL_ESLO"
 #define PS_MEAN_EOFF		"ALL_EOFF"
 
+#define PS_MEAN_EN		"MEAN_EN"
+
 
 #define MAX_SITES		6
 
@@ -54,6 +56,7 @@ template <class T>
 class SlowmonDriver: public asynPortDriver {
 
 	void member_init();
+	void task_wait_params();
 
 protected:
 	int P_NCHAN;
@@ -67,6 +70,7 @@ protected:
 	int P_SITE_EOFF;
 	int P_MEAN_ESLO;
 	int P_MEAN_EOFF;
+	int P_MEAN_EN;
 
 	unsigned *raw_mean;
 	float *cal_mean;
@@ -76,6 +80,7 @@ protected:
 	std::vector<int> site_nchan;
 	const int ssb;
 	unsigned slowmonms;
+	unsigned enable;
 
 	int* site_off;          /* offset each site in set */
 
