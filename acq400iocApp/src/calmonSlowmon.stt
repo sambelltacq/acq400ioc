@@ -1,0 +1,93 @@
+// duplicate site cal values for SLOWMON
+
+// seq calmonSlowmon "uut=acq1001_064,site=1"
+
+
+program calmonSlowmon
+option +r;
+
+float ext_eslo[33]; 	assign ext_eslo to "{uut}:{site}:AI:CAL:ESLO";
+float ext_eoff[33]; 	assign ext_eoff to "{uut}:{site}:AI:CAL:EOFF";
+
+float slow_eslo[32];	assign slow_eslo to "{uut}:{site}:SLOWMON:ESLO";
+float slow_eoff[32]; 	assign slow_eoff to "{uut}:{site}:SLOWMON:EOFF";
+
+int enable;		assign enable to "{uut}:0:SLOWMON:EN"; monitor enable;
+int nchan;		assign nchan to "{uut}:{site}:NCHAN";
+
+int has_ch_gains;	assign has_ch_gains to "{uut}:{site}:HAS_CH_GAINS";
+int gain_changes;	assign gain_changes to "";
+int gain_changes0;
+
+char* uut;
+char* site = "1";		// default site 1, should override
+int verbose;
+char pvname[80];
+int ic;
+
+double delay_seconds = 5.0;
+
+%{
+#include <stdlib.h>
+}%
+
+ss calmonSL {
+	state init {
+		entry {
+			pvGet(nchan);
+			pvGet(has_ch_gains);
+			printf("calmon42x R1000 site:%s nchan:%d has_gains:%s\n", 
+						site, nchan, has_ch_gains? "yes": "no");
+			uut = macValueGet("uut"); 
+			if (macValueGet("site") != 0){
+				site = macValueGet("site");
+			}
+			if (macValueGet("verbose") != 0) verbose = atoi(macValueGet("verbose"));
+			
+			if (has_ch_gains){
+				snprintf(pvname, 80, "%s:%s:GAIN_CHANGES", uut, site);
+				pvAssign(gain_changes, pvname);			
+				pvMonitor(gain_changes);			
+			}
+		}  
+		when(enable) {
+			
+		} state update
+	}
+	
+	state update {
+		entry {
+			if (verbose) printf("calmonSL::update\n");
+			
+			pvGet(ext_eslo);
+			pvGet(ext_eoff);
+			for (ic = 0; ic < nchan; ++ic){
+				slow_eslo[ic] = ext_eslo[ic+1];
+				slow_eoff[ic] = ext_eoff[ic+1];
+			}
+			pvPut(slow_eslo);
+			pvPut(slow_eoff);
+		} 
+		when() {
+					
+		} state wait_change
+	}
+	
+	state wait_change {
+		entry {
+			if (verbose) printf("calmonSL::wait_change\n");
+		}
+		when(gain_changes != gain_changes0){
+			gain_changes0 = gain_changes;
+		} state wait_settle
+	}
+	
+	state wait_settle {
+		entry {
+			if (verbose) printf("calmonSL::wait_delay\n");
+		}
+		when(delay(delay_seconds)){
+			
+		} state update
+	}
+}
