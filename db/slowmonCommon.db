@@ -20,6 +20,27 @@ record(longout, "$(UUT):0:SLOWMON:EN") {
     field(PINI, "YES")
     field(VAL,  "0")
 }
+
+record(longout, "$(UUT):0:SLOWMON:QESLO") {
+    field(DTYP, "asynInt32")
+    field(OUT,  "@asyn($(PORT),0,$(TIMEOUT))QESLO")
+    field(DESC, "show 4 elements from ESLO on console")
+    field(DRVL, "0")
+    field(DRVH, "$(NCHAN)")
+    field(PINI, "YES")
+    field(VAL,  "0")
+}
+
+record(longout, "$(UUT):0:SLOWMON:QEOFF") {
+    field(DTYP, "asynInt32")
+    field(OUT,  "@asyn($(PORT),0,$(TIMEOUT))QEOFF")
+    field(DESC, "show 4 elements from EOFF on console")
+    field(DRVL, "0")
+    field(DRVH, "$(NCHAN)")
+    field(PINI, "YES")
+    field(VAL,  "0")
+}
+
 # make one
 record(waveform, "$(UUT):0:SLOWMON:MEAN:RAW") {
     field(DTYP, "asynInt16ArrayIn")

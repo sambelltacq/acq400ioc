@@ -46,6 +46,8 @@
 #define PS_MEAN_EOFF		"ALL_EOFF"
 
 #define PS_MEAN_EN		"MEAN_EN"
+#define PS_QUERY_ESLO		"QESLO"
+#define PS_QUERY_EOFF		"QEOFF"
 
 
 #define MAX_SITES		6
@@ -71,6 +73,8 @@ protected:
 	int P_MEAN_ESLO;
 	int P_MEAN_EOFF;
 	int P_MEAN_EN;
+	int P_QUERY_ESLO;
+	int P_QUERY_EOFF;
 
 	unsigned *raw_mean;
 	float *cal_mean;

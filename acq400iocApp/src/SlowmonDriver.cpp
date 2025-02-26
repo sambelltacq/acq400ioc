@@ -76,6 +76,8 @@ asynPortDriver(portName,
 	createParam(PS_MEAN_ESLO, asynParamFloat32Array, &P_MEAN_ESLO);
 	createParam(PS_MEAN_EOFF, asynParamFloat32Array, &P_MEAN_EOFF);
 	createParam(PS_MEAN_EN,   asynParamInt32,   	 &P_MEAN_EN);
+	createParam(PS_QUERY_ESLO, asynParamInt32,       &P_QUERY_ESLO);
+	createParam(PS_QUERY_EOFF, asynParamInt32,       &P_QUERY_EOFF);
 
 	raw_mean = new unsigned[nchan*sizeof(T)/sizeof(unsigned)+nspad];
 	cal_mean = new float[nchan];
@@ -287,6 +289,12 @@ void SlowmonDriver<T>::handle_buffer()
 	assert(0);
 }
 
+#define CLAMPR(xx, ll, rr) ((xx<ll)? (ll): (xx)>=(rr)? (rr): (xx))
+
+void cal_deb(const char *pram, int ii, float* xx){
+	printf("%s:[%d] %f %f %f %f\n", pram, ii, xx[ii], xx[ii+1], xx[ii+2], xx[ii+3]);
+}
+
 template<class T>
 asynStatus SlowmonDriver<T>::writeInt32(asynUser *pasynUser, epicsInt32 value)
 {
@@ -305,6 +313,10 @@ asynStatus SlowmonDriver<T>::writeInt32(asynUser *pasynUser, epicsInt32 value)
 	}else if (function == P_MEAN_EN){
 		enable = value;
 		printf("%s() enable set %d\n", __FUNCTION__, enable);
+	}else if (function == P_QUERY_ESLO){
+		cal_deb("ESLO", CLAMPR(value, 0, nchan-5), set_eslo);
+	}else if (function == P_QUERY_EOFF){
+		cal_deb("EOFF", CLAMPR(value, 0, nchan-5), set_eoff);
 	}else{
 
 		/* All other parameters just get set in parameter list, no need to act on them here */
