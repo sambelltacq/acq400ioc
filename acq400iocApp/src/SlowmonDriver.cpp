@@ -350,18 +350,24 @@ asynStatus SlowmonDriver<T>::writeFloat32Array(asynUser *pasynUser, epicsFloat32
 
 	assert(addr >= 0 && addr < nsites());
 
-	float* dst = 0;
+	float* setv = 0;
+	int all_fun;
 
 	if (function == P_SITE_ESLO){
-		dst = set_eslo + site_off[addr];
+		setv = set_eslo;
+		all_fun = P_MEAN_ESLO;
 	}else if (function == P_SITE_EOFF){
-		dst = set_eoff + site_off[addr];
+		setv = set_eoff;
+		all_fun = P_MEAN_EOFF;
 	}else{
 		return asynPortDriver::writeFloat32Array(pasynUser, value, nElements);
 	}
+	float* setv_site = setv + site_off[addr];
 
-	printf("writeFloat32Array %s f:%d a:%d n:%lu %p\n", paramName, function, addr, nElements, dst);
-	floatCopy(dst, value, nElements);
+	printf("writeFloat32Array %s f:%d a:%d n:%lu %p\n",
+			paramName, function, addr, nElements, setv_site);
+	floatCopy(setv_site, value, nElements);
+	doCallbacksFloat32Array(setv, nchan, all_fun, 0);
 	TRACE;
 	return status;
 }
