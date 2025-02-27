@@ -49,6 +49,8 @@
 #define PS_QUERY_ESLO		"QESLO"
 #define PS_QUERY_EOFF		"QEOFF"
 
+#define PS_SET_WATERFALL	"WATERFALL"
+
 
 #define MAX_SITES		6
 
@@ -75,6 +77,7 @@ protected:
 	int P_MEAN_EN;
 	int P_QUERY_ESLO;
 	int P_QUERY_EOFF;
+	int P_SET_WATERFALL;
 
 	unsigned *raw_mean;
 	float *cal_mean;

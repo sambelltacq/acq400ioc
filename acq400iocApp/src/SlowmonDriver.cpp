@@ -78,6 +78,7 @@ asynPortDriver(portName,
 	createParam(PS_MEAN_EN,   asynParamInt32,   	 &P_MEAN_EN);
 	createParam(PS_QUERY_ESLO, asynParamInt32,       &P_QUERY_ESLO);
 	createParam(PS_QUERY_EOFF, asynParamInt32,       &P_QUERY_EOFF);
+	createParam(PS_SET_WATERFALL, asynParamInt32,    &P_SET_WATERFALL);
 
 	raw_mean = new unsigned[nchan*sizeof(T)/sizeof(unsigned)+nspad];
 	cal_mean = new float[nchan];
@@ -265,8 +266,14 @@ void SlowmonDriver<short>::handle_buffer()
 			__FUNCTION__, nchan, mean[0], mean[1], mean[2], mean[3]);
 	}
 */
+	int waterfall = 0;
+	asynStatus rc = getIntegerParam(P_SET_WATERFALL, &waterfall);
+	if (rc != asynSuccess){
+		reportGetParamErrors(rc, P_SET_WATERFALL, 0, "task()");
+	};
+
 	for (int ic = 0; ic < nchan; ++ic){
-		cal_mean[ic] = mean16[ic]*set_eslo[ic] + set_eoff[ic];
+		cal_mean[ic] = mean16[ic]*set_eslo[ic] + set_eoff[ic] + waterfall*ic;
 		if (verbose > 1 && ic < 2){
 			fprintf(stderr, "%s [%d] cal %.0f = raw %04x\n",
 				__FUNCTION__, ic, cal_mean[ic], mean16[ic]);
@@ -281,8 +288,15 @@ void SlowmonDriver<epicsInt32>::handle_buffer()
 {
 	epicsInt32* mean32 = (epicsInt32*)raw_mean;
 	// @@todo do something with the SPAD timestamps
+
+	int waterfall = 0;
+	asynStatus rc = getIntegerParam(P_SET_WATERFALL, &waterfall);
+	if (rc != asynSuccess){
+		reportGetParamErrors(rc, P_SET_WATERFALL, 0, "task()");
+	};
+
 	for (int ic = 0; ic < nchan; ++ic){
-		cal_mean[ic] = mean32[ic]*set_eslo[ic] + set_eoff[ic];
+		cal_mean[ic] = mean32[ic]*set_eslo[ic] + set_eoff[ic] + waterfall*ic;
 		if (verbose > 1 && ic < 2){
 			fprintf(stderr, "%s [%d] cal %.0f = raw %04x\n",
 				__FUNCTION__, ic, cal_mean[ic], mean32[ic]);

@@ -31,6 +31,25 @@ record(longout, "$(UUT):0:SLOWMON:QESLO") {
     field(VAL,  "0")
 }
 
+record(mbbo, "${UUT}:0:SLOWMON:WATERFALL") {
+    field(DTYP, "asynInt32")
+    field(OUT,  "@asyn($(PORT),0,$(TIMEOUT))WATERFALL")
+    field(DESC, "offset traces on display")
+    field(NOBT, "3")
+    field(ZRVL, "0")
+    field(ONVL, "1")
+    field(TWVL, "2")
+    field(THVL, "5")
+    field(FRVL, "10")
+    field(ZRST, "0")
+    field(ONST, "1")
+    field(TWST, "2")
+    field(THST, "5")
+    field(FRST, "10")    
+    field(PINI, "YES")
+    field(VAL,  "0")
+}
+
 record(longout, "$(UUT):0:SLOWMON:QEOFF") {
     field(DTYP, "asynInt32")
     field(OUT,  "@asyn($(PORT),0,$(TIMEOUT))QEOFF")
