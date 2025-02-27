@@ -277,10 +277,19 @@ void SlowmonDriver<short>::handle_buffer()
 }
 
 template<>
-void SlowmonDriver<unsigned>::handle_buffer()
+void SlowmonDriver<epicsInt32>::handle_buffer()
 {
+	epicsInt32* mean32 = (epicsInt32*)raw_mean;
 	// @@todo do something with the SPAD timestamps
-	doCallbacksInt32Array((epicsInt32*)raw_mean, nchan, P_MEAN_RAW, 0);
+	for (int ic = 0; ic < nchan; ++ic){
+		cal_mean[ic] = mean32[ic]*set_eslo[ic] + set_eoff[ic];
+		if (verbose > 1 && ic < 2){
+			fprintf(stderr, "%s [%d] cal %.0f = raw %04x\n",
+				__FUNCTION__, ic, cal_mean[ic], mean32[ic]);
+		}
+	}
+	doCallbacksFloat32Array(cal_mean, nchan, P_MEAN_EGU, 0);
+	doCallbacksInt32Array(mean32, nchan, P_MEAN_RAW, 0);
 }
 
 template<class T>
@@ -437,9 +446,9 @@ extern "C" {
 		std::vector<int> site_nchan = csv2int(_site_nchan);
 
 		if (data_size == 2){
-			new SlowmonDriver<short>(portName, nchan, sitelist, site_nchan);
+			new SlowmonDriver<epicsInt16>(portName, nchan, sitelist, site_nchan);
 		}else{
-			new SlowmonDriver<int>(portName, nchan, sitelist, site_nchan);
+			new SlowmonDriver<epicsInt32>(portName, nchan, sitelist, site_nchan);
 		}
 
 		return 0;
