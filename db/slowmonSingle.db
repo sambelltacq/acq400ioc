@@ -1,12 +1,10 @@
 # split out up to 16 fields from SLOWMON:MEAN as individual channel records
 
-# dynamic INDX FAILED. Abandon
-
 record(longout, "$(UUT):0:SLOWMON:SGL:$(ID):CH") {
     field(DTYP, "Soft Channel")
     field(DRVL, "1")
     field(DRVH, "192")
-    field(VAL,  "$(VAL)")
+    field(VAL,  "$(INDX)")
     field(PINI, "YES")
     field(FLNK, "$(UUT):0:SLOWMON:SGL:$(ID):CH:c PP")
 }
@@ -16,20 +14,28 @@ record(calcout, "$(UUT):0:SLOWMON:SGL:$(ID):CH:c") {
     field(CALC, "A-1")
     field(OOPT, "Every Time")
     field(DOPT, "Use CALC")
-    field(OUT,  "$(UUT):0:SLOWMON:SGL:$(ID).INDX PP")
+    field(OUT,  "$(UUT):0:SLOWMON:SGL:$(ID):sa.INDX PP")
 }
 
-record(subArray, "$(UUT):0:SLOWMON:SGL:$(ID)") {
+record(subArray, "$(UUT):0:SLOWMON:SGL:$(ID):sa") {
     field(DTYP, "Soft Channel")
     field(FTVL, "FLOAT")
     field(INP,  "$(UUT):0:SLOWMON:MEAN")
     field(INDX, "$(INDX)")
     field(NELM, "1")
     field(MALM, "$(MALM)")
+    field(FLNK, "$(UUT):0:SLOWMON:SGL:$(ID) PP" )
+}
+
+# https://epics.anl.gov/tech-talk/2021/msg00432.php
+# https://epics.anl.gov/base/R7-0/5-docs/filters.html
+record(ai, "$(UUT):0:SLOWMON:SGL:$(ID)") {
+    field(DTYP, "Soft Channel")
+    field(INP,  "$(UUT):0:SLOWMON:SGL:$(ID):sa.[0] CA")
     field(EGU,  "V")
 }
 record(fanout, "$(UUT):0:SLOWMON:f") {
-    field(LNK$(LNK), "$(UUT):0:SLOWMON:SGL:$(ID)")
+    field(LNK$(LNK), "$(UUT):0:SLOWMON:SGL:$(ID):sa")
 }
 
 
