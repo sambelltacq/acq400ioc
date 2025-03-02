@@ -8,16 +8,19 @@ record(longout, "$(UUT):0:SLOWMON:SGL:$(ID):CH") {
     field(FLNK, "$(UUT):0:SLOWMON:SGL:$(ID):CH:c PP")
 }
 
-record(calc, "$(UUT):0:SLOWMON:SGL:$(ID):CH:c") {
+record(calcout, "$(UUT):0:SLOWMON:SGL:$(ID):CH:c") {
     field(INPA, "$(UUT):0:SLOWMON:SGL:$(ID):CH")
     field(CALC, "A-1")
+    field(OOPT, "Every Time")
+    field(DOPT, "Use CALC")
+    field(OUT,  "$(UUT):0:SLOWMON:SGL:$(ID).INDX PP")
 }
 
 record(subArray, "$(UUT):0:SLOWMON:SGL:$(ID)") {
     field(DTYP, "Soft Channel")
     field(FTVL, "FLOAT")
     field(INP,  "$(UUT):0:SLOWMON:MEAN")
-    field(INDX, "$(UUT):0:SLOWMON:SGL:$(ID):CH:c")
+    field(INDX, "0")
     field(NELM, "1")
     field(EGU,  "V")
     
