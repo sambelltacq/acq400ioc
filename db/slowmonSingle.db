@@ -2,22 +2,22 @@
 
 # dynamic INDX FAILED. Abandon
 
-#record(longout, "$(UUT):0:SLOWMON:SGL:$(ID):CH") {
-#    field(DTYP, "Soft Channel")
-    #field(DRVL, "1")
-    #field(DRVH, "192")
-    #field(VAL,  "$(VAL)")
-#    field(PINI, "YES")
-#    field(FLNK, "$(UUT):0:SLOWMON:SGL:$(ID):CH:c PP")
-#}
+record(longout, "$(UUT):0:SLOWMON:SGL:$(ID):CH") {
+    field(DTYP, "Soft Channel")
+    field(DRVL, "1")
+    field(DRVH, "192")
+    field(VAL,  "$(VAL)")
+    field(PINI, "YES")
+    field(FLNK, "$(UUT):0:SLOWMON:SGL:$(ID):CH:c PP")
+}
 
-#record(calcout, "$(UUT):0:SLOWMON:SGL:$(ID):CH:c") {
-    #field(INPA, "$(UUT):0:SLOWMON:SGL:$(ID):CH")
-    #field(CALC, "A-1")
-    #field(OOPT, "Every Time")
-    #field(DOPT, "Use CALC")
-    #field(OUT,  "$(UUT):0:SLOWMON:SGL:$(ID).INDX PP")
-#}
+record(calcout, "$(UUT):0:SLOWMON:SGL:$(ID):CH:c") {
+    field(INPA, "$(UUT):0:SLOWMON:SGL:$(ID):CH")
+    field(CALC, "A-1")
+    field(OOPT, "Every Time")
+    field(DOPT, "Use CALC")
+    field(OUT,  "$(UUT):0:SLOWMON:SGL:$(ID).INDX PP")
+}
 
 record(subArray, "$(UUT):0:SLOWMON:SGL:$(ID)") {
     field(DTYP, "Soft Channel")
@@ -27,7 +27,6 @@ record(subArray, "$(UUT):0:SLOWMON:SGL:$(ID)") {
     field(NELM, "1")
     field(MALM, "$(MALM)")
     field(EGU,  "V")
-    
 }
 record(fanout, "$(UUT):0:SLOWMON:f") {
     field(LNK$(LNK), "$(UUT):0:SLOWMON:SGL:$(ID)")
