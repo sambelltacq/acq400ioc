@@ -255,3 +255,6 @@ export RTM_BUFFER_MON=y
 export RTM_BUFFER_MON_VERBOSE=1
 export SIZE=20000
 
+# disable GAIN READBACK. May be more reliable, faster
+export CALMON_RDIS=1
+
