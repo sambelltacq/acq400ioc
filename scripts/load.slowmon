@@ -36,6 +36,19 @@ for site in $(echo $sites | tr , \  ); do
         isite=$((isite+1))
 done;
 
+nsingles=${SLOWMON_SINGLE_PVS:-4}
+[ $nsingles -gt 16 ] && nsingles=16
+
+
+for site in $(echo $sites | tr , \  ); do
+        for sgl in $(seq $nsingles); do
+                sgl_02d=$(printf "%02d" $sgl)
+                lnk=$(printf %x $((sgl-1)))
+                echo dbLoadRecords\("db/slowmonSingle.db",\"UUT=${HOST},LNK=${lnk},ID=${sgl_02d}\"\)
+        done
+        break
+done;
+
 for site in $(echo $sites | tr , \  ); do
         echo seq calmonSlowmon \"uut=${HOST},site=${site},verbose=${calmonSlowmon_VERBOSE}\"
 done

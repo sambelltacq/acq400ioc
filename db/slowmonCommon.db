@@ -81,6 +81,11 @@ record(waveform, "$(UUT):0:SLOWMON:MEAN") {
     #field(HOPR, "10")
     field(EGU,  "V")
     field(SCAN, "I/O Intr")
+    field(FLNK, "$(UUT):0:SLOWMON:f")
+}
+
+record(fanout, "$(UUT):0:SLOWMON:f") {
+    field(SELM, "All")
 }
 
 record(waveform, "$(UUT):0:SLOWMON:ESLO") {

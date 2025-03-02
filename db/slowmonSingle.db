@@ -1,0 +1,28 @@
+# split out up to 16 fields from SLOWMON:MEAN as individual channel records
+record(longout, "$(UUT):0:SLOWMON:SGL:$(ID):CH") {
+    field(DTYP, "Soft Channel")
+    field(DRVL, "1")
+    field(DRVH, "192")
+    field(VAL,  "$(ID)")
+    field(PINI, "YES")
+    field(FLNK, "$(UUT):0:SLOWMON:SGL:$(ID):CH:c PP")
+}
+
+record(calc, "$(UUT):0:SLOWMON:SGL:$(ID):CH:c") {
+    field(INPA, "$(UUT):0:SLOWMON:SGL:$(ID):CH")
+    field(CALC, "A-1")
+}
+
+record(subArray, "$(UUT):0:SLOWMON:SGL:$(ID)") {
+    field(DTYP, "Soft Channel")
+    field(FTVL, "FLOAT")
+    field(INP,  "$(UUT):0:SLOWMON:MEAN")
+    field(INDX, "$(UUT):0:SLOWMON:SGL:$(ID):CH:c")
+    field(NELM, "1")
+    field(EGU,  "V")
+    
+}
+record(fanout, "$(UUT):0:SLOWMON:f") {
+    field(LNK$(LNK), "$(UUT):0:SLOWMON:SGL:$(ID)")
+}
+
