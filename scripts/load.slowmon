@@ -43,8 +43,8 @@ nsingles=${SLOWMON_SINGLE_PVS:-4}
 for site in $(echo $sites | tr , \  ); do
         for sgl in $(seq $nsingles); do
                 sgl_02d=$(printf "%02d" $sgl)
-                lnk=$(printf %x $((sgl-1)))
-                echo dbLoadRecords\("db/slowmonSingle.db",\"UUT=${HOST},LNK=${lnk},ID=${sgl_02d}\"\)
+                lnk=$(printf %X $((sgl-1)))
+                echo dbLoadRecords\("db/slowmonSingle.db",\"UUT=${HOST},LNK=${lnk},CAL=${sgl},ID=${sgl_02d}\"\)
         done
         break
 done;
