@@ -50,9 +50,13 @@
 #define PS_QUERY_EOFF		"QEOFF"
 
 #define PS_SET_WATERFALL	"WATERFALL"
+#define PS_HISTO		"HISTO"
+#define PS_HISTO_CLR		"HISTO_CLR"
 
 
 #define MAX_SITES		6
+#define NHISTO			128	/* 64 usec at 0.5usec ticks */
+#define HISTO_MAX		(NHISTO-1)
 
 void runTask(void *drvPvt);
 
@@ -78,9 +82,12 @@ protected:
 	int P_QUERY_ESLO;
 	int P_QUERY_EOFF;
 	int P_SET_WATERFALL;
+	int P_HISTO;
+	int P_HISTO_CLR;
 
 	unsigned *raw_mean;
 	float *cal_mean;
+	int *histo;
 
 	const int nchan;
 	std::vector<int> site_list;
@@ -101,15 +108,19 @@ protected:
 	static int stub_es;
 	static int verbose;
 	static int trace;
+	static int dtrt;    // delta_ticks_report_threshold
 
 	int nsites() { return site_list.size(); }
+
+	//virtual void handle_buffer(int vbn) = 0;
+	virtual void handle_buffer();
+	virtual int handle_spad(unsigned* spad, int nspad);     // rc==0 :OK
 
 public:
 	SlowmonDriver(const char *portName, int _nchan, std::vector<int> _site_list, std::vector<int> _site_nchan);
 
 	virtual void task();
-	//virtual void handle_buffer(int vbn) = 0;
-	virtual void handle_buffer();
+
 
 	virtual asynStatus writeInt32(asynUser *pasynUser, epicsInt32 value);
 	virtual asynStatus writeFloat32Array(asynUser *pasynUser, epicsFloat32 *value,

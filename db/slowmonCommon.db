@@ -109,3 +109,19 @@ record(waveform, "$(UUT):0:SLOWMON:EOFF") {
     #field(HOPR, "10")
     field(EGU,  "V")
 }
+
+record(waveform, "$(UUT):0:SLOWMON:HISTO") {
+    field(DTYP,  "asynInt32ArrayIn")
+    field(INP,   "@asyn($(PORT),0,$(TIMEOUT))HISTO")
+    field(SCAN, "I/O Intr")
+    field(FTVL, "ULONG")
+    field(NELM, "128")              # NHISTO
+    field(EGU,  "clk ticks")
+}
+
+record(bo, "$(UUT):0:SLOWMON:HISTO:CLR") {
+    field(DTYP,  "asynInt32")
+    field(OUT,   "@asyn($(PORT),0,$(TIMEOUT))HISTO_CLR")
+    field(ZNAM,  "0")
+    field(ONAM,  "1")
+}

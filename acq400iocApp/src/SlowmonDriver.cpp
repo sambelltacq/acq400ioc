@@ -79,6 +79,8 @@ asynPortDriver(portName,
 	createParam(PS_QUERY_ESLO, asynParamInt32,       &P_QUERY_ESLO);
 	createParam(PS_QUERY_EOFF, asynParamInt32,       &P_QUERY_EOFF);
 	createParam(PS_SET_WATERFALL, asynParamInt32,    &P_SET_WATERFALL);
+	createParam(PS_HISTO,     asynParamInt32Array,   &P_HISTO);
+	createParam(PS_HISTO_CLR, asynParamInt32,        &P_HISTO_CLR);
 
 	raw_mean = new unsigned[nchan*sizeof(T)/sizeof(unsigned)+nspad];
 	cal_mean = new float[nchan];
@@ -125,6 +127,8 @@ void SlowmonDriver<T>::member_init()
 		site_off[ii] = offset;
 		offset += site_nchan[ii];
 	}
+
+	histo = new int[NHISTO];
 	TRACE;
 }
 template <class T>
@@ -142,6 +146,11 @@ template <class T>
 int SlowmonDriver<T>::stub_es = ::getenv_default("SlowmonDriver_STUB_ES", 0);
 template <class T>
 int SlowmonDriver<T>::nice		= ::getenv_default("SlowmonDriver_NICE", 0);
+
+template <class T>
+int SlowmonDriver<T>::dtrt		= ::getenv_default("SlowmonDriver_DTRT", 1000);
+
+
 template <class T>
 const int SlowmonDriver<T>::nspad(4);
 
@@ -247,13 +256,41 @@ void SlowmonDriver<T>::task()
 				fprintf(stderr, "%s %d lenb:%d\n", __FUNCTION__, iter, lenb);
 			}
 			epicsTimeGetCurrent(&t1);
-			handle_buffer();
+			if (handle_spad(raw_mean+lenw-nspad, nspad) == 0){
+				handle_buffer();
+			}
+			doCallbacksInt32Array(histo, NHISTO, P_HISTO, 0);
 		}
 	}
 	TRACE;
 }
 
 typedef short RTYPE;
+
+template<class T>
+int SlowmonDriver<T>::handle_spad(unsigned* spad, int nspad)
+{
+	unsigned clk0 = spad[0];
+	unsigned clk1 = spad[3];
+
+	if (clk1 < clk0){
+		return 0;  // rollover, skip
+	}
+
+	unsigned dt = clk1 - clk0;
+
+	if (dt > (unsigned)dtrt){
+		fprintf(stderr, "%s clk0:%08x, clk1:%08x dt:%d\n",
+				__FUNCTION__, clk0, clk1, dt);
+	}
+	if (dt >= HISTO_MAX){
+		dt = HISTO_MAX;
+	}
+	histo[dt]++;
+
+	return 0;
+}
+
 
 template<>
 void SlowmonDriver<short>::handle_buffer()
@@ -340,6 +377,8 @@ asynStatus SlowmonDriver<T>::writeInt32(asynUser *pasynUser, epicsInt32 value)
 		cal_deb("ESLO", CLAMPR(value, 0, nchan-5), set_eslo);
 	}else if (function == P_QUERY_EOFF){
 		cal_deb("EOFF", CLAMPR(value, 0, nchan-5), set_eoff);
+	}else if (function == P_HISTO_CLR){
+		memset(histo, 0, NHISTO*sizeof(unsigned));
 	}else{
 
 		/* All other parameters just get set in parameter list, no need to act on them here */
