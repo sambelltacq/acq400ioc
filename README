@@ -227,9 +227,23 @@ export CB_QSIZE=4000
 #export WR_CLK_VERBOSE=1
 
 
-#SLOWMON: default max poll 80Hz. 160 allows 40kSPS on ACQ43x
-#export SLOWMON_FIN_MAX=160
+# new SLOWMON: full EPICS implementation, full PRESCALE for strong N filter
+[ ! -e /usr/local/epics/init.d/slowmon.init ] && \
+    ln -s /usr/local/epics/scripts/load.slowmon /usr/local/epics/init.d/slowmon.init
 
+## Good options:
+export SLOWMON_FIN_MAX=400
+export SLOWMON_SINGLE_PVS=16    # number of scalar updates beware loading 
+
+## Debug options
+export SlowmonDriver_TRACE=1
+export SlowmonDriver_VERBOSE=1
+export calmonSlowmon_VERBOSE=1
+
+## Useful rc.user options
+echo 37 > /etc/acq400/0/slowmon_prio
+caput $(hostname):0:SLOWMON:SLOWMONMS 20
+caput $(hostname):0:SLOWMON:EN 1
 
 # Z7IO: enable FP2BP (backplane master). ONLY ONE box in create should do this.
 #export Z7IO_FP2BP_EN=y
