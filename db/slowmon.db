@@ -104,8 +104,8 @@ record(calcout, "${UUT}:NACC:c") {
 	field(INPC, "${UUT}:0:NACC:START")	
 	field(INPD, "${UUT}:0:NACC:PRES")
 	field(OUT,  "@slowmon.proto setNACC ${SPORT}")
-        field(SDIS, "${UUT}:SLOWMON:NACC:DISA")
-        field(DISV, "1")
+#        field(SDIS, "${UUT}:SLOWMON:NACC:DISA")
+#        field(DISV, "1")
 }
 
 record(bo, "${UUT}:SLOWMON:NACC:DISA")
