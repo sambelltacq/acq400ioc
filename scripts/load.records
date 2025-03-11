@@ -686,8 +686,7 @@ load_400() {
                 dblr '"db/slowmon.db","'$mprams',PRESMAX='${presmax},FIN_MAX=${SLOWMON_FIN_MAX:-80}'"'
                 s1=1
                 [ -e /etc/acq400/0/sites ] && s1=$(cat /etc/acq400/0/sites | tr , \ | awk '{ print $1 }')
-#                echo "seq set_nacc_and_prescale \"uut=${HOST},s1=${s1},verbose=${SLOWMON_VERBOSE:-0}\""
-#                echo "seq slowmon_rate_adjust \"uut=${HOST},s1=${s1},verbose=${SLOWMON_VERBOSE:-0}\""
+                echo "seq slowmon_rate_adjust \"uut=${HOST},s1=${s1},verbose=${SLOWMON_VERBOSE:-0}\""
                 echo 1 > /etc/acq400/0/slowmon_hw
             else
                 dblr '"db/slowmon_soft.db","'$mprams',PRESMAX='1,FIN_MAX=${SLOWMON_FIN_MAX:-100}'"'
