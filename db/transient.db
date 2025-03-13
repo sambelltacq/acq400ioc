@@ -2,6 +2,7 @@
 # NP: 2226
 # SS: 4220
 # SC: 4220, dedicated channel
+# S0AB: 4220
 record(bo, "${UUT}:MODE:CONTINUOUS") {
 	field(DTYP, "Soft Channel")
 	field(DESC, "continuous stream start/stop")
@@ -267,7 +268,7 @@ record(bo, "${UUT}:MODE:TRANSIENT:SET_ABORT:w") {
 	field(ZNAM, "OFF")
 	field(DESC, "")
 	field(DTYP, "stream")
-	field(OUT,  "@mb.proto setAbort ${SPORT}")
+	field(OUT,  "@s0ab.proto setAbort S0AB")
 	field(FLNK, "${UUT}:MODE:TRANSIENT:SET_ABORT:clr")
 }
 

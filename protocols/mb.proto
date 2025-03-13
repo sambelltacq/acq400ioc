@@ -1,5 +1,6 @@
 Terminator = LF;
 ExtraInput = Ignore;
+ReplyTimeout = 4000;
 
 setMB {
 # fin kHz, fout (setpoint)
@@ -54,10 +55,6 @@ setArm {
 	in;
 }
 
-setAbort {
-	out "set_abort";
-	in;
-}
 
 getCState {
 	out "cstate";

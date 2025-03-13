@@ -1090,6 +1090,7 @@ load_mb_sites() {
             dblr '"db/acq2006clktree.db","UUT='${HOST},thst=${thst}'"'
             dblr '"db/acq2006mb.db","UUT='${HOST}',SPORT=S0,MB_SET_MIN=4000000"';;
     esac
+
     [ -e /etc/acq400/0/transient ] && \
         dblr '"db/transient.db","UUT='${HOST},LIVESZ=${SIZE}',SPORT=SS,SPORTT=ST,NPORT=NP,SPC=SC"'
     [ -e /etc/acq400/0/reboot ] && \
@@ -1109,6 +1110,7 @@ load_mb_sites() {
     create_asyn_channel NP 127.0.0.1:2226
     create_asyn_channel SS 127.0.0.1:4220
     create_asyn_channel SC 127.0.0.1:4220
+    create_asyn_channel S0AB 127.0.0.1:4220
     create_asyn_channel ST 127.0.0.1:$(get-port-from-service acq4xx-transient-console)
 }
 

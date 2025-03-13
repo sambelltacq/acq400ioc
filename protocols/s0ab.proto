@@ -1,0 +1,8 @@
+Terminator = LF;
+ExtraInput = Ignore;
+ReplyTimeout = 4000;
+
+setAbort {
+        out "set_abort";
+        in;
+}

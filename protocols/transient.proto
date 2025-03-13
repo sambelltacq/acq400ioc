@@ -1,5 +1,6 @@
 Terminator = LF;
 ExtraInput = Ignore;
+ReplyTimeout = 4000;
 
 #4 5000 50000 86016 19
 #state pre post elapsed demux
