@@ -33,7 +33,7 @@ make_reset_knobs() {
 	for site in $*; do
 		if [ -e /etc/acq400/$site ]; then
 			case $site in
-			12)	re=:B:;;
+			12) re=:B:;;
 			13) re=:A:;;
 			*)  re=:$site:;;
 			esac
@@ -143,7 +143,7 @@ make_epics_knobs() {
 		make_caput $PV ${pv1#*:} $site -n
 	done	
 	
-	for PV in $(egrep -e GPG -e DO:[1-9] $RLP)
+	for PV in $(egrep -e GPG -e DO:[1-9] -e SHOT $RLP)
 	do
 		pv1=${PV#*:}
 		site=${pv1%%:*}
