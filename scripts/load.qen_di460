@@ -1,0 +1,27 @@
+#!/bin/sh
+# quadrature encoder.
+source /etc/profile.d/epics.sh
+
+HOST=${1:-${IOC_HOST}}
+SITE=${2:-2}
+MODEL=${3:-biscuit}
+
+echo "# load.qen ${SITE} ${MODEL}"
+source ./scripts/record_support.sh
+
+
+mprams="UUT=${HOST},SITE=${SITE},SPORT=SQEN${SITE}"
+
+for ch in 1 2 3 4 5 6; do
+        dblr '"db/qen_di460.db","'${mprams},CH=${ch}'"'
+done
+create_asyn_channel SQEN${SITE} 127.0.0.1:422${SITE}
+
+
+for enprams in \
+    FUN=PA,fun=phaseA_en \
+    FUN=PB,fun=phaseB_en
+do
+    dblr '"db/qen_en.db","'${mprams},SCAN=\'2 second\',${enprams}'"'
+done
+          

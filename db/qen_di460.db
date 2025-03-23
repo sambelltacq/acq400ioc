@@ -1,0 +1,51 @@
+# quadrature encoder
+
+
+record(longin, "${UUT}:${SITE}:QEN:${CH}:COUNT") {
+	field(DTYP, "stream")
+	field(SCAN, ".1 second")
+	field(INP,  "@qen_di460.proto read_qen_count(${CH}) ${SPORT}")
+	field(FLNK, "${UUT}:${SITE}:QEN:${CH}:COUNT:POS")
+}
+
+record(calc, "${UUT}:${SITE}:QEN:${CH}:COUNT:POS")
+{
+	field(DESC, "Moving forwards")
+	field(INPA, "${UUT}:${SITE}:QEN:${CH}:COUNT")
+	field(INPB, "${UUT}:${SITE}:QEN:${CH}:COUNT:POS.LA")
+	field(CALC,  "A>B? 1: 0")
+	field(FLNK, "${UUT}:${SITE}:QEN:${CH}:COUNT:NEG")
+}
+record(calc, "${UUT}:${SITE}:QEN:${CH}:COUNT:NEG")
+{
+	field(DESC, "Moving reverse")
+	field(INPA, "${UUT}:${SITE}:QEN:${CH}:COUNT")
+	field(INPB, "${UUT}:${SITE}:QEN:${CH}:COUNT:NEG.LA")
+	field(CALC,  "A<B? 1: 0")
+#	field(FLNK, "${UUT}:${SITE}:QEN:DI4")
+}
+
+record(longin, "${UUT}:${SITE}:QEN:DI4") {
+	field(DTYP, "stream")
+	field(INP,  "@qen.proto di4_mon ${SPORT}")
+}
+
+
+record(bo, "${UUT}:${SITE}:QEN:${CH}:CLR") {
+	field(ONAM, "ON")
+	field(ZNAM, "OFF")
+	field(DESC, "count clear")
+	field(DTYP, "stream")
+	field(OUT, "@qen.proto clr_qen_count(${CH}) ${SPORT}")
+}
+
+#record(int64in, "${UUT}:${SITE}:QEN:COUNT64") {
+#	field(DTYP, "Soft Channel")
+#	field(VAL,  "8000000000")
+#	field(PINI,  "YES")
+#}
+
+#record(int64in, "${UUT}:${SITE}:QEN:COUNT64:T") {
+#	field(DTYP, "asynInt64")
+#	field(INP,  "@asyn(100,200,300) ${SPORT}")
+#}

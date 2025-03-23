@@ -1,0 +1,31 @@
+Terminator = LF;
+ExtraInput = Ignore;
+
+
+
+
+clr_qen_count {
+	out "qen_count\$1 0";
+	in;
+}
+
+di4_mon {
+	out "di4_mon";
+	in "%x";
+}
+
+
+read_qen_count {
+	out "qen_count\$1";
+	in "%d";
+}
+
+get_en {
+	out "\$1";
+	in "%d";
+}
+
+set_en {
+	out "\$1 %d";
+	in;
+}

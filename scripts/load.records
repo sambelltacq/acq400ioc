@@ -568,6 +568,9 @@ load_400() {
                         if [ "$model" = "$MT_DIO422" ]  && [ $((0x$(cat ${esite}/module_variant)&0x7f)) -eq 1 ]; then
                                 ./scripts/load.qen ${HOST} ${site} ${model}
                                 has_output="no"
+                        elif [ "$model" = "$MT_DI460" ]; then
+                                ./scripts/load.qen_di460 ${HOST} ${site} ${model}
+                                has_output="no"
                         fi
                         [ -e ./scripts/load.$name ] && ./scripts/load.$name $HOST $site
                fi
