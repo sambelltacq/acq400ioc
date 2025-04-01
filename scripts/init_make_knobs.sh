@@ -52,7 +52,7 @@ make_epics_knobs() {
 		return
 	fi
 	RLP=${RL%.*}P.dbl
-	grep  -v .[a-z]$ $RL | grep -v rawc64 | grep -v fan | grep -v mux  | grep -v clk0$ > $RLP
+	grep  -v .[a-z]$ $RL | grep -v rawc64 | grep -v fan | grep -v mux  | grep -v clk0$ | grep -v :f1 > $RLP
 	
 	
 	mkdir -p /etc/acq400/S
@@ -81,7 +81,7 @@ make_epics_knobs() {
 		make_caget_w $PV ${NU#*:} ${SITE}	
 	done	
 
-	for PV in $(egrep -e AWG -e AO:SLOW_SET -e AO:REF $RLP | grep -v :f1)
+	for PV in $(egrep -e AWG -e AO:SLOW_SET -e AO:REF $RLP)
 	do
 		NU=${PV#*:}
 		case ${PV} in
@@ -107,8 +107,8 @@ make_epics_knobs() {
 		make_caget $PV ${NU#*:} ${NU%%:*}
 	done
 	
-	for PV in $(grep -v :TRG: $RLP | egrep -e FIR:01$ -e HPF:0[1-8] -e T50R -e ACQ480:MR \
-			-e LFNS -e INVERT -e ACQ4.X_SAMPLE_RATE -e GAIN -e RANGE -e ACQ465 -e QEN -e PPW | grep -v f1)
+	for PV in $(grep -v :TRG: $RLP | egrep -e FIR:01$ -e HPF:0[1-8] -e T50R -e ACQ480 \
+			-e LFNS -e INVERT -e ACQ4.X_SAMPLE_RATE -e GAIN -e RANGE -e ACQ465 -e QEN -e PPW)
 	do
 		NU=${PV#*:}
 		SITE=${NU%%:*}
