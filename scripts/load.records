@@ -594,9 +594,11 @@ load_400() {
         make_AI $site
         aprams="UUT=${HOST},SITE=${site},CHG=${has_ch_gains}"
         dblr '"db/adc-'${is_adc}'.db","'$aprams'"'
-        if [ "x${calmon}" != "xnone" ]; then
-            echo >>/tmp/st_post.cmd "seq ${calmon} \"uut=${HOST},site=${site},rdis=${CALMON_RDIS:-0},verbose=${CALMON_VERBOSE:-0}\""
-        fi
+	if [ "$DISABLE_CALMON" != "1" ]; then
+	    if [ "x${calmon}" != "xnone" ]; then
+		echo >>/tmp/st_post.cmd "seq ${calmon} \"uut=${HOST},site=${site},rdis=${CALMON_RDIS:-0},verbose=${CALMON_VERBOSE:-0}\""
+	    fi
+	fi
         ONSETTRANSIENT=${ONSETTRANSIENT:-1}
     fi
 
