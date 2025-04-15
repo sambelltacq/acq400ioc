@@ -272,3 +272,8 @@ export SIZE=20000
 # disable GAIN READBACK. May be more reliable, faster
 export CALMON_RDIS=1
 
+
+# disable CALMON sequences entirely 
+# If this is not set then the calmon threads will run
+# If set then up to user to set EOFF and ESLO manually when gains are changed
+export DISABLE_CALMON=1
