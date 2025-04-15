@@ -483,7 +483,7 @@ load_400() {
             if [ -e /mnt/local/sysconfig/on_sync_role ]; then
                 ln -s /mnt/local/sysconfig/on_sync_role /etc/acq400/0/on_sync_role
             else
-                echo "[ -e  /var/www/d-tacq/rc-user-complete ] && sleep 1; set.site ${site} acq465_adc.init" >/etc/acq400/0/on_sync_role
+                echo "[ -e  /var/www/d-tacq/rc-user-complete ] && sleep 1; /tmp/acq465_init.job" >/etc/acq400/0/on_sync_role
             fi
             chmod a+rx /etc/acq400/0/on_sync_role
             ACQ465_FILTER=$(cat /etc/acq400/$site/acq465_filter_default)
