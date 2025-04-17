@@ -2,6 +2,7 @@ load_AO() {
         site=$1
         mtype=$2
         cprams=$3
+        dsite=$4
         nchan=0
         maxcode=32768
         type=SHORT
@@ -69,7 +70,7 @@ load_AO() {
                 fn=$((ch0/8+1))
                 m8=$((ch0%8))
                 outx=$(echo $m8 | tr 01234567 ABCDEFGH)
-                dblr '"db/ao424elf.db","'${cprams},cid=$cid,fn=$fn,outx=$outx'"'
+                dblr '"db/ao424elf.db","'${cprams},DSITE=${dsite},cid=$cid,fn=$fn,outx=$outx'"'
                 echo "seq ao424_range_set \"UUT=${HOST},SITE=${site},CID=$cid\"" >>/tmp/st_post.cmd
             done
             dblr '"db/aoALL.db","'${cprams},SPORT=S${site}'"'
@@ -104,4 +105,4 @@ load_AO() {
         
 }
 
-load_AO $1 $2 $3
+load_AO $1 $2 $3 ${4:-1}
