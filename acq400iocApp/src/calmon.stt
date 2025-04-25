@@ -50,6 +50,10 @@ int scale;
 
 int adc_cal_stash;
 
+unsigned char all_x[33]; assign all_x to "{uut}:{site}:GAIN:ALL:X"; monitor all_x;         // index from 1
+int rdis; assign rdis to "${uut}:${site}:GAIN:RDIS";
+int rdis0;
+
 %%extern void* acq400_openDoc(const char* docfile, int* nchan);
 %%extern int acq400_getChannel(void *prv, int ch, const char* sw, float* eslo, float* eoff, int nocal);
 %%extern int acq400_isData32(void* prv);
@@ -225,5 +229,52 @@ ss calmon_on_delay {
 		when(0) {
 			
 		} state calmon_on_delay_done
+	}
+}
+
+ss set_all_x {
+	state init {
+		when(delay(1000)) {           // let the other sm's kick off..
+
+		} state init2
+	}
+	state init2 {
+		entry {
+			printf("set_all_x::init2 %s\n", site);
+			pvGet(has_ch_gains);
+		}
+		when(has_ch_gains == 1){
+
+		} state wait_all_x
+	}
+
+	state wait_all_x {
+		entry {
+			printf("set_all_x::wait_all_x %s\n", site);
+		}
+		when (all_x){
+
+		} state wait_all_x_action
+	}
+
+	state wait_all_x_action {
+		entry {
+			printf("set_all_x::wait_all_x_action %s\n", site);
+			// set them all
+		}
+		when() {
+			pvGet(rdis);
+			rdis0 = rdis;
+			if (rdis != 1){
+				rdis = 1; pvPut(rdis);
+			}
+			for (ch = 1; ch <= nchan; ++ch){
+				gains[ch] = all_x[ch];
+				pvPut(gains[ch]);
+			}
+			if (rdis != rdis0){
+				rdis = rdis0; pvPut(rdis);
+			}
+		} state wait_all_x
 	}
 }

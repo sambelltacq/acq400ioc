@@ -727,6 +727,7 @@ load_400() {
     gain_file=db/${gain_file_pfx}.db
     (
     has_gain=0
+    nchan=0
     for kb in /etc/acq400/${site}/gain[0-9]*
     do
         if [ -e $kb ]; then
@@ -737,11 +738,13 @@ load_400() {
             ixgrp="IX=$ix,FAN=$fan0,fan=${OUTX:$f9:1}"
             dblr '"'${gain_file}'","'${cprams}',CH='$ch','$gains','$ixgrp'"'
             has_gain=1
+            nchan=$((nchan+1))
         fi
     done
     if [ $has_gain -ne 0 ]; then
         gain_file=db/${gain_file_pfx}M.db
-        dblr '"'${gain_file}'","'${cprams}','$gains',CH='ALL'"'
+        nchanp1=$((nchan+1))
+        dblr '"'${gain_file}'","'${cprams}','$gains',nchanp1='${nchanp1}',CH='ALL'"'
     fi
     ) >>/tmp/gains_last
 

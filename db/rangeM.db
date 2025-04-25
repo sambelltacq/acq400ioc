@@ -11,6 +11,13 @@ record (mbbo, "${UUT}:${SITE}:GAIN:${CH}") {
 	field(FLNK, "${UUT}:${SITE}:GAIN:${CH}:s") 
 }
 
+record(waveform, "${UUT}:${SITE}:GAIN:${CH}:X") {
+        field(DTYP, "Soft Channel")
+        field(NELM, "${nchanp1}")
+        field(FTVL, "UCHAR")
+        field(DESC, "set gain per chan by ordinal")
+}
+
 record(calcout, "${UUT}:${SITE}:GAIN:${CH}:s") {
 	field(CALC, "1")
 	field(OOPT, "Every Time")

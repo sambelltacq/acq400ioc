@@ -37,6 +37,10 @@ FIN_DEF=1000000
 FIN_CLKSTAR=20000000
 
 [ -e /etc/acq400/0/run0_log ] && s1=$(tr , \  < /etc/acq400/0/run0_log | awk '{ print $2 }')
+# hmm default is zero, not helpful, if no XI, we need a dummy aggregator
+# we could say if $s1 == 0 then go look at the distributor to find distributor s1?
+# THIS WAS ALL SO MUCH SIMPLER when we ALWAYS populated from SITE1!
+
 S1=${s1:-1}
 
 set.site $S1 CLK=1 2>&1 > /dev/null
