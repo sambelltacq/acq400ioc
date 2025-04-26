@@ -23,4 +23,5 @@ db/intclk_noinhibit.db
 dbd/acq2ioc.dbd
 dbd/acq400ioc.dbd
 include/
+SAFE/
 
