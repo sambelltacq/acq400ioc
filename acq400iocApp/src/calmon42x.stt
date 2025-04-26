@@ -28,7 +28,7 @@ int data32;		assign data32 to "{uut}:{site}:data32";
 int gain_changes;	assign gain_changes to "";
 int gain_changes0;
 
-int gains[33];		assign gains to {};	/* "${UUT}:${SITE}:GAIN:${CH}" */
+int gains[33];		assign gains to {};	/* "${UUT}:${SITE}:GAIN:${CH}.RVAL" */
 
 char* doc;
 char fname[80];
@@ -41,6 +41,16 @@ char pvfield[100];
 int scale;
 int verbose;
 int rdis_permanent = 0;
+
+
+unsigned char all_x[33]; assign all_x to "{uut}:{site}:GAIN:ALL:X"; monitor all_x;         // index from 1
+unsigned char all_x0 = 0;       // monitor change to all_x[0]
+
+int gain_vals[33];		assign gain_vals to {};	/* "${UUT}:${SITE}:GAIN:${CH}" */
+int rdis; assign rdis to "{uut}:{site}:GAIN:RDIS";
+int rdis0;
+
+
 
 %{
 #include <stdlib.h>
@@ -231,7 +241,7 @@ ss calmon {
 ss calmon_on_delay {
 	state init {
 		entry {
-			printf("calmon_on_delay %s entry\n", site);
+			if (verbose) printf("calmon_on_delay %s entry\n", site);
 		}
 		when(delay(3) && (adc_cal_mode == 2)){
 			adc_cal_mode = 0;
@@ -260,4 +270,65 @@ ss calmon_on_delay {
 		} state calmon_on_delay_done
 	}
 }
+
+ss set_all_x {
+	state init {
+		entry {
+			if (verbose) printf("set_all_x::init %s\n", site);
+		}
+		when(delay(1)) {           // let the other sm's kick off..
+
+		} state init2
+	}
+	state init2 {
+		entry {
+			if (verbose) printf("set_all_x::init2 %s\n", site);
+			pvGet(has_ch_gains);
+		}
+		when(has_ch_gains == 1){
+			int ch;
+			for (ch = 1; ch <= nchan; ++ch){
+				snprintf(pvname, 80, "%s:%s:GAIN:%02d", uut, site, ch);
+				pvAssign(gain_vals[ch], pvname);
+				//pvGet(gains[ch]);
+			}
+		} state wait_all_x
+	}
+
+	state wait_all_x {
+		entry {
+			if (verbose) printf("set_all_x::wait_all_x %s\n", site);
+		}
+		when (all_x && all_x[0] != all_x0){
+			all_x0 = all_x[0];
+		} state wait_all_x_action
+	}
+
+	state wait_all_x_action {
+		entry {
+			if (verbose) printf("set_all_x::wait_all_x_action %s seq %d\n", site, all_x[0]);
+			// set them all
+		}
+		when() {
+			int ch;
+
+			pvGet(rdis);
+			rdis0 = rdis;
+			if (rdis != 1){
+				rdis = 1; pvPut(rdis, SYNC);
+			}
+			for (ch = 1; ch <= nchan; ++ch){
+				if (verbose) printf("ch:%d=%d ", ch, all_x[ch]);
+				gain_vals[ch] = all_x[ch];
+				pvPut(gain_vals[ch], SYNC);
+			}
+			if (verbose) printf("\n");
+			if (rdis != rdis0){
+				rdis = rdis0; pvPut(rdis);
+			}
+		} state wait_all_x
+	}
+}
+
+
 
