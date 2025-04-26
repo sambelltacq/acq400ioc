@@ -229,6 +229,16 @@ make_epics_knobs() {
                 4) make_caput $PV TX_DISABLE 10;;
                 esac
         done
+
+        for pv in $(grep :GAIN:ALL:X $RLP); do
+                nohn=${pv#*:};
+                site=${nohn%%:*}
+                mkfifo /etc/acq400/$site/gain_all_x
+                if [ ! -e /etc/acq400/0/gain_all_x ]; then
+                        mkfifo /etc/acq400/0/gain_all_x
+                fi
+        done
+
 	make_reset_knobs 0 12 13
 		
 	make_site0_knobs	
