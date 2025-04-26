@@ -1,5 +1,10 @@
 #!/usr/bin/python
-
+``` 
+set gain all channels by array, either on SITE or, if SITE==0, all sites with gain
+sample data:
+set.site 0 gain_all_x 000000000000000300000000000000030000000000000003
+set.site 0 gain_all_x 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3
+```
 import glob
 import os
 import re
