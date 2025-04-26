@@ -93,11 +93,11 @@ ss calmon {
 				snprintf(pvname, 80, "%s:%s:AI:CH:%02d", uut, site, ch);						
 				snprintf(pvfield, 100, "%s.%s", pvname, "ESLO");
 				pvAssign(eslo[ch], pvfield);
-				if (ch==1) printf("assign %s\n",pvfield);
+				if (verbose && ch==1) printf("assign %s\n",pvfield);
 				
 				snprintf(pvfield, 100, "%s.%s", pvname, "EOFF");
 				pvAssign(eoff[ch], pvfield);
-				if (ch==1) printf("assign %s\n",pvfield);
+				if (verbose && ch==1) printf("assign %s\n",pvfield);
 				
 				if (has_ch_gains){
 					snprintf(pvname, 80, "%s:%s:GAIN:%02d.RVAL", uut, site, ch);
