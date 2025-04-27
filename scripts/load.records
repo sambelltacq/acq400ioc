@@ -237,6 +237,22 @@ if [ "x$SITES" != "xnone" ]; then
 fi
 
 make_AI_TR() {
+    if [ "x$SITES" = "xnone" ] || [ "x$SITES" = "x" ]; then
+        return
+    fi
+    
+    has_ai=0
+    for site in $SITES; do
+        is_adc=$(cat /etc/acq400/$site/is_adc)
+        [ $is_adc -eq 1 ] && has_ai=1
+        echo 1>&2 "make_AI_TR site:$site has_ai:$has_ai is_adc:$is_adc"
+    done
+
+    if [ $has_ai -eq 0 ]; then
+        echo 1>&2 "make_AI_TR we have no adc, stub"
+        return
+    fi
+
     kctrl=/dev/acq400/data/.control
     if [ -e $kctrl ]; then
         echo 1>&2 "load.records: control $(cat $kctrl)"
@@ -261,22 +277,18 @@ make_AI_TR() {
     fi
     export NSAMPLES
 
-    eval $(cat /dev/acq400.0.knobs/aggregator)
-    sites=$(echo $sites | tr , \  )
-    if [ "x$SITES" = "xnone" ]; then
-        return
-    elif [ "x$SITES" != "x" ]; then
-        let i1=0
-        for site in $sites
-        do
-            nc=$(get.site $site NCHAN)
-            make_AI_records $site $i1 $nc-1
-            if [ "x$NSAMPLES" != "x" ]; then
-                make_AI_TR_records $site $i1 $nc-1 $NSAMPLES
-            fi
-            let i1=$i1+$nc
-        done
-    fi
+#    eval $(cat /dev/acq400.0.knobs/aggregator)
+#    sites=$(echo $sites | tr , \  )
+
+    let i1=0
+    for site in $sites; do
+        nc=$(get.site $site NCHAN)
+        make_AI_records $site $i1 $nc-1
+        if [ "x$NSAMPLES" != "x" ]; then
+            make_AI_TR_records $site $i1 $nc-1 $NSAMPLES
+        fi
+        i1=$((i1+nc))
+    done
 }
 
 acq480_div() {
