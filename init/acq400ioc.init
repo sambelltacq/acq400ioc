@@ -131,6 +131,7 @@ stop_gain_all_x_svc() {
 }
 
 start_gain_all_x_svc() {
+        source /etc/profile.d/epics.sh
         stop_gain_all_x_svc
         /usr/local/bin/procServ -p $GXPID 2228 /usr/local/epics/scripts/gain_all_x_svc.py
 }
