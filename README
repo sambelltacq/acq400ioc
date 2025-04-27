@@ -277,3 +277,8 @@ export CALMON_RDIS=1
 # If this is not set then the calmon threads will run
 # If set then up to user to set EOFF and ESLO manually when gains are changed
 export DISABLE_CALMON=1
+
+# wait for NTP .. if NTP is a bit slow to come up, schedule a repeat wait seconds:
+export IOC_WAIT_NTP=5
+
+

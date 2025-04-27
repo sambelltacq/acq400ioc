@@ -3,6 +3,7 @@
 ETOP=/usr/local/epics
 STCMD=/tmp/st.cmd
 PIDF=/var/run/acq400ioc.pid
+GXPID=/var/run/gain_all_x.pid
 LOG=/var/log/epics.log
 NICE=10
 LG="logger -t acq400ioc.init"
@@ -121,16 +122,51 @@ stop_ioc() {
 	fi
 }
 
+
+stop_gain_all_x_svc() {
+        if [ -r ${GXPID} ]; then
+                kill -s TERM $(cat ${GXPID})
+                rm ${GXPID}
+        fi
+}
+
+start_gain_all_x_svc() {
+        stop_gain_all_x_svc
+        /usr/local/bin/procServ -p $GXPID 2228 /usr/local/epics/scripts/gain_all_x_svc.py
+}
+
+
+
+wait_ntp() {
+        if [ -z $IOC_WAIT_NTP ] || [ "$IOC_WAIT_NTP" = "0" ]; then
+                return
+        fi
+
+        while [ 1 ]; do
+                year=$(date +%Y)
+                if [ $year -lt 2025 ]; then
+                        $LG waiting for NTP
+                        sleep $IOC_WAIT_NTP
+                else
+                        break
+                fi
+        done
+        $LG NTP good
+}
+
+
 restart() {
 	if [ "$1" = "force" ]; then
 		rm -f ${STCMD}
 	fi	
 	make_stcmd
+	wait_ntp
 	stop_ioc
 	start_ioc
 	wait_ioc_records_loaded
 	stop_ioc
 	nice /usr/local/init/acq400ioc.init make_epics_knobs
+        [ -e /etc/acq400/0/gain_all_x ] && start_gain_all_x_svc&
 
 	[ "x$IOC_GLOBAL_ALIAS_PFX" != "x" ] && make_aliases $IOC_GLOBAL_ALIAS_PFX
 	cat /tmp/st_final.cmd >> /tmp/st.cmd
