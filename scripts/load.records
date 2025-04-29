@@ -243,7 +243,7 @@ make_AI_TR() {
     
     has_ai=0
     for site in $SITES; do
-        is_adc=$(cat /etc/acq400/$site/is_adc)
+        is_adc=$(awk '{ print $1 }' /etc/acq400/$site/is_adc)
         [ $is_adc -eq 1 ] && has_ai=1
         echo 1>&2 "make_AI_TR site:$site has_ai:$has_ai is_adc:$is_adc"
     done
