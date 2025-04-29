@@ -277,18 +277,20 @@ make_AI_TR() {
     fi
     export NSAMPLES
 
-#    eval $(cat /dev/acq400.0.knobs/aggregator)
-#    sites=$(echo $sites | tr , \  )
+    echo
+    eval $(cat /dev/acq400.0.knobs/aggregator)
+    if [ "x$sites" != "xnone" ]; then
+        sites=$(echo $sites | tr , \  )
 
-    let i1=0
-    for site in $sites; do
-        nc=$(get.site $site NCHAN)
-        make_AI_records $site $i1 $nc-1
-        if [ "x$NSAMPLES" != "x" ]; then
-            make_AI_TR_records $site $i1 $nc-1 $NSAMPLES
-        fi
-        i1=$((i1+nc))
-    done
+        i1=0
+        for site in $sites; do
+                nc=$(get.site $site NCHAN)
+                make_AI_records $site $i1 $nc-1
+                [ "x$NSAMPLES" != "x" ] && \
+                        make_AI_TR_records $site $i1 $nc-1 $NSAMPLES
+                i1=$((i1+nc))
+        done
+    fi
 }
 
 acq480_div() {
