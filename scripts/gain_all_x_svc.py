@@ -79,14 +79,10 @@ while True:
     for fd, event in poller.poll():
          if event & select.POLLIN:
             site = FIFOS[fd]
-            print(f'request read from {site}')
+            #print(f'request read from {site}')
             txt = os.read(fd, 1024)
-            print(f'read {txt}')
-            string_data = txt.decode('utf-8')
-            gains = re.split(r'[ ,]', string_data)
-#            gains = string_data.split(r'[ ,]')
-            if len(gains) == 1:
-                gains = list(string_data)
+            #print(f'read {txt}')
+            gains = list(re.sub(r'[\s,:]+', '', txt.decode('utf-8')))
             handle_site(site, [int(x) for x in gains])
          else:
             print(f'empty event {event}')
