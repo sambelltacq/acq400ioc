@@ -99,6 +99,7 @@ acq400ioc_SRCS += mgtStopOnLinkDown.st
 acq400ioc_SRCS += calmon.st
 acq400ioc_SRCS += calmonAO.st
 acq400ioc_SRCS += calmon42x.st
+acq400ioc_SRCS += calmon424.st
 acq400ioc_SRCS += calmon426.st
 acq400ioc_SRCS += calmonBOLO.st
 acq400ioc_SRCS += calmon480.st

@@ -453,6 +453,7 @@ load_400() {
             gains="GX=fixed"
             gain_file_pfx="gain423";;
         $MT_ACQ424)
+            calmon=calmon424
             has_ch_gains=0
             LO=66000000;;
         $MT_ACQ426)
