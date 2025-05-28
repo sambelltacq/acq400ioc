@@ -143,11 +143,12 @@ wait_ntp() {
                 return
         fi
 
-        while [ 1 ]; do
+        while [ $IOC_WAIT_NTP -gt 0 ]; do
                 year=$(date +%Y)
                 if [ $year -lt 2025 ]; then
                         $LG waiting for NTP
                         sleep $IOC_WAIT_NTP
+			IOC_WAIT_NTP=$((IOC_WAIT_NTP-1))
                 else
                         break
                 fi
