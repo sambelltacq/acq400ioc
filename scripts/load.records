@@ -450,6 +450,7 @@ load_400() {
         $MT_ACQ427|$MT_ACQ427F)
             HAS_ACQ427=1;;
         $MT_ACQ423)
+            calmon=calmon424
             gains="GX=fixed"
             gain_file_pfx="gain423";;
         $MT_ACQ424)
