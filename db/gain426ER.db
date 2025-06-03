@@ -1,0 +1,153 @@
+# ACQ426ER
+
+record (mbbo, "${UUT}:${SITE}:GAIN:${CH}")	{
+	field(DTYP, "Soft Channel")
+	field(NOBT, "4")	
+	field(ZRST, "+/-10V")
+	field(ONST, "+/-5V")
+	field(TWST, "+/-2V5")
+	field(THST, "0-10V")
+	field(FRST, "0-5V")
+	field(FVST, "0-12V5")
+	field(SXST, "+/-12V5")
+	field(SVST, "0-20V")
+        field(EIST, "+/-20V")
+        field(NIST, "0-25V")
+        field(TEST, "+/-25V")
+        field(ELST, "0-40")
+        field(TVST, "+/-40V")
+        field(TTST, "")
+        field(FTST, "")
+        field(FFST, "")
+
+        field(ZRVL, "0")
+        field(ONVL, "1")
+        field(TWVL, "2")
+        field(THVL, "3")
+        field(FRVL, "4")
+        field(FVVL, "5")
+        field(SXVL, "6")
+        field(SVVL, "7")
+        field(EIVL, "8")
+        field(NIVL, "9")
+        field(TEVL,"10")
+        field(ELVL,"11")
+        field(TVVL,"12")
+        field(TTVL,"13")
+        field(FTVL,"14")
+        field(FFVL,"15")
+               
+        field(DISV, "1")
+        field(SDIS, "${UUT}:${SITE}:ACTIVE")
+        field(FLNK, "${UUT}:${SITE}:GAIN:${CH}:w PP")	
+}
+
+
+
+# M2.5-2.5 0-5 M5-5 0-6.25 M6.25-6.25 0-10 M10-10 0-12.5 M12.5-12.5 0-20 M20-20 0-25 M25-25 0-40 M40-40
+
+record (mbbo, "${UUT}:${SITE}:GAIN:${CH}:w")	{
+	field(DTYP, "stream")
+	field(OUT,  "@acq426ER.proto setGain(${IX}) ${SPORT}")
+	field(NOBT, "4")
+	field(DISV, "1")
+	field(SDIS, "${UUT}:${SITE}:GAIN:${CH}:s.PACT")
+	field(OMSL, "closed_loop")
+	field(DOL, "${UUT}:${SITE}:GAIN:${CH}.RVAL PP")
+	field(FLNK, "${UUT}:${SITE}:SCALE:${CH} PP")
+}
+
+record(bo, "${UUT}:${SITE}:ACTIVE"){
+        field(DTYP, "Soft Channel")
+        field(VAL,  "1")
+        field(PINI, "YES")
+        field(DOL,  "${UUT}:0:ACTIVE")
+        field(OMSL, "closed_loop")
+}
+
+record(fanout, "${UUT}:0:ACTIVE:f"){
+        field(LNK${SITE}, "${UUT}:${SITE}:ACTIVE PP")
+}
+
+record (mbbi, "${UUT}:${SITE}:GAIN:${CH}:r") {
+	field(DTYP, "stream")
+	field(INP,  "@acq426ER.proto getGain(${IX}) ${SPORT}")
+        field(NOBT, "4")        
+        field(ZRST, "+/-10V")
+        field(ONST, "+/-5V")
+        field(TWST, "+/-2V5")
+        field(THST, "0-10V")
+        field(FRST, "0-5V")
+        field(FVST, "0-12V5")
+        field(SXST, "+/-12V5")
+        field(SVST, "0-20V")
+        field(EIST, "+/-20V")
+        field(NIST, "0-25V")
+        field(TEST, "+/-25V")
+        field(ELST, "0-40")
+        field(TVST, "+/-40V")
+        field(TTST, "")
+        field(FTST, "")
+        field(FFST, "")
+        
+	field(SCAN, "5 second")
+	
+	field(DISV, "1")
+	field(SDIS, "${UUT}:${SITE}:ACTIVE")
+	field(FLNK, "${UUT}:${SITE}:GAIN:${CH}:s")
+}
+
+record (mbbo, "${UUT}:${SITE}:GAIN:${CH}:s") {
+	field(DTYP, "Soft Channel")
+        field(NOBT, "4")        
+        field(ZRST, "+/-10V")
+        field(ONST, "+/-5V")
+        field(TWST, "+/-2V5")
+        field(THST, "0-10V")
+        field(FRST, "0-5V")
+        field(FVST, "0-12V5")
+        field(SXST, "+/-12V5")
+        field(SVST, "0-20V")
+        field(EIST, "+/-20V")
+        field(NIST, "0-25V")
+        field(TEST, "+/-25V")
+        field(ELST, "0-40")
+        field(TVST, "+/-40V")
+        field(TTST, "")
+        field(FTST, "")
+        field(FFST, "")
+
+	field(OMSL, "closed_loop")	
+	field(DOL, "${UUT}:${SITE}:GAIN:${CH}:r NPP")	
+	field(OUT, "${UUT}:${SITE}:GAIN:${CH} PP")
+	field(FLNK, "${UUT}:${SITE}:GAIN:${CH}_f")
+}
+
+# force waveform record to rescale
+record(calc, "${UUT}:${SITE}:GAIN:${CH}_f") {
+	field(INPA, "${UUT}:${SITE}:GAIN:${CH}")
+# todo how to handle unipolar?	
+	field(CALC, "A==1? 10: A==2? 5: 0")
+}
+
+# and set the volts range in all associated WF records..
+record(aSub, "${UUT}:${SITE}:AI:WF:${CH}:V") {	
+	field(INPC,  "${UUT}:${SITE}:GAIN:${CH}_f")
+}
+record(aSub, "${UUT}:${SITE}:AI:TW:${CH}:V") {	
+	field(INPC,  "${UUT}:${SITE}:GAIN:${CH}_f")
+}
+
+record(dfanout, "${UUT}:${SITE}:GAIN:fan${FAN}") {
+	field(OUT${fan}, "${UUT}:${SITE}:GAIN:${CH} PP")
+}
+
+record(ai, "${UUT}:${SITE}:SCALE:${CH}") {
+        field(DTYP, "stream")
+        field(INP,  "@acq426ER.proto getScale(${IX}) ${SPORT}")
+        field(PINI, "YES")
+        field(FLNK, "${UUT}:${SITE}:GAIN_CHANGES")
+}
+
+
+

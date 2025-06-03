@@ -1,0 +1,55 @@
+# ACQ426ERM
+
+record (mbbo, "${UUT}:${SITE}:GAIN:${CH}") {	
+	field(DTYP, "Soft Channel")
+        field(NOBT, "4")        
+        field(ZRST, "+/-10V")
+        field(ONST, "+/-5V")
+        field(TWST, "+/-2V5")
+        field(THST, "0-10V")
+        field(FRST, "0-5V")
+        field(FVST, "0-12V5")
+        field(SXST, "+/-12V5")
+        field(SVST, "0-20V")
+        field(EIST, "+/-20V")
+        field(NIST, "0-25V")
+        field(TEST, "+/-25V")
+        field(ELST, "0-40")
+        field(TVST, "+/-40V")
+        field(TTST, "")
+        field(FTST, "")
+        field(FFST, "")
+	field(VAL,  "0")
+        field(DISV, "1")
+        field(SDIS, "${UUT}:${SITE}:ACTIVE")	
+	field(FLNK, "${UUT}:${SITE}:GAIN:fan1")    	
+}
+
+
+record(dfanout, "${UUT}:${SITE}:GAIN:fan1") {
+	field(DOL,  "${UUT}:${SITE}:GAIN:${CH}")
+	field(OMSL, "closed_loop")
+	field(FLNK, "${UUT}:${SITE}:GAIN:fan2")
+}
+
+record(dfanout, "${UUT}:${SITE}:GAIN:fan2") {
+	field(DOL,  "${UUT}:${SITE}:GAIN:${CH}")
+	field(OMSL, "closed_loop")
+	field(FLNK, "${UUT}:${SITE}:GAIN:fan3")
+}
+
+record(dfanout, "${UUT}:${SITE}:GAIN:fan3") {
+	field(DOL,  "${UUT}:${SITE}:GAIN:${CH}")
+	field(OMSL, "closed_loop")
+	field(FLNK, "${UUT}:${SITE}:GAIN:fan4")
+}
+record(dfanout, "${UUT}:${SITE}:GAIN:fan4") {
+	field(DOL,  "${UUT}:${SITE}:GAIN:${CH}")
+	field(OMSL, "closed_loop")
+	field(FLNK, "${UUT}:${SITE}:GAIN_CHANGES")
+}
+
+record (calc, "${UUT}:${SITE}:GAIN_CHANGES") {
+	field(INPA, "${UUT}:${SITE}:GAIN_CHANGES")
+	field(CALC, "A+1")
+}
