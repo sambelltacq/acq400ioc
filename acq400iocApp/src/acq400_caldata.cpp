@@ -231,6 +231,11 @@ static void fixup(int site, char* cmd, int maxcmd, const char* gainstr, const ch
 	}
 }
 
+/** @@todo: popen() causes memory stress. It's a heavy solution.
+ *  better: create PV GAINS that has the same string.
+ *  the string is maintained by the normal StreamDevice on the normal service socket.
+ *  acq400_cal_ll_check_success is ALWAYS calles from SNL, so pvGet GAINS and pass it in ..
+ */
 int acq400_cal_ll_check_success(int site, int gains[], int nchan)
 {
 	char cmd[80];
@@ -249,7 +254,9 @@ int acq400_cal_ll_check_success(int site, int gains[], int nchan)
 
 	fp = popen(cmd, "r");
 	if (fp == 0){
-		printf("ERROR: popen fail");
+		char emsg[256];
+		snprintf(emsg, 255, "ERROR: %s %s popen fail", __FUNCTION__, cmd);
+		perror(emsg);
 		rc = -1;
 	}else if (fgets(actstr, 80, fp) == 0){
 		rc = -1;
