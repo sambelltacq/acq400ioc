@@ -1,4 +1,4 @@
-# ACQ423 : WORKTODO
+# ACQ426 : WORKTODO
 
 record (mbbo, "${UUT}:${SITE}:GAIN:${CH}") {	
 	field(DTYP, "Soft Channel")
