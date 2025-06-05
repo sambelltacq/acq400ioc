@@ -369,10 +369,10 @@ asynStatus SlowmonDriver<T>::writeInt32(asynUser *pasynUser, epicsInt32 value)
 
 	if (function == P_SLOWMONMS){
 		slowmonms = value;
-		printf("%s() slowmonms set %d\n", __FUNCTION__, slowmonms);
+		if (verbose) printf("%s() slowmonms set %d\n", __FUNCTION__, slowmonms);
 	}else if (function == P_MEAN_EN){
 		enable = value;
-		printf("%s() enable set %d\n", __FUNCTION__, enable);
+		if (verbose) printf("%s() enable set %d\n", __FUNCTION__, enable);
 	}else if (function == P_QUERY_ESLO){
 		cal_deb("ESLO", CLAMPR(value, 0, nchan-5), set_eslo);
 	}else if (function == P_QUERY_EOFF){

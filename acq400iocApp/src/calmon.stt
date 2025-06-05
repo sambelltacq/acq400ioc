@@ -50,10 +50,18 @@ int scale;
 
 int adc_cal_stash;
 
-%%extern void* acq400_openDoc(const char* docfile, int* nchan);
-%%extern int acq400_getChannel(void *prv, int ch, const char* sw, float* eslo, float* eoff, int nocal);
-%%extern int acq400_isData32(void* prv);
-%%extern int acq400_isCalibrated(void* prv);
+int verbose;
+
+%{
+#include <stdlib.h>
+
+extern void* acq400_openDoc(const char* docfile, int* nchan);
+extern int acq400_getChannel(void *prv, int ch, const char* sw, float* eslo, float* eoff, int nocal);
+extern int acq400_isData32(void* prv);
+extern int acq400_isCalibrated(void* prv);
+extern int acq400_cal_ll_check_success(int site, int gains[], int nchan);
+}%
+
 %{
 static char* getKey(int hrm, int gain) 
 { 
@@ -76,6 +84,7 @@ ss calmon {
 			if (macValueGet("site") != 0){
 				site = macValueGet("site");
 			}
+			if (macValueGet("verbose") != 0) verbose = atoi(macValueGet("verbose"));
 			printf("calmon R1000 %s site:%s\n", uut, site);
 
 			pvGet(agg_s1);
@@ -220,7 +229,7 @@ ss calmon_on_delay {
 	}
 	state calmon_on_delay_done {
 		entry {
-			printf("calmon_on_delay %s calmon_on_delay_done\n", site);
+			if (verbose>1) printf("calmon_on_delay %s calmon_on_delay_done\n", site);
 		}
 		when(0) {
 			

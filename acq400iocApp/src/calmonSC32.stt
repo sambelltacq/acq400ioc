@@ -231,7 +231,7 @@ ss calmon_on_delay {
 		when(delay(1)){
 			adc_cal_mode = adc_cal_stash;
 			pvPut(adc_cal_mode);
-			printf("calmon_on_delay %s go_again\n", site);
+			if (verbose>1) printf("calmon_on_delay %s go_again\n", site);
 		} state calmon_on_delay_done
 	}
 	state calmon_on_delay_done {

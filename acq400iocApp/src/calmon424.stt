@@ -253,7 +253,7 @@ ss calmon_on_delay {
 	}
 	state calmon_on_delay_done {
 		entry {
-			printf("calmon_on_delay %s calmon_on_delay_done\n", site);
+			if (verbose>1) printf("calmon_on_delay %s calmon_on_delay_done\n", site);
 		}
 		when(0) {
 
