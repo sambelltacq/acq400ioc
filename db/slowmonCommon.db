@@ -12,9 +12,36 @@ record(longout, "$(UUT):0:SLOWMON:SLOWMONMS") {
 }
 
 record(longout, "$(UUT):0:SLOWMON:EN") {
+    field(DTYP, "Soft Channel")
+    field(DESC, "Set sample interval ms")
+    field(DRVL, "0")
+    field(DRVH, "1")
+    field(PINI, "YES")
+    field(VAL,  "0")
+    field(FLNK, "$(UUT):0:SLOWMON:EN:c")
+}
+
+record(calc, "$(UUT):0:SLOWMON:EN:c") {
+    field(INPA, "$(UUT):0:SLOWMON:EN")
+    field(INPB, "${UUT}:MODE:TRANS_ACT:STATE")
+    field(INPC, "${UUT}:MODE:CONTINUOUS:STATE")
+    field(CALC, "A && (B||C)")
+    field(FLNK, "$(UUT):0:SLOWMON:EN:w PP")
+}
+
+record(mbbi, "${UUT}:MODE:CONTINUOUS:STATE") {
+    field(FLNK, "$(UUT):0:SLOWMON:EN:c PP")
+}
+
+record(mbbi, "${UUT}:MODE:TRANS_ACT:STATE") {
+    field(FLNK, "$(UUT):0:SLOWMON:EN:c PP")
+}
+record(longout, "$(UUT):0:SLOWMON:EN:w") {
     field(DTYP, "asynInt32")
     field(OUT,  "@asyn($(PORT),0,$(TIMEOUT))MEAN_EN") 
     field(DESC, "Set sample interval ms")
+    field(DOL,  "$(UUT):0:SLOWMON:EN:c")
+    field(OMSL, "closed_loop")
     field(DRVL, "0")
     field(DRVH, "1")
     field(PINI, "YES")
