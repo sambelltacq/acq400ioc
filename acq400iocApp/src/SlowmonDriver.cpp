@@ -426,7 +426,7 @@ asynStatus SlowmonDriver<T>::writeFloat32Array(asynUser *pasynUser, epicsFloat32
 	}
 	float* setv_site = setv + site_off[addr];
 
-	printf("writeFloat32Array %s f:%d a:%d n:%lu %p\n",
+	if (verbose) printf("writeFloat32Array %s f:%d a:%d n:%lu %p\n",
 			paramName, function, addr, nElements, setv_site);
 	floatCopy(setv_site, value, nElements);
 	doCallbacksFloat32Array(setv, nchan, all_fun, 0);
