@@ -29,12 +29,12 @@ record(calc, "$(UUT):0:SLOWMON:EN:c") {
     field(FLNK, "$(UUT):0:SLOWMON:EN:w PP")
 }
 
-record(mbbi, "${UUT}:MODE:CONTINUOUS:STATE") {
+record(fanout, "${UUT}:MODE:CONTINUOUS:STATE_f") {
     field(FLNK, "$(UUT):0:SLOWMON:EN:c PP")
 }
 
-record(mbbi, "${UUT}:MODE:TRANS_ACT:STATE") {
-    field(FLNK, "$(UUT):0:SLOWMON:EN:c PP")
+record(fanout, "${UUT}:MODE:TRANS_ACT:STATE_f") {
+    field(LNK3, "$(UUT):0:SLOWMON:EN:c PP")
 }
 record(longout, "$(UUT):0:SLOWMON:EN:w") {
     field(DTYP, "asynInt32")

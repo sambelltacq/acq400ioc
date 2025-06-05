@@ -40,6 +40,12 @@ record(mbbi, "${UUT}:MODE:CONTINUOUS:STATE") {
 	field(THST, "RUN2")
 	field(FRST, "POST_PROCESS")
 	field(FVST, "CLEANUP")
+	field(FLNK, "${UUT}:MODE:CONTINUOUS:STATE_f")
+}
+
+record(fanout, "${UUT}:MODE:CONTINUOUS:STATE_f") {
+        field(SELM, "All")
+#        field(FLNK, "$(UUT):0:SLOWMON:EN:c PP")
 }
 
 record(longin, "${UUT}:MODE:CONTINUOUS:SC") {
@@ -398,7 +404,8 @@ record(calc, "${UUT}:MODE:TRANS_ACT:STATE_NOT_IDLE") {
 record(fanout, "${UUT}:MODE:TRANS_ACT:STATE_NOT_IDLEf") {
 	field(SELM, "All")
 	field(LNK1, "${UUT}:1:AI:WF:TB")
-	field(LNK2, "${UUT}:1:AI:TW:TB")		
+	field(LNK2, "${UUT}:1:AI:TW:TB")
+#     field(LNK3, "$(UUT):0:SLOWMON:EN:c PP")
 }
 
 
