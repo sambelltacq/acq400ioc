@@ -25,7 +25,7 @@ record(calc, "$(UUT):0:SLOWMON:EN:c") {
     field(INPA, "$(UUT):0:SLOWMON:EN")
     field(INPB, "${UUT}:MODE:TRANS_ACT:STATE")
     field(INPC, "${UUT}:MODE:CONTINUOUS:STATE")
-    field(CALC, "A && (B||C)")
+    field(CALC, "A && (B==2||B==3||C==2)")
     field(FLNK, "$(UUT):0:SLOWMON:EN:w PP")
 }
 
