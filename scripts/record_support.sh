@@ -19,7 +19,7 @@ dblr() {
 get_range() {
 	site=$1
 	if [ -e /etc/acq400/${site}/PART_NUM ]; then
-		VSPEC=$(tr -s -- -\  \\n   </etc/acq400/${site}/PART_NUM | grep V)
+		VSPEC=$(tr -s -- -\  \\n   </etc/acq400/${site}/PART_NUM | grep [0-9]V)
 		vr1=${VSPEC%*V}
 		VR=${vr1/V/.}
 	fi
