@@ -217,6 +217,8 @@ record(longin, "${UUT}:${SITE}:RTM_TRANSLENp:r") {
 	field(FLNK, "${UUT}:${SITE}:RTM_TRANSLENp:s")
 }
 
+alias("${UUT}:${SITE}:RTM_TRANSLENp:r", "${UUT}:${SITE}:RTM_TRANSLEN:R")
+
 record(longout, "${UUT}:${SITE}:RTM_TRANSLENp:s") {
 	field(DTYP, "Soft Channel")
 	field(DOL,  "${UUT}:${SITE}:RTM_TRANSLENp:r NPP")
