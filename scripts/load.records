@@ -600,7 +600,7 @@ load_400() {
                         [ -e ./scripts/load.$name ] && ./scripts/load.$name $HOST $site
                fi
         fi;;
-    $MT_DIOB)
+    $MT_DIOB|$MT_OCTOBEE)
         name=$(cat /dev/acq400.$site.knobs/module_name)
         [ -e ./scripts/load.$name ] && ./scripts/load.$name $HOST $site
         return;;
