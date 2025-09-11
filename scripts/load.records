@@ -981,13 +981,17 @@ load_mb_base() {
 
     dblr '"db/hwmonvolts_common.db","UUT='${HOST}'"'
     case $mt in
-    acq1102|acq2[12]06*)
+    acq1102*|acq2[12]06*)
             load_mb_acq2106
             dblr '"db/hwmonvolts_2106.db","UUT='${HOST}'"'
             acq2106b=$(cat /sys/module/acq420fmc/parameters/is_acq2106B)
             dblr '"db/acq2106clk12.db","UUT='${HOST}',acq2106b='${acq2106b}',SPORT=S0C"'
-            [ "$mt" != "acq1102" ] && 
-            dblr '"db/acq2106clk3456.db","UUT='${HOST}',acq2106b='${acq2106b}',SPORT=S0C"';;
+            case $mt in
+            acq1102*)
+                ;;
+            *)
+                dblr '"db/acq2106clk3456.db","UUT='${HOST}',acq2106b='${acq2106b}',SPORT=S0C"';;
+            esac;;
 
     z7io*)
 	    vadj=$(grep FMC_Vadj /tmp/mmcinfo1.txt | awk '{ print $3 }')
@@ -1007,7 +1011,7 @@ load_mb_base() {
             dblr '"db/hwmonvolts.db","UUT='${HOST}'"';;
     esac
     case $mt in
-    acq1001|acq1002|acq1102)
+    acq1001|acq1002*|acq1102*)
         for site in $(seq 1 $ns)
         do
             # handles special case of v2f biscuit, no SITE LEDs.
@@ -1042,7 +1046,7 @@ load_mb_base() {
             VAP=0;VAN=0
         fi
         case $mt in
-        acq1102|acq2206*)
+        acq1102*|acq2206*)
             dblr '"db/acq2206psu.db","UUT='${HOST},vap=$VAP,van=$VAN'"';;
         *)
             dblr '"db/acq2006psu.db","UUT='${HOST},vap=$VAP,van=$VAN'"';;
@@ -1160,7 +1164,7 @@ has_dsp_trg() {
     if [ -e /dev/acq400.0.knobs/fpga_rev ]; then
         rev=$(cat /dev/acq400.0.knobs/fpga_rev)
         case $1 in
-        acq1102|acq2206*)
+        acq1102*|acq2206*)
                         rc=1;;
         acq2106*)       [ $rev -ge 25 ] && rc=1;;
         acq100*)        [ $rev -ge 38 ] && rc=1;;
@@ -1226,7 +1230,7 @@ load_mb_sync() {
             fi;;
         SYNC)
             case $MB_MODEL in
-            acq1102|acq2[12]06*)
+            acq1102*|acq2[12]06*)
                 if [ $HAS_WR -eq 1 ]; then
                     lsb_x ${lp0},NOBT=1 WRPPS nc
                 else
@@ -1242,7 +1246,7 @@ load_mb_sync() {
         case $FUN in
         CLK)
             case $MB_MODEL in
-            acq1102|acq2[12]06*)
+            acq1102*|acq2[12]06*)
                 if [ $HAS_WR -eq 1 ]; then
                     lsb_x ${lp1},NOBT=1 MCLK nc
                 else
@@ -1266,7 +1270,7 @@ load_mb_sync() {
             fi;;
         SYNC)
             case $MB_MODEL in
-            acq1102|acq2[12]06*)
+            acq1102*|acq2[12]06*)
                 if [ $HAS_WR -eq 1 ]; then
                     lsb_x ${lp1},NOBT=1 WRPPS nc
                 else
@@ -1361,7 +1365,7 @@ load_mb_sync() {
 
     if [ $HAS_ACQ43X -ne 0 ] && [ $ACQ43X_SET_SAMPLE_RATE -ge 0 ] && [ $HAS_WR -eq 0 ]; then
             case $MB_MODEL in
-            acq1102|acq2[12]06*)
+            acq1102*|acq2[12]06*)
                 (
                 echo "dbpf ${HOST}:SYS:CLK:FPMUX XCLK"
                 echo "dbpf ${HOST}:SYS:FPCLK: 32768000"
@@ -1420,6 +1424,8 @@ load_mb() {
                 ns=6; mt=acq2006;;
         acq1102)
                 ns=2; mt=acq1102;;
+        acq1102d)
+                ns=3; mt=acq1102;;
         acq1002)
                 ns=2; mt=acq1001;;
         acq1002p)
@@ -1520,7 +1526,7 @@ do
 done
 
 case $MB_MODEL in
-acq1102|acq2[12]06*)
+acq1102*|acq2[12]06*)
     [ $ACQ480_COUNT -gt 0 ] && echo "seq badledfixer \"uut=${HOST}\"" >>/tmp/st_post.cmd
     [ -e /etc/acq400/0/wrtd_tx ] && source /usr/local/epics/scripts/wr.init;;
 esac
