@@ -71,6 +71,9 @@ ss calmon {
 	}
 	
 	state wait_change {
+		when(adc_resolution){
+
+		} state update
 		when(gain_changes || data32){
 			
 		} state settle

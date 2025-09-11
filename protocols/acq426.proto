@@ -27,6 +27,6 @@ getScale {
 }
 
 getAdcResolution {
-        out "adc_resolution";
+        out "acq426_adc_resolution";
         in "%d";
 }
