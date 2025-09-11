@@ -99,7 +99,7 @@ nameFromMT() {
 	$MT_ACQ494)     echo "acq494fmc";;
 	$MT_DIO422)     echo "dio422elf";;
 	$MT_DI460)      echo "di460elf";;
-	$MT_ACQ1102DIO4) echo "acq1102dio4;;
+	$MT_ACQ1102DIO4) echo "acq1102dio4";;
 	# no default	
 	esac					
 }

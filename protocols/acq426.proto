@@ -26,3 +26,7 @@ getScale {
         in "%f";
 }
 
+getAdcResolution {
+        out "adc_resolution";
+        in "%d";
+}

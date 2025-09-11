@@ -459,6 +459,7 @@ load_400() {
             LO=66000000;;
         $MT_ACQ426)
             calmon=calmon426
+            dblr '"db/acq426.db","'${cprams}'"'
             gains="GX=fixed"
             source /dev/sites/${site}/details
 # remove me:
