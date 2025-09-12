@@ -90,6 +90,9 @@ ss calmon {
 		entry {
 			wscale = data32==0? adc_resolution == 20? 16: 1: SCALE32;
 
+			printf("calmon426::update s:%s %s adc_resolution:%d wscale: %.2f\n",
+				site, data32==0?"int16":"int32", adc_resolution, wscale);
+
 			for (ch = 1; ch <= nchan; ++ch){
 				pvGet(scale[ch]);
 				ext_eslo[ch] = eslo[ch] = wscale * scale[ch];
