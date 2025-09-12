@@ -6,6 +6,7 @@ option +r;
 
 int data32;		assign data32 to "{uut}:{site}:data32";
 monitor data32;
+int data32_0;
 
 float ext_eslo[33]; 	assign ext_eslo to "{uut}:{site}:AI:CAL:ESLO";
 float eslo[33];		assign eslo to {};	// index from 1
@@ -16,11 +17,11 @@ int has_ch_gains;	assign has_ch_gains to "{uut}:{site}:HAS_CH_GAINS";
 
 int gain_changes;	assign gain_changes to "{uut}:{site}:GAIN_CHANGES";
 monitor gain_changes;
-int gain_changes0;
+int gain_changes_0;
 
 int adc_resolution;	assign adc_resolution to "{uut}:{site}:ADC_RESOLUTION";
 monitor adc_resolution;
-
+int adc_resolution_0;
 
 %{
 #include <stdlib.h>
@@ -36,6 +37,7 @@ char pvfield[130];
 float wscale;              /* wordsize scale factor */
 
 float SCALE32 = 1.0/16;    /* convert 20 bit to 24 bit .. there's a /256 elsewhere */
+
 
 ss calmon {
 	state init {
@@ -65,22 +67,27 @@ ss calmon {
 				pvAssign(eoff[ch], pvfield);
 			}
 		}
-		when() {
+		when(delay(3)) {
 			
 		} state update
 	}
 	
 	state wait_change {
-		when(adc_resolution){
+		entry {
+			if (verbose) printf("calmon426::wait_change s:%s\n", site);
+		}
+		when(adc_resolution != adc_resolution_0){
 
 		} state update
-		when(gain_changes || data32){
+		when(gain_changes != gain_changes_0 || data32 != data32_0){
 			
 		} state settle
 	}
 	
 	state settle {
-
+		entry {
+			if (verbose) printf("calmon426::settle s:%s\n", site);
+		}
 		when(delay(3)){
 			
 		} state update
@@ -88,6 +95,8 @@ ss calmon {
 	
 	state update {
 		entry {
+			if (verbose) printf("calmon426::update s:%s\n", site);
+
 			wscale = data32==0? adc_resolution == 20? 16: 1: SCALE32;
 
 			printf("calmon426::update s:%s %s adc_resolution:%d wscale: %.2f\n",
@@ -104,6 +113,10 @@ ss calmon {
 				}
 			}
 			pvPut(ext_eslo);
+
+			data32_0 = data32;
+			gain_changes_0 = gain_changes;
+			adc_resolution_0 = adc_resolution;
 		}
 		when() {
 			
