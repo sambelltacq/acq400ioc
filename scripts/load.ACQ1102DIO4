@@ -1,0 +1,12 @@
+#!/bin/sh
+
+HOST=$1
+site=$2
+source ./scripts/record_support.sh
+
+
+HSS="UUT=${HOST},SITE=${site},SPORT=S${site}C"
+
+
+create_asyn_channel S${site}C 127.0.0.1:$((4220+${site}))
+dblr '"db/cos.db","'${HSS}'"'
