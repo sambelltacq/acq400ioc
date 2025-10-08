@@ -234,8 +234,8 @@ record(bi, "${UUT}:${SITE}:HUDP:UDP:DATA_SRC:r") {
 }
 record(bo, "${UUT}:${SITE}:HUDP:UDP:DATA_SRC:s") {
         field(DTYP, "Soft Channel")
-        field(ZRST, "AGG")
-        field(ONST, "DIST")
+        field(ZNAM, "AGG")
+        field(ONAM, "DIST")
         field(DOL, "${UUT}:${SITE}:HUDP:UDP:DATA_SRC:r NPP")
         field(OMSL, "closed_loop")
         field(OUT, "${UUT}:${SITE}:HUDP:UDP:DATA_SRC PP") 
