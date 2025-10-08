@@ -69,7 +69,7 @@ record(bo, "${UUT}:MODE:TRANSIENT") {
 	field(VAL,  "0")
 	field(PINI, "YES")
 	field(FLNK, "${UUT}:MODE:TRANSIENT:set")
-	field(HIGH, "0.1")
+	field(HIGH, "0.01")
 }
 
 record(calcout, "${UUT}:MODE:TRANSIENT:set") {
@@ -77,15 +77,23 @@ record(calcout, "${UUT}:MODE:TRANSIENT:set") {
 	field(CALC, "A")
 	field(OOPT, "Transition To Non-zero")
 	field(DOPT, "Use CALC")
-	field(OUT,  "${UUT}:MODE:TRANSIENT:TRANSIENT:w PP")
+	field(OUT,  "${UUT}:MODE:TRANSIENT:w PP")
 }
 
-record(bo, "${UUT}:MODE:TRANSIENT:TRANSIENT:w") {
+record(bo, "${UUT}:MODE:TRANSIENT:w") {
 	field(ONAM, "ON")
 	field(ZNAM, "OFF")
 	field(DESC, "")
 	field(DTYP, "stream")
 	field(OUT,  "@transient.proto setTransient(${UUT}:MODE:TRANSIENT) ${SPORT}")
+}
+
+record(calcout, "${UUT}:MODE:TRANSIENT:set1") {
+        field(INPA, "")
+        field(CALC, "1")
+        field(OOPT, "Every Time")
+        field(DOPT, "Use CALC")
+        field(OUT,  "${UUT}:MODE:TRANSIENT PP")
 }
 
 record(longout, "${UUT}:MODE:TRANSIENT:PRE") {
@@ -94,6 +102,7 @@ record(longout, "${UUT}:MODE:TRANSIENT:PRE") {
 	field(EGU,  "Samples")
 	field(LOPR, "0")
 	field(HOPR, "100000000")
+	field(FLNK, "${UUT}:MODE:TRANSIENT:set1 PP")
 }
 
 record(longin, "${UUT}:MODE:TRANSIENT:PRE:r") {
@@ -112,6 +121,7 @@ record(longout, "${UUT}:MODE:TRANSIENT:POST") {
 	field(EGU,  "Samples")
 	field(LOPR, "0")
 	field(HOPR, "100000000")
+	field(FLNK, "${UUT}:MODE:TRANSIENT:set1 PP")
 }
 
 record(longin, "${UUT}:MODE:TRANSIENT:POST:r") {
@@ -132,6 +142,7 @@ record(longout, "${UUT}:MODE:TRANSIENT:OSAM") {
 	field(VAL,  "1")
 	field(PINI, "YES")
 	field(HOPR, "256")
+	field(FLNK, "${UUT}:MODE:TRANSIENT:set1 PP")
 }
 
 record(longin, "${UUT}:MODE:TRANSIENT:OSAM:r") {
@@ -201,6 +212,7 @@ record(longout, "${UUT}:MODE:TRANSIENT:SOFT_TRIGGER") {
 	field(PINI, "YES")	
 	field(LOPR, "0")
 	field(HOPR, "1")
+	field(FLNK, "${UUT}:MODE:TRANSIENT:set1 PP")
 }
 
 record(bo, "${UUT}:MODE:TRANSIENT:SET_ARM") {
