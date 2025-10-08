@@ -462,10 +462,15 @@ load_400() {
             dblr '"db/acq426.db","'${cprams}'"'
             gains="GX=fixed"
             source /dev/sites/${site}/details
-# remove me:
-            [ "$FAKE_ACQ426_ER" = "y" ] && FRU_PART_NUM="$FRU_PART_NUM ER"
+
+            case "$FAKE_ACQ426_ER" in
+            y)
+                FRU_PART_NUM="$FRU_PART_NUM ER";;
+            never)
+                FRU_PART_NUM="ACQ426ELF-32-1000-16";;
+            esac
  
-            if echo $FRU_PART_NUM | grep ER; then
+            if echo $FRU_PART_NUM | grep -q ER; then
                 gain_file_pfx="gain426ER"
             else
                 gain_file_pfx="gain426"
