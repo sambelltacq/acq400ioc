@@ -52,7 +52,7 @@ record(fanout, "${UUT}:0:ACTIVE:f"){
 record (mbbi, "${UUT}:${SITE}:GAIN:${CH}:r") {
 	field(DTYP, "stream")
 	field(INP,  "@acq426.proto getGain(${IX}) ${SPORT}")
-	field(NOBT, "3")	
+	field(NOBT, "4")
         field(ZRST, "+/-10V")
         field(ONST, "+/-5V")
         field(TWST, "+/-2V5")
@@ -61,6 +61,7 @@ record (mbbi, "${UUT}:${SITE}:GAIN:${CH}:r") {
         field(FVST, "")
         field(SXST, "")
         field(SVST, "")
+        field(FFST, "BUSY")
 	field(SCAN, "5 second")
 	
 	field(DISV, "1")
