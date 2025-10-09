@@ -1,0 +1,7 @@
+
+
+record(longin, "${UUT}:${SITE}:ADC_RESOLUTION") {
+        field(DTYP, "stream")
+        field(INP,  "@acq426.proto getAdcResolution ${SPORT}")
+        field(SCAN, "2 second")
+}
