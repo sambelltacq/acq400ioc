@@ -37,7 +37,7 @@ echo dbLoadRecords\(\"db/asynRecord.db\",\"P=${HOST}:,R=asyn:J1,PORT=J1,ADDR=3,O
 
 
 ix=0
-eval $(get.site 0 aggregator)
+#eval $(get.site 0 aggregator)
 
 WIN_R_LIM=${WIN_R_LIM:-3}
 [ -e /tmp/st_internals.sh ] && source /tmp/st_internals.sh
