@@ -53,7 +53,7 @@ record(longout, "${UUT}:1:ES_SPREAD:w") {
         field(DOL,  "${UUT}:${S1}:ES_SPREAD")
 }
 
-record(longin, "${UUT}:1:ES_SPREAD") {
+record(longin, "${UUT}:${S1}:ES_SPREAD") {
         field(FLNK, "${UUT}:1:ES_SPREAD:w")
 }
 
