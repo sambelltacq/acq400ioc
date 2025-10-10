@@ -1,0 +1,2 @@
+# each actual AI site aliases the TB.
+alias("${UUT}:1:AI:WF:TB", "${UUT}:${SITE}:AI:WF:TB")

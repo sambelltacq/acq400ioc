@@ -1,6 +1,8 @@
 
+# by convention, there's ALWAYS a TB in site 1 
+# True 80% of the time, and may as well be there always
 
-record(aSub, "${UUT}:${SITE}:AI:TW:TB") {
+record(aSub, "${UUT}:1:AI:TW:TB") {
 	field(SNAM, "timebase")
 	
 	field(FTA,  "LONG")

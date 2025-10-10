@@ -161,6 +161,9 @@ make_AI() {
         dblr '"db/_counter.db","'${sprams},SIG=AI,lname=WF'"'
         FIRST_AI_WF_RECORDS=0
     fi
+    [ $site -ne 1 ] &&
+           dblr \"db/wfAcqHostTbAlias.db\",\"UUT=$HOST,SITE=${site}\"
+
     let nchanp1="$nchan+1"
     dblr \"db/cal.db\",\"${wprams},nchanp1=${nchanp1}\"
 }
@@ -226,6 +229,8 @@ make_AI_TR_records() {
     [ $FIRST_AI_TR_RECORDS -eq 1 ] && [ "x$WPRAMS" != "x" ] && \
         dblr \"db/wfAcqHostTwTb.db\",\"$WPRAMS\"
     FIRST_AI_TR_RECORDS=0
+    [ $site -ne 1 ] &&
+        dblr \"db/wfAcqHostTwTbAlias.db\",\"UUT=$HOST,SITE=${site}\"
 }
 
 SITES=$(awk '{ print $2 }' </etc/acq400/0/run0_log | sed -e s'/,/ /g')
@@ -710,7 +715,7 @@ load_400() {
         fi
 
         [ "x$RTM_BUFFER_MON" = "xy" ] &&
-            echo "seq rtm_buffer_mon \"uut=${HOST},verbose=${RTM_BUFFER_MON_VERBOSE:-0}\""
+            echo "seq rtm_buffer_mon \"uut=${HOST},site=${site},verbose=${RTM_BUFFER_MON_VERBOSE:-0}\""
         create_asyn_channel S${site}M 127.0.0.1:$((4220+${site}))
 
         if [ "$is_adc" != "no" ]; then
