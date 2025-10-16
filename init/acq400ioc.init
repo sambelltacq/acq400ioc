@@ -168,7 +168,7 @@ restart() {
 	wait_ioc_records_loaded
 	stop_ioc
 	nice /usr/local/init/acq400ioc.init make_epics_knobs
-        [ -e /etc/acq400/0/gain_all_x ] && start_gain_all_x_svc&
+        [ "x$GAIN_ALL_X" = "xy" ] && [ -e /etc/acq400/0/gain_all_x ] && start_gain_all_x_svc&
 
 	[ "x$IOC_GLOBAL_ALIAS_PFX" != "x" ] && make_aliases $IOC_GLOBAL_ALIAS_PFX
 	cat /tmp/st_final.cmd >> /tmp/st.cmd
