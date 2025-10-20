@@ -79,7 +79,7 @@ source ./scripts/record_support.sh
 source /tmp/u-boot_env
 MB_MODEL=$(basename ${devicetree_image%*.dtb})
 
-ssb=$(cat /etc/acq400/0/ssb)
+ssb=$(cat $ETC0/ssb)
 
 case $MB_MODEL in
 acq2[12]06*)
@@ -89,7 +89,12 @@ acq2[12]06*)
 esac
 
 
-HAS_WR=0; [ -e /etc/acq400/0/wrtd_tx ] && HAS_WR=1
+HAS_WR_FPGA=0
+HAS_WR=0
+if [ -e $ETC0/wr_fpga ]; then
+        HAS_WR_FPGA=$(cat $ETC0/wr_fpga)
+        [ $HAS_WR_FPGA -eq 1 ] && [ -e $ETC0/wrtd_tx ] && HAS_WR=1
+fi
 
 FIRST_AI_WF_RECORDS=1
 
@@ -1265,7 +1270,7 @@ load_mb_sync() {
         CLK)
             case $MB_MODEL in
             acq1102*|acq2[12]06*)
-                if [ $HAS_WR -eq 1 ]; then
+                if [ $HAS_WR_FPGA -eq 1 ]; then
                     lsb_x ${lp1},NOBT=1 MCLK nc
                 else
                     lsb_x ${lp1},NOBT=2 MCLK HDMI GPG1 COMM_B
