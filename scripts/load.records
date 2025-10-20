@@ -1256,6 +1256,8 @@ load_mb_sync() {
             acq1102*|acq2[12]06*)
                 if [ $HAS_WR -eq 1 ]; then
                     lsb_x ${lp0},NOBT=1 WRPPS nc
+                elif [ $HAS_WR_FPGA -eq 1 ]; then
+                    lsb_x ${lp0},NOBT=1 nc nc
                 else
                     lsb_x ${lp0},NOBT=3 EXT HDMI INT01M nc MBCLK GPG0
                 fi;;
@@ -1296,6 +1298,8 @@ load_mb_sync() {
             acq1102*|acq2[12]06*)
                 if [ $HAS_WR -eq 1 ]; then
                     lsb_x ${lp1},NOBT=1 WRPPS nc
+                elif [ $HAS_WR_FPGA -eq 1 ]; then
+                    lsb_x ${lp1},NOBT=1 nc nc
                 else
                     lsb_x ${lp1},NOBT=3 EXT HDMI INT01M nc MBCLK GPG1
                 fi;;
