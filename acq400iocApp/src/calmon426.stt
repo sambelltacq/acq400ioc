@@ -222,8 +222,11 @@ ss calmon {
 			if (verbose) printf("check_success => wait_and_retry\n");
 		} state wait_and_retry
 		*/
-		when() {
-
+		when(delay(1)) {
+			if (has_ch_gains && rdis_permanent == 0){
+				readback_disable = 0;
+				pvPut(readback_disable);
+			}
 		} state wait_change
 	}
 	
@@ -238,6 +241,9 @@ ss calmon {
 	}
 	
 	state wait_change {
+		entry {
+			if (verbose) printf("wait_change\n");
+		}
 		when(adc_cal_mode != adc_cal_mode0 || gain_changes != gain_changes0){
 			if (adc_cal_mode != adc_cal_mode0){
 				printf("cal mode changed=>%d\n", adc_cal_mode);
