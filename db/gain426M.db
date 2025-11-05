@@ -10,7 +10,7 @@ record (mbbo, "${UUT}:${SITE}:GAIN:${CH}") {
 	field(VAL,  "0")
         field(DISV, "1")
         field(SDIS, "${UUT}:${SITE}:ACTIVE")	
-	field(FLNK, "${UUT}:${SITE}:GAIN:s")
+	field(FLNK, "${UUT}:${SITE}:GAIN:${CH}:s PP")
 }
 
 record(waveform, "${UUT}:${SITE}:GAIN:${CH}:X") {
@@ -25,7 +25,7 @@ record(calcout, "${UUT}:${SITE}:GAIN:${CH}:s") {
         field(OOPT, "Every Time")
         field(DOPT, "Use CALC")
         field(OUT, "${UUT}:${SITE}:GAIN:RDIS PP")
-        field(FLNK, "${UUT}:${SITE}:GAIN:fan1")
+        field(FLNK, "${UUT}:${SITE}:GAIN:fan1 PP")
 }
 
 record(bo, "${UUT}:${SITE}:GAIN:RDIS") {
@@ -40,24 +40,24 @@ record(bo, "${UUT}:${SITE}:GAIN:RDIS") {
 record(dfanout, "${UUT}:${SITE}:GAIN:fan1") {
 	field(DOL,  "${UUT}:${SITE}:GAIN:${CH}")
 	field(OMSL, "closed_loop")
-	field(FLNK, "${UUT}:${SITE}:GAIN:fan2")
+	field(FLNK, "${UUT}:${SITE}:GAIN:fan2 PP")
 }
 
 record(dfanout, "${UUT}:${SITE}:GAIN:fan2") {
 	field(DOL,  "${UUT}:${SITE}:GAIN:${CH}")
 	field(OMSL, "closed_loop")
-	field(FLNK, "${UUT}:${SITE}:GAIN:fan3")
+	field(FLNK, "${UUT}:${SITE}:GAIN:fan3 PP")
 }
 
 record(dfanout, "${UUT}:${SITE}:GAIN:fan3") {
 	field(DOL,  "${UUT}:${SITE}:GAIN:${CH}")
 	field(OMSL, "closed_loop")
-	field(FLNK, "${UUT}:${SITE}:GAIN:fan4")
+	field(FLNK, "${UUT}:${SITE}:GAIN:fan4 PP")
 }
 record(dfanout, "${UUT}:${SITE}:GAIN:fan4") {
 	field(DOL,  "${UUT}:${SITE}:GAIN:${CH}")
 	field(OMSL, "closed_loop")
-	field(FLNK, "${UUT}:${SITE}:GAIN_CHANGES")
+	field(FLNK, "${UUT}:${SITE}:GAIN_CHANGES PP")
 }
 
 record (calc, "${UUT}:${SITE}:GAIN_CHANGES") {
