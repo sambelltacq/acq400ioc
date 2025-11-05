@@ -82,7 +82,7 @@ record (mbbo, "${UUT}:${SITE}:GAIN:${CH}:s") {
 record(calc, "${UUT}:${SITE}:GAIN:${CH}_f") {
 	field(INPA, "${UUT}:${SITE}:GAIN:${CH}")
 # todo how to handle unipolar?	
-	field(CALC, "A==1? 10: A==2? 5: 0")
+	field(CALC, "A==1? 10: A==2? 5: 2.5")
 }
 
 # and set the volts range in all associated WF records..
