@@ -234,7 +234,7 @@ static void fixup(int site, char* cmd, int maxcmd, const char* gainstr, const ch
 /** @@todo: popen() causes memory stress. It's a heavy solution.
  *  better: create PV GAINS that has the same string.
  *  the string is maintained by the normal StreamDevice on the normal service socket.
- *  acq400_cal_ll_check_success is ALWAYS calles from SNL, so pvGet GAINS and pass it in ..
+ *  acq400_cal_ll_check_success is ALWAYS called from SNL, so pvGet GAINS and pass it in ..
  */
 int acq400_cal_ll_check_success(int site, int gains[], int nchan)
 {
