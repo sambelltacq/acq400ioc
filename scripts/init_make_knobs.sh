@@ -101,7 +101,7 @@ make_epics_knobs() {
 			make_caget $PV ${NU#*:} 0;;
 		esac
 	done	
-	for PV in $(egrep -e DECIM -e OSR $RLP)
+	for PV in $(egrep -e DECIM -e OSR -e ES_SPREAD $RLP)
 	do
 		NU=${PV#*:}
 		make_caget $PV ${NU#*:} ${NU%%:*}
