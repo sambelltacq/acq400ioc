@@ -67,6 +67,7 @@ acq400ioc_DBD += sfp_txen.dbd
 acq400ioc_DBD += ppw_tick_scaler.dbd
 acq400ioc_DBD += softIocPVX.dbd
 acq400ioc_DBD += pvxsIoc.dbd
+acq400ioc_DBD += reccaster.dbd
 
 # Add all the support libraries needed by this IOC
 acq400ioc_LIBS += acq2ioc
@@ -74,6 +75,7 @@ acq400ioc_LIBS += seq pv
 acq400ioc_LIBS += acq
 acq400ioc_LIBS += pvxs
 acq400ioc_LIBS += pvxsIoc
+acq400ioc_LIBS += reccaster
 
 # acq400ioc_registerRecordDeviceDriver.cpp derives from acq400ioc.dbd
 acq400ioc_SRCS += acq400ioc_registerRecordDeviceDriver.cpp
