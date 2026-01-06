@@ -62,8 +62,6 @@ setAbort {
 }
 
 setBurstLen {
-    	out "rtm %d";   
-    	in;
     	out "rtm_translen %d";
 }
 
