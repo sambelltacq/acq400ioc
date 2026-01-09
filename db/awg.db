@@ -37,7 +37,7 @@ record (longin, "${UUT}:${SITE}:AWG:BURSTLEN:r") {
 	field(DRVL, "0")
 	field(DRVH, "16777215")
 
-	field(OUT, "@awg.proto getBurstLen ${SPORT}")
+	field(INP, "@awg.proto getBurstLen ${SPORT}")
 	field(FLNK, "${UUT}:${SITE}:AWG:BURSTLEN:s")
 }
 
