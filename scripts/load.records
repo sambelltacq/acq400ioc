@@ -240,11 +240,12 @@ make_AI_TR_records() {
 
 get_sites() {
         SITES=$(awk '{ print $2 }' <$1 | sed -e s'/,/ /g')
-        if [ "x$SITES" != "xnone" ]; then
-                FIRST_SITE=${SITES%% *}
-                return 0
+        if [ -z $SITES ] || [ "$SITES" = "0" ] || [ "$SITES" = "none" ]; then
+                return 1
         fi
-        return 1
+
+        FIRST_SITE=${SITES%% *}
+        return 0
 }
 
 # set FIRST_SITE, either from aggregator or, failing that distributor
