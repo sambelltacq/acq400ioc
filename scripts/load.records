@@ -238,13 +238,17 @@ make_AI_TR_records() {
         dblr \"db/wfAcqHostTwTbAlias.db\",\"UUT=$HOST,SITE=${site}\"
 }
 
-SITES=$(awk '{ print $2 }' </etc/acq400/0/run0_log | sed -e s'/,/ /g')
-if [ "x$SITES" != "xnone" ]; then
-    for s in $SITES; do
-        FIRST_SITE=$s
-        break
-    done
-fi
+get_sites() {
+        SITES=$(awk '{ print $2 }' <$1 | sed -e s'/,/ /g')
+        if [ "x$SITES" != "xnone" ]; then
+                FIRST_SITE=${SITES%% *}
+                return 0
+        fi
+        return 1
+}
+
+# set FIRST_SITE, either from aggregator or, failing that distributor
+get_sites /etc/acq400/0/run0_log || get_sites /etc/acq400/0/play0_log
 
 make_AI_TR() {
     if [ "x$SITES" = "xnone" ] || [ "x$SITES" = "x" ]; then
