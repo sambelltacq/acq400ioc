@@ -210,6 +210,8 @@ record(longout, "${UUT}:0:BLEN:s") {
 	field(OUT,  "${UUT}:0:BLEN PP")
 }
 
+alias("${UUT}:${SITE}:TRG:DX", "${UUT}:${SITE}:RGM:DX")
+alias("${UUT}:${SITE}:TRG:SENSE", "${UUT}:${SITE}:RGM:SENSE")
 
 
 
