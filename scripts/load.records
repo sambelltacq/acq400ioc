@@ -377,22 +377,18 @@ load_rgm() {
         esp=1
         radj=${RTM_TRANSLEN_ADJ:-1};;
     *)
-        if [ $__is_adc -eq 1 ]; then
-            s_nc=$(get.site $st active_chan)
-            if [ $(get.site $st data32) -eq 1 ]; then
-                s_longs=$((s_nc))
-            else
-                s_longs=$((s_nc/2))
-            fi
-            if [ $s_longs -ge 8 ]; then
-                esp=1
-            elif [ $s_longs -ge 4 ]; then
-                esp=2
-            else
-                esp=4
-            fi
+        s_nc=$(get.site $st active_chan)
+        if [ $(get.site $st data32) -eq 1 ]; then
+            s_longs=$((s_nc))
         else
-            esp=0
+            s_longs=$((s_nc/2))
+        fi
+        if [ $s_longs -ge 8 ]; then
+            esp=1
+        elif [ $s_longs -ge 4 ]; then
+            esp=2
+        else
+            esp=4
         fi
         radj=${RTM_TRANSLEN_ADJ:-0};;
     esac
@@ -401,6 +397,18 @@ load_rgm() {
     echo "ES_SPREAD=$esp" >>/tmp/st_internals.sh
     rgmprams="BLEN=${blen},RADJ=${radj},BPB=${BURSTS_PER_BUFFER:-1},ES_SPREAD=${esp}"
     dblr '"db/acq4xx_rgm.db","'${mp},${rgmprams}'"'
+}
+
+load_rgm_dac() {
+    st=$1
+    mp=$2
+    __is_adc=$3
+    esp=0
+
+    blen=$(cat /sys/module/acq420fmc/parameters/bufferlen)
+
+    rgmprams="BLEN=${blen},RADJ=${radj},BPB=${BURSTS_PER_BUFFER:-1},ES_SPREAD=${esp}"
+    dblr '"db/awg_rgm.db","'${mp},${rgmprams}'"'
 }
 
 load_400() {
@@ -714,7 +722,7 @@ load_400() {
             has_rgm=1
         elif [ $has_rgm -eq 1 ]; then
             if [ "$is_adc" = "no" ]; then
-                load_rgm ${site} "${mprams},onst=RTMC,twst=nc" $_is_adc
+                load_rgm_dac ${site} "${mprams},onst=RTMC,twst=nc" $_is_adc
             else
                 load_rgm ${site} "${mprams},onst=nc,twst=RGM" $_is_adc
             fi

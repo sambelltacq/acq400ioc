@@ -1,0 +1,216 @@
+record(mbbo, "${UUT}:${SITE}:RGM") {
+	field(DTYP, "Soft Channel")
+	field(DESC, "set Repeating Gate Mode")
+	field(NOBT, "2")
+	field(ZRST, "OFF")
+    	field(ONST, "${onst}")
+    	field(TWST, "${twst}")
+    	field(THST, "RTM")
+    	field(FRST, "nc")		
+	field(FLNK, "${UUT}:${SITE}:RGM:w PP")	
+	alias("${UUT}:${SITE}:BURST")
+}
+
+#http://www.aps.anl.gov/epics/tech-talk/2010/msg00131.php
+# rgm   : setpoint
+# rgm:r : readback
+# rgm:s : sync
+# rgm:w : write
+# added twist, all 3 writes get muxed together in :_rgm
+# while we could disable DX, SENSE when set==0, better effect doing this on 
+# the gui. The driver driver will reject attempts to set 0,X,X where X!=0
+
+record(mbbi, "${UUT}:${SITE}:RGM:r") {
+	field(DTYP, "stream")
+	field(INP,  "@awg.proto getAwgRgm ${SPORT}")
+	field(SCAN, "1 second")
+	field(PINI, "YES")
+	field(FLNK, "${UUT}:${SITE}:RGM:s")
+}
+record(mbbo, "${UUT}:${SITE}:RGM:s") {
+	field(DTYP, "Soft Channel")
+	field(DOL,  "${UUT}:${SITE}:RGM:r NPP")
+	field(OMSL, "closed_loop")
+	field(OUT,  "${UUT}:${SITE}:RGM PP")
+}
+
+record(mbbo, "${UUT}:${SITE}:RGM:w") {	
+	field(DTYP, "stream")
+	field(OUT,  "@awg.proto setAwgRgm ${SPORT}")		
+	field(SDIS, "${UUT}:${SITE}:RGM:s.PACT")
+	field(DISV, "1")
+}
+
+record(mbbo, "${UUT}:${SITE}:RGM:DX") {
+	field(DTYP, "Soft Channel")
+	field(NOBT, "3")
+	field(ZRST, "d0")
+	field(ONST, "d1")
+	field(TWST, "d2")
+	field(THST, "d3")
+	field(FRST, "d4")
+	field(FVST, "d5")
+	field(SXST, "d6")
+	field(SVST, "d7")    
+	field(FLNK, "${UUT}:${SITE}:TRG:DX:w PP")
+	alias("${UUT}:${SITE}:BURST:DX")
+}     
+
+record(bo, "${UUT}:${SITE}:RGM:SENSE") {
+	field(DESC, "RGM Sense")
+	field(DTYP, "Soft Channel")
+	field(ZNAM, "falling")
+	field(ONAM, "rising")
+	field(FLNK, "${UUT}:${SITE}:TRG:SENSE:w PP")
+	alias("${UUT}:${SITE}:BURST:SENSE")
+}
+
+}
+record(calcout, "${UUT}:${SITE}:_rgm") {
+	field(INPA, "${UUT}:${SITE}:RGM")
+	field(INPB, "${UUT}:${SITE}:RGM:DX")
+	field(INPC, "${UUT}:${SITE}:RGM:SENSE")
+	field(CALC, "0")
+	field(DTYP, "stream")
+# refuse to update in the RUN state	
+	field(SDIS, "${UUT}:${SITE}:RUN")
+	field(DISV, "1")
+	field(OUT,  "@signal.proto setSig(rgm) ${SPORT}")
+}
+
+record(longout, "${UUT}:0:BPB") {
+	field(DTYP, "Soft Channel")
+	field(DESC, "Bursts per buffer")
+	field(LOPR, "1")
+	field(HOPR, "100")
+	field(VAL,  "${BPB}")
+	field(PINI, "YES")
+}
+
+record(longin, "${UUT}:0:MAXBLEN") {
+	field(DTYP, "longinAcqHost")
+	field(INP, "@/sys/module/acq420fmc/parameters/bufferlen")		
+	field(DESC, "Buffer KBUF len")
+	field(LOPR, "32768")
+	field(HOPR, "4194304")	
+	field(PINI, "YES")
+}
+
+record(longout, "${UUT}:${SITE}:RTM_TRANSLEN") {
+	field(DTYP, "Soft Channel")
+	field(LOPR, "1")
+	field(HOPR, "16777215")
+	
+	field(DISV, "1")
+	field(SDIS, "${UUT}:${SITE}:RUN")
+	field(FLNK, "${UUT}:${SITE}:RTM_TRANSLEN:ONCHANGE PP")
+}
+
+record(longin, "${UUT}:${SITE}:ES_SPREAD") {
+	field(DTYP, "Soft Channel")
+	field(DESC, "ES spreads over this number of samples")
+	field(LOPR, "1")
+	field(HOPR, "4")
+	field(PINI, "YES")
+	field(VAL,  "${ES_SPREAD}")
+}
+
+record(calcout, "${UUT}:${SITE}:RTM_TRANSLEN:ONCHANGE") {
+	field(INPA, "${UUT}:${SITE}:RTM_TRANSLEN")
+	field(INPB, "${UUT}:${SITE}:ES_ENABLE")
+	field(INPC, "${UUT}:${SITE}:ES_SPREAD")
+	field(INPD, "${RADJ}")
+	field(CALC, "A - B*C + D")
+	field(OOPT, "On Change")
+	field(DOPT, "Use CALC")
+	field(OUT,  "${UUT}:${SITE}:RTM_TRANSLENp PP")
+	field(LOPR, "0")
+	field(HOPR, "16777215")
+}
+
+
+record(bo, "${UUT}:0:OPTIMISE_BUFFERLEN")
+{
+	field(ONAM, "ON")
+	field(ZNAM, "OFF")
+	field(DESC, "")
+	field(DTYP, "stream")
+	field(OUT,  "@mb.proto store_optimise_bufferlen(${UUT}:0:SSB) S0")
+}
+
+
+record(longout, "${UUT}:${SITE}:RTM_TRANSLENp") {
+	field(DTYP, "Soft Channel")
+	field(LOPR, "1")
+	field(HOPR, "16777215")
+	field(DESC, "writes physical reg, with adjustments")
+	
+	field(DISV, "1")
+	field(SDIS, "${UUT}:${SITE}:RUN")
+	field(FLNK, "${UUT}:${SITE}:RTM_TRANSLENp:w PP")	
+}
+
+record(longout, "${UUT}:${SITE}:RTM_TRANSLENp:w") {
+	field(DTYP, "stream")
+	field(OUT,  "@acq43x.proto setRtmTranslen ${SPORT}")	
+	field(DISV, "1")
+	field(SDIS, "${UUT}:${SITE}:RTM_TRANSLENp:s.PACT")
+	field(DOL,  "${UUT}:${SITE}:RTM_TRANSLENp PP")
+	field(OMSL, "closed_loop")
+
+}
+
+record(longin, "${UUT}:${SITE}:RTM_TRANSLENp:r") {
+	field(DTYP, "stream")
+	field(INP,  "@acq43x.proto getRtmTranslen ${SPORT}")
+	field(SCAN, "1 second")
+	field(FLNK, "${UUT}:${SITE}:RTM_TRANSLENp:s")
+}
+
+record(longout, "${UUT}:${SITE}:RTM_TRANSLENp:s") {
+	field(DTYP, "Soft Channel")
+	field(DOL,  "${UUT}:${SITE}:RTM_TRANSLENp:r NPP")
+	field(OMSL, "closed_loop")
+	field(OUT,  "${UUT}:${SITE}:RTM_TRANSLENp PP")
+}
+
+
+
+record(longout, "${UUT}:0:BLEN") {
+	field(DTYP, "Soft Channel")
+	field(LOPR, "4096")
+	field(HOPR, "${BLEN}")	
+	field(VAL,  "${BLEN}")
+	field(DISV, "1")
+	field(SDIS, "${UUT}:${SITE}:RUN")
+	field(FLNK, "${UUT}:0:BLEN:w")
+}
+
+record(longout, "${UUT}:0:BLEN:w") {
+	field(DTYP, "stream")
+	field(OUT,  "@signal.proto setBLEN S0")	
+	field(DISV, "1")
+	field(SDIS, "${UUT}:0:BLEN:s.PACT")
+	field(DOL,  "${UUT}:0:BLEN PP")
+	field(OMSL, "closed_loop")
+	field(FLNK, "${UUT}:${SITE}:RTM_TRANSLEN:ONCHANGE")
+}
+
+record(longin, "${UUT}:0:BLEN:r") {
+	field(DTYP, "stream")
+	field(INP,  "@signal.proto getBLEN S0")	
+	field(SCAN, "1 second")
+	field(FLNK, "${UUT}:0:BLEN:s")
+}
+
+record(longout, "${UUT}:0:BLEN:s") {
+	field(DTYP, "Soft Channel")
+	field(DOL,  "${UUT}:0:BLEN:r NPP")
+	field(OMSL, "closed_loop")
+	field(OUT,  "${UUT}:0:BLEN PP")
+}
+
+
+
+
+
