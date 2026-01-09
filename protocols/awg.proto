@@ -65,12 +65,18 @@ setAwgRgm {
 	out "awg_rtm %d";
 	in;
 }
-setAwgRgm {
+getAwgRgm {
 	out "awg_rtm";
 	in "%d";
 }
 setBurstLen {
     	out "rtm_translen %d";
+    	in;
+}
+
+getBurstLen {
+	out "rtm_translen";
+	in "%d";
 }
 
 getPushBuf {
