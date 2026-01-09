@@ -404,16 +404,23 @@ load_rgm() {
     dblr '"db/acq4xx_rgm.db","'${mp},${rgmprams}'"'
 }
 
+LOAD_RGM_DAC_SITE=0
+
 load_rgm_dac() {
-    st=$1
-    mp=$2
-    __is_adc=$3
-    esp=0
+        st=$1
+        if [ ${LOAD_RGM_DAC_SITE} -ne 0 ]; then
+                echo "# load_rgm_dac asking for site:$st but previously we had ${LOAD_RGM_DAC_SITE} STUB"
+        else
+                mp=$2
+                __is_adc=$3
+                esp=0
 
-    blen=$(cat /sys/module/acq420fmc/parameters/bufferlen)
+                blen=$(cat /sys/module/acq420fmc/parameters/bufferlen)
 
-    rgmprams="BLEN=${blen},RADJ=${radj},BPB=${BURSTS_PER_BUFFER:-1},ES_SPREAD=${esp}"
-    dblr '"db/awg_rgm.db","'${mp},${rgmprams}'"'
+                rgmprams="BLEN=${blen},RADJ=${radj},BPB=${BURSTS_PER_BUFFER:-1},ES_SPREAD=${esp}"
+                dblr '"db/awg_rgm.db","'${mp},${rgmprams}'"'
+                LOAD_RGM_DAC_SITE=${st}
+        fi
 }
 
 load_400() {
@@ -822,7 +829,7 @@ load_400() {
             eval $(get.site 0 distributor)
             dblr '"db/awg.db","'${dprams},dsites=\'${sites}\''"'
             echo "seq select_awg_distributor \"${dprams},verbose=1\""
-            [ ${has_rgm} -eq 1 ] && load_rgm ${dist_s1} "${dprams},onst=nc,twst=nc" $_is_adc
+            [ ${has_rgm} -eq 1 ] && load_rgm_dac ${dist_s1} "${dprams},onst=RTMC,twst=nc" $_is_adc
             sprams="${dprams},CTRMAX=$CTR28,DT=1,DTC=1"
             dblr '"db/_counter.db","'${sprams},SIG=AWG,lname=REPS'"'
             echo "dbpf ${HOST}:${site}:SIG:clk_counter_src d$((${site}+1))" >> /tmp/st_post.cmd
