@@ -46,6 +46,7 @@ record(mbbi, "${UUT}:MODE:CONTINUOUS:STATE") {
 record(fanout, "${UUT}:MODE:CONTINUOUS:STATE_f") {
         field(SELM, "All")
 #        field(FLNK, "$(UUT):0:SLOWMON:EN:c PP")
+	field(LNK0, "${UUT}:1:DT PP")
 }
 
 record(longin, "${UUT}:MODE:CONTINUOUS:SC") {
