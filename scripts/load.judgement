@@ -24,9 +24,14 @@ fi
 
 SITEC=
 DELIM=
+adc_sites=
 for s in $(echo $sites | tr , \  ); do
-        SITEC="$SITEC$DELIM$(get.site $s active_chan)"
-        DELIM=,
+        is_adc=$(get.site $s is_adc | awk '{ print $1 }')
+        if [ $is_adc -eq 1 ]; then
+                SITEC="$SITEC$DELIM$(get.site $s active_chan)"
+                DELIM=,
+                adc_sites="$adc_sites $s"
+        fi
 done
 
 echo acq400JudgementConfigure\(J1, ${NCHAN}, ${nsam}, ${WSZ}, \"${SITEC}\", ${BURSTS_PER_BUFFER}, ${NDMA}\)
@@ -45,7 +50,7 @@ ES_SPREAD=${ES_SPREAD:-1}
 
 nsam2=$((nsam-WIN_R_LIM-ES_SPREAD))
 
-for site in $(echo $sites | tr , \  ); do
+for site in $adc_sites; do
         sitem1=$((site-1))
 	echo dbLoadRecords\(\"db/judgementCommonSite.db\",\"${PRAMS},SITE=${site},SITEM1=${sitem1}\"\)
 
