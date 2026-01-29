@@ -9,6 +9,7 @@ LOG=/var/log/epics.log
 NICE=10
 LG="logger -t acq400ioc.init"
 RL=/tmp/records.dbl
+CP=$(get-port-from-service acq4xx-epics-console)
 
 
 if [ -f /etc/profile.d/epics.sh ]; then
@@ -103,7 +104,7 @@ bump()
 
 start_ioc() {
 	/usr/local/bin/procServ \
-		-c ${ETOP} -p $PIDF -L $LOG 2222 \
+		-c ${ETOP} -p $PIDF -L $LOG $CP \
 		/bin/nice -n $NICE ${ACQ400IOC} ${STCMD}
 	while [ ! -r $PIDF ]; do
 		usleep 10000
