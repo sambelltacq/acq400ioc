@@ -1,5 +1,6 @@
 #!/bin/sh
 
+export IOCSH_PS1="acq400-epics>"
 ETOP=/usr/local/epics
 STCMD=/tmp/st.cmd
 PIDF=/var/run/acq400ioc.pid
@@ -77,16 +78,12 @@ make_stcmd() {
 			source $file
 		fi 
 	done
-	cat - >> /tmp/st.cmd <<EOF
+	cat - >> ${STCMD} <<EOF
 dbLoadRecords("db/local-aliases.db","UUT=${HOST}")
 iocInit()	
-dbl > /tmp/records.dbl
-seqShow > /tmp/records.dbl.done
+dbl > ${RL}
+seqShow > ${RL}.done
 EOF
-	touch /dev/shm/AI
-	if [ -x /usr/local/epics/scripts/${MB_MODEL}_init.sh ]; then
-		/usr/local/epics/scripts/${MB_MODEL}_init.sh create
-	fi
 }
 
 make_aliases_loop() {
