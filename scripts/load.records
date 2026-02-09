@@ -608,7 +608,7 @@ load_400() {
             ./scripts/load.dio482td_DI ${HOST} ${site}
         fi;;
     $MT_DIO432|$MT_DIO432P|$MT_DIO482|$MT_DIO482TD_PG|\
-	    $MT_DIO422|$MT_DI460|$MT_DIO_5CH|$MT_ACQ1102DIO4)
+	    $MT_DIO422|$MT_DI460|$MT_DIO_5CH|$MT_ACQ1102DIO4|$MT_DIO482ELF_XRM)
         mv=$(cat /dev/acq400.$site.knobs/module_variant)
         case $model in
         $MT_DIO482|$MT_DI460|$MT_DIO_5CH)
