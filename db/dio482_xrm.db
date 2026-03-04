@@ -1,0 +1,208 @@
+record(longin, "${UUT}:${SITE}:AWG:SAMPLES") {
+	
+}
+
+record(mbbi, "${UUT}:${SITE}:AWG:STATE") {
+	field(DTYP, "stream")
+	field(NOBT, "2")
+	field(ZRST, "IDLE")
+	field(ONST, "ARM")
+	field(TWST, "RUN")
+	field(INP, "@dio482_xrm.proto get_dwg(${UUT}:${SITE}:AWG:SAMPLES) ${SPORT}")
+	field(SCAN, ".1 second")
+}
+
+record(mbbo, "${UUT}:${SITE}:DIO:MODE") {
+	field(DTYP, "Soft Channel")
+	field(NOBT, "2")
+	field(ZRST, "OFF")
+	field(ONST, "IMM")
+	field(TWST, "CLK")
+	field(FLNK, "${UUT}:${SITE}:DIO:MODE:w PP")
+	field(SDIS, "${UUT}:${SITE}:NOPOLL")
+	field(DISV, "1")
+}
+
+record(mbbo, "${UUT}:${SITE}:DIO:MODE:w") {
+        field(DTYP, "stream")
+        field(NOBT, "2")
+        field(ZRST, "OFF")
+        field(ONST, "IMM")
+        field(TWST, "CLK")
+
+        field(SDIS, "${UUT}:${SITE}:DIO:MODE:s.PACT")
+        field(DISV, "1")
+
+        field(OMSL, "closed_loop")
+        field(DOL,  "${UUT}:${SITE}:DIO:MODE")
+
+        field(OUT, "@dio482_xrm.proto set_mode() ${SPORT}")
+        field(FLNK, "${UUT}:${SITE}:DIO:fan")
+}
+
+record(mbbi, "${UUT}:${SITE}:DIO:MODE:r") {
+        field(DTYP, "stream")
+        field(NOBT, "2")
+        field(ZRST, "OFF")
+        field(ONST, "IMM")
+        field(TWST, "CLK")
+        field(INP, "@dio482_xrm.proto get_mode() ${SPORT}")
+        field(SCAN, "1 second")
+        field(FLNK, "${UUT}:${SITE}:DIO:MODE:s")
+        field(SDIS, "${UUT}:${SITE}:NOPOLL")
+        field(DISV, "1")
+}
+
+record(mbbo, "${UUT}:${SITE}:DIO:MODE:s") {
+        field(DTYP, "Soft Channel")
+        field(NOBT, "2")
+        field(ZRST, "OFF")
+        field(ONST, "IMM")
+        field(TWST, "CLK")
+        field(DOL,  "${UUT}:${SITE}:DIO:MODE:r NPP")
+        field(OMSL, "closed_loop")
+        field(OUT,  "${UUT}:${SITE}:DIO:MODE PP")
+        field(FLNK, "${UUT}:${SITE}:DIO:fan")
+}
+
+
+# force DO's to process as they may be disabled.. from change of OUTPUT
+record(fanout, "${UUT}:${SITE}:DIO:fan") {
+	field(LNKA, "${UUT}:${SITE}:IMM:DO:BYTE1 PP")
+	field(LNKB, "${UUT}:${SITE}:IMM:DO:BYTE2 PP")
+	field(LNKC, "${UUT}:${SITE}:IMM:DO:BYTE3 PP")
+	field(LNKD, "${UUT}:${SITE}:IMM:DO:BYTE4 PP")
+}
+
+record(longin, "${UUT}:${SITE}:IMM:DI32") {
+	field(SCAN, "1 second")
+	field(DTYP, "stream")	
+	field(INP,  "@dio482_xrm.proto get_DI32 ${SPORT}")	
+	field(DESC, "DI32 immediate value")	
+	field(PRIO, "LOW")
+	field(SDIS, "${UUT}:${SITE}:NOPOLL")
+	field(DISV, "1")
+}
+record(longout, "${UUT}:${SITE}:IMM:DO32") {	
+	field(DTYP, "stream")	
+	field(OUT,  "@dio482_xrm.proto set_DO32 ${SPORT}")	
+	field(DESC, "DO32 immediate value")	
+	field(PRIO, "LOW")
+}
+
+record(bi, "${UUT}:${SITE}:ISOUTPUT:BYTE4") {
+	field(DTYP, "Raw Soft Channel")
+	field(ZNAM, "FALSE")
+	field(ONAM, "TRUE")
+}
+record(bi, "${UUT}:${SITE}:ISOUTPUT:BYTE3") {
+	field(DTYP, "Raw Soft Channel")
+	field(ZNAM, "FALSE")
+	field(ONAM, "TRUE")
+}
+record(bi, "${UUT}:${SITE}:ISOUTPUT:BYTE2") {
+	field(DTYP, "Raw Soft Channel")
+	field(ZNAM, "FALSE")
+	field(ONAM, "TRUE")
+}
+record(bi, "${UUT}:${SITE}:ISOUTPUT:BYTE1") {
+	field(DTYP, "stream")
+	field(INP,  "@dio482_xrm.proto get_dir(${UUT}:${SITE}:ISOUTPUT) ${SPORT}")
+	field(PINI, "YES")
+	field(SCAN, ".5 second")
+	field(ZNAM, "FALSE")
+	field(ONAM, "TRUE")
+}
+
+record(mbbiDirect, "${UUT}:${SITE}:IMM:DI:BYTE4") {
+	field(DTYP, "Raw Soft Channel")
+	field(DESC, "Instantaneous DI, Byte4")
+	field(NOBT, "8")
+	field(SDIS, "${UUT}:${SITE}:ISOUTPUT:BYTE4")
+	field(DISV, "1")
+}
+
+record(mbbiDirect, "${UUT}:${SITE}:IMM:DI:BYTE3") {
+	field(DTYP, "Raw Soft Channel")
+	field(DESC, "Instantaneous DI, Byte3")
+	field(NOBT, "8")
+	field(SDIS, "${UUT}:${SITE}:ISOUTPUT:BYTE3")
+	field(DISV, "1")
+}
+
+record(mbbiDirect, "${UUT}:${SITE}:IMM:DI:BYTE2") {
+	field(DTYP, "Raw Soft Channel")
+	field(DESC, "Instantaneous DI, Byte2")
+	field(NOBT, "8")
+	field(SDIS, "${UUT}:${SITE}:ISOUTPUT:BYTE2")
+	field(DISV, "1")
+}
+
+record(mbbiDirect, "${UUT}:${SITE}:IMM:DI:BYTE1") {
+	field(DTYP, "Raw Soft Channel")
+	field(NOBT, "8")
+	field(MASK, "0xff")
+	field(SDIS, "${UUT}:${SITE}:ISOUTPUT:BYTE1")
+	field(DISV, "1")
+}
+
+record(bo, "${UUT}:${SITE}:NOPOLL") {
+	field(DTYP, "Soft Channel")
+	field(ZNAM, "0")
+	field(ONAM, "1")
+}
+record(mbbiDirect, "${UUT}:${SITE}:IMM:DI:bx") {
+	field(DTYP, "stream")
+	field(DESC, "Instantaneous DI, monitor")
+	field(INP,  "@dio482_xrm.proto get_DI32_4x8(${UUT}:${SITE}:IMM:DI) ${SPORT}")
+	field(SCAN, ".1 second")
+	field(NOBT, "8")
+	field(MASK, "0xff")
+	field(SDIS, "${UUT}:${SITE}:NOPOLL")
+	field(DISV, "1")
+}
+
+record(mbboDirect, "${UUT}:${SITE}:IMM:DO:BYTE4") {
+	field(DTYP, "stream")
+	field(DESC, "Instantaneous DO, Byte4")
+	field(OUT,  "@dio482_xrm.proto set_DO32_4x8(${UUT}:${SITE}:IMM:DO) ${SPORT}")
+	field(PINI, "YES")
+	field(VAL,  "0")
+	field(NOBT, "8")
+	field(SDIS, "${UUT}:${SITE}:ISOUTPUT:BYTE4")
+	field(DISV, "0")
+}
+
+record(mbboDirect, "${UUT}:${SITE}:IMM:DO:BYTE3") {
+	field(DTYP, "stream")
+	field(DESC, "Instantaneous DO, Byte3")
+	field(OUT,  "@dio482_xrm.proto set_DO32_4x8(${UUT}:${SITE}:IMM:DO) ${SPORT}")
+	field(PINI, "YES")
+	field(VAL,  "0")
+	field(NOBT, "8")
+	field(SDIS, "${UUT}:${SITE}:ISOUTPUT:BYTE3")
+	field(DISV, "0")
+}
+
+record(mbboDirect, "${UUT}:${SITE}:IMM:DO:BYTE2") {
+	field(DTYP, "stream")
+	field(DESC, "Instantaneous DO, Byte2")
+	field(OUT,  "@dio482_xrm.proto set_DO32_4x8(${UUT}:${SITE}:IMM:DO) ${SPORT}")
+	field(PINI, "YES")
+	field(VAL,  "0")
+	field(NOBT, "8")
+	field(SDIS, "${UUT}:${SITE}:ISOUTPUT:BYTE2")
+	field(DISV, "0")
+}
+
+record(mbboDirect, "${UUT}:${SITE}:IMM:DO:BYTE1") {
+	field(DTYP, "stream")
+	field(DESC, "Instantaneous DO, Byte1")
+	field(OUT,  "@dio482_xrm.proto set_DO32_4x8(${UUT}:${SITE}:IMM:DO) ${SPORT}")
+	field(PINI, "YES")
+	field(VAL,  "0")
+	field(NOBT, "8")
+	field(SDIS, "${UUT}:${SITE}:ISOUTPUT:BYTE1")
+	field(DISV, "0")
+}
+
