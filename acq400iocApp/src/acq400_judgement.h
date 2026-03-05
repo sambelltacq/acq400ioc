@@ -55,6 +55,7 @@ public:
 	static int stub_es;
 	static int nice;
 	static const int _FIRST_SAM;
+	static const int _NCHAN_MAX;   // if < NCHAN, Cut channel processing early to save cycles
 	void task_get_params();
 	virtual void task();
 	virtual void fill_request_task(void) {};

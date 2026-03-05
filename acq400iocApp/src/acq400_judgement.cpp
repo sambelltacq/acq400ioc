@@ -23,6 +23,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+#include "local.h"
 #include "acq-util.h"
 #include <bits/stdc++.h>
 
@@ -344,6 +345,7 @@ asynStatus acq400Judgement::readInt16Array(asynUser *pasynUser, epicsInt16 *valu
 }
 
 const int acq400Judgement::_FIRST_SAM = ::getenv_default("acq400_Judgement_FIRST_SAM", 0);
+const int acq400Judgement::_NCHAN_MAX = ::getenv_default("acq400_Judgement_NCHAN_MAX",  999);
 //possibly skip ES and friends. es_spread should automate this.
 
 
@@ -432,15 +434,17 @@ private:
 	bool calculate(ETYPE* raw)
 	{
 		const int skip = FIRST_SAM;
+		const int nchan_limit = MIN(nchan, _NCHAN_MAX);
+
 		for (int isam = 0; isam < nsam-skip; ++isam){
-			for (int ic = 0; ic < nchan; ++ic){
+			for (int ic = 0; ic < nchan_limit; ++ic){
 				int ib = (isam+skip)*nchan+ic;
 				ETYPE xx = raw[ib];        // keep the ES out of the output data..
 
 				RAW[ic*nsam+isam] = xx;			 	// for plotting
 			}
 		}
-		for (int ic = 0; ic < nchan; ic++){
+		for (int ic = 0; ic < nchan_limit; ic++){
 			doDataUpdateCallbacks(ic);
 		}
 		return false;
@@ -844,9 +848,10 @@ public:
 		memset(FAIL_MASK32, 0, fail_mask_len*sizeof(epicsInt32));
 		bool fail = false;
 		int isam;
+		const int nchan_limit = MIN(nchan, _NCHAN_MAX);
 
 		for (isam = 0; isam < nsam-FIRST_SAM; ++isam){
-			for (int ic = 0, ic0 = 0, isite = 0; ic < nchan; ++ic){
+			for (int ic = 0, ic0 = 0, isite = 0; ic < nchan_limit; ++ic){
 				if (ic - ic0 >= site_channels[isite]){
 					++isite;
 					ic0 = ic;
@@ -868,7 +873,7 @@ public:
 		}
 
 		for (int itail = (--isam)-1; isam < nsam; ++isam){
-			for (int ic = 0; ic < nchan; ++ic){
+			for (int ic = 0; ic < nchan_limit; ++ic){
 				RAW[ic*nsam+isam] = RAW[ic*nsam+itail];
 			}
 		}
