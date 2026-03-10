@@ -1,0 +1,83 @@
+# ACQ420, ACQ425 gains
+
+record (mbbo, "${UUT}:${SITE}:GAIN:${CH}")	{
+	field(DTYP, "Soft Channel")
+	field(NOBT, "2")	
+	field(ZRST, "${G0}")
+	field(ONST, "${G1}")
+	field(TWST, "${G2}")
+	field(THST, "${G3}")
+	field(ZRST, "${G4}")
+	field(ONST, "${G5}")
+	field(TWST, "${G6}")
+	field(THST, "${G7}")
+	field(ZRVL, "0")
+	field(ONVL, "1")
+	field(TWVL, "2")
+	field(THVL, "3")	       
+	field(FRVL, "4")
+	field(FVVL, "5")
+	field(SXVL, "6")
+	field(SVVL, "7")	       
+	field(EINK, "${UUT}:${SITE}:GAIN:${CH}:c PP")
+}
+
+record(calcout, "${UUT}:${SITE}:GAIN:${CH}:c") {
+	field(INPA, "${UUT}:${SITE}:GAIN:${CH}")
+	field(CALC, "A")
+	field(OOPT, "On Change")
+	field(DOPT, "Use CALC")
+	field(OUT,  "${UUT}:${SITE}:GAIN:${CH}:w PP")
+}
+
+record (mbbo, "${UUT}:${SITE}:GAIN:${CH}:w")	{
+	field(DTYP, "stream")
+	field(OUT,  "@acq42x.proto setGain(${IX}) ${SPORT}")	
+	field(NOBT, "2")
+	field(DISV, "1")
+	field(SDIS, "${UUT}:${SITE}:GAIN:${CH}:s.PACT")
+	field(FLNK, "${UUT}:${SITE}:GAIN:${CH}:wf")
+}
+
+record(fanout, "${UUT}:${SITE}:GAIN:${CH}:wf") {
+	field(LNKA, "${UUT}:${SITE}:GAIN:${CH}:r PP")
+	field(FLNK, "${UUT}:${SITE}:GAIN_CHANGES")
+}
+record (mbbi, "${UUT}:${SITE}:GAIN:${CH}:r") {
+	field(DTYP, "stream")
+	field(INP,  "@acq42x.proto getGain(${IX}) ${SPORT}")	
+	field(NOBT, "2")	
+	field(SCAN, "Passive")
+	field(PINI, "YES")
+	field(DISV, "1")
+	field(SDIS, "${UUT}:${SITE}:GAIN:RDIS")
+	field(FLNK, "${UUT}:${SITE}:GAIN:${CH}:s")
+}
+
+record (mbbo, "${UUT}:${SITE}:GAIN:${CH}:s") {
+	field(DTYP, "Soft Channel")
+	field(NOBT, "2")
+	field(OMSL, "closed_loop")	
+	field(DOL, "${UUT}:${SITE}:GAIN:${CH}:r NPP")	
+	field(OUT, "${UUT}:${SITE}:GAIN:${CH} PP")
+	field(FLNK, "${UUT}:${SITE}:GAIN:${CH}_f")
+}
+
+# force waveform record to rescale
+record(calc, "${UUT}:${SITE}:GAIN:${CH}_f") {
+	field(INPA, "${UUT}:${SITE}:GAIN:${CH}")
+	field(CALC, "A==0? ${G0}: A==1? ${G1}: A==2? ${G2}: A==3? ${G3}:  A==4? ${G4}:  A==5? ${G5}:  A==6? ${G6}: ${G7}")
+}
+
+# and set the volts range in all associated WF records..
+record(aSub, "${UUT}:${SITE}:AI:WF:${CH}:V") {	
+	field(INPC,  "${UUT}:${SITE}:GAIN:${CH}_f")
+}
+record(aSub, "${UUT}:${SITE}:AI:TW:${CH}:V") {	
+	field(INPC,  "${UUT}:${SITE}:GAIN:${CH}_f")
+}
+
+record(dfanout, "${UUT}:${SITE}:GAIN:fan${FAN}") {
+	field(OUT${fan}, "${UUT}:${SITE}:GAIN:${CH} PP")
+}
+
