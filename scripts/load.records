@@ -507,6 +507,7 @@ load_400() {
                 gain_file_pfx="gain426"
             fi;;
         $MT_ACQ428)
+            calmon=calmon428
             HAS_ACQ428=1
             gain_file_pfx="gain428";;
         *)
