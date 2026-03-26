@@ -2,15 +2,15 @@
 
 record (mbbo, "${UUT}:${SITE}:GAIN:${CH}")	{
 	field(DTYP, "Soft Channel")
-	field(NOBT, "2")	
+	field(NOBT, "3")
 	field(ZRST, "${G0}")
 	field(ONST, "${G1}")
 	field(TWST, "${G2}")
 	field(THST, "${G3}")
-	field(ZRST, "${G4}")
-	field(ONST, "${G5}")
-	field(TWST, "${G6}")
-	field(THST, "${G7}")
+	field(FRST, "${G4}")
+	field(FVST, "${G5}")
+	field(SXST, "${G6}")
+	field(SVST, "${G7}")
 	field(ZRVL, "0")
 	field(ONVL, "1")
 	field(TWVL, "2")
@@ -19,7 +19,7 @@ record (mbbo, "${UUT}:${SITE}:GAIN:${CH}")	{
 	field(FVVL, "5")
 	field(SXVL, "6")
 	field(SVVL, "7")	       
-	field(EINK, "${UUT}:${SITE}:GAIN:${CH}:c PP")
+	field(FLNK, "${UUT}:${SITE}:GAIN:${CH}:c PP")
 }
 
 record(calcout, "${UUT}:${SITE}:GAIN:${CH}:c") {
@@ -33,7 +33,7 @@ record(calcout, "${UUT}:${SITE}:GAIN:${CH}:c") {
 record (mbbo, "${UUT}:${SITE}:GAIN:${CH}:w")	{
 	field(DTYP, "stream")
 	field(OUT,  "@acq42x.proto setGain(${IX}) ${SPORT}")	
-	field(NOBT, "2")
+	field(NOBT, "3")
 	field(DISV, "1")
 	field(SDIS, "${UUT}:${SITE}:GAIN:${CH}:s.PACT")
 	field(FLNK, "${UUT}:${SITE}:GAIN:${CH}:wf")
@@ -46,7 +46,7 @@ record(fanout, "${UUT}:${SITE}:GAIN:${CH}:wf") {
 record (mbbi, "${UUT}:${SITE}:GAIN:${CH}:r") {
 	field(DTYP, "stream")
 	field(INP,  "@acq42x.proto getGain(${IX}) ${SPORT}")	
-	field(NOBT, "2")	
+	field(NOBT, "3")	
 	field(SCAN, "Passive")
 	field(PINI, "YES")
 	field(DISV, "1")
@@ -56,7 +56,7 @@ record (mbbi, "${UUT}:${SITE}:GAIN:${CH}:r") {
 
 record (mbbo, "${UUT}:${SITE}:GAIN:${CH}:s") {
 	field(DTYP, "Soft Channel")
-	field(NOBT, "2")
+	field(NOBT, "3")
 	field(OMSL, "closed_loop")	
 	field(DOL, "${UUT}:${SITE}:GAIN:${CH}:r NPP")	
 	field(OUT, "${UUT}:${SITE}:GAIN:${CH} PP")
