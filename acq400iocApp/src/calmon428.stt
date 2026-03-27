@@ -7,7 +7,7 @@
 // acq1001_064:1:AI:TW:01:V
 // acq1001_064:1:AI:WF:01:V
 
-program calmon42x
+program calmon428
 option +r;
 
 int adc_cal_mode; assign adc_cal_mode to "{uut}:{site}:ADC_CAL";
@@ -49,7 +49,8 @@ unsigned char all_x0 = 0;       // monitor change to all_x[0]
 int gain_vals[17];		assign gain_vals to {};	/* "${UUT}:${SITE}:GAIN:${CH}" */
 int rdis; assign rdis to "{uut}:{site}:GAIN:RDIS";
 int rdis0;
-
+int status1;
+int status2;
 
 
 %{
@@ -67,7 +68,7 @@ extern int acq400_cal_ll_check_success(int site, int gains[], int nchan);
 ss calmon {
 	state init {
 		when() {
-			printf("calmon42x R1000 site:%s\n", site);
+			printf("calmon428 R1000 site:%s\n", site);
 			pvGet(has_ch_gains);
 			uut = macValueGet("uut"); 
 			if (macValueGet("site") != 0){
@@ -172,11 +173,16 @@ ss calmon {
 							ext_eslo[0] = ext_eoff[0] = 1+gains[1];
 						}						
 					}else{
-						printf("ERROR calmon42x site:%s ch:%d key:%s return from acq400_getChannel()\n", site, ch, skey);
+						printf("ERROR calmon428 site:%s ch:%d key:%s return from acq400_getChannel()\n", site, ch, skey);
 					}
 				}
-				pvPut(ext_eslo);
-				pvPut(ext_eoff);
+			        status1 = pvPut(ext_eslo, SYNC);
+                                status2 = pvPut(ext_eoff, SYNC);
+
+                                printf("\n--- SNL ARRAY DEBUG ---\n");
+                                printf("ext_eslo[1] is currently: %f\n", ext_eslo[1]);
+                                printf("pvPut(ext_eslo) returned status: %d (pvStatOK is %d)\n", status1, pvStatOK);
+                                printf("-----------------------\n\n");
 			}else{
 				printf("make_change: STUB\n");
 			}
