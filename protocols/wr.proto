@@ -17,6 +17,11 @@ getSi5326TP_STATE {
 	in "%#s";
 }
 
+getWRSFP {
+	out "wrsfp";
+	in "%d";
+}
+
 getSi5326TP_STATE_VALUE {
 	in "%*d %s %*d %*s";
 }

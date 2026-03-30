@@ -8,6 +8,13 @@ record(stringin, "${UUT}:${SITE}:Si5326:TUNEPHASE:STATUS")
 	field(SCAN, "1 second")
 }
 
+record(longin, "${UUT}:11:WRSFP")
+{
+	field(DTYP, "stream")
+	field(INP,  "@wr.proto getWRSFP ${SPORT}")
+	field(PINI, "YES")
+}
+
 record(stringin, "${UUT}:${SITE}:Si5326:TUNEPHASE:STATE")
 {
 	field(DTYP, "stream")
