@@ -1,0 +1,70 @@
+# ACQ426 : WORKTODO
+
+record (mbbo, "${UUT}:${SITE}:GAIN:${CH}") {	
+	field(DTYP, "Soft Channel")
+	field(NOBT, "3")
+        field(ZRST, "+/-25V6")
+        field(ONST, "+/-12V8")
+        field(TWST, "+/-6V4")
+        field(THST, "+/-3V2")
+        field(FRST, "+/-1V6")
+        field(FVST, "+/-0V8")
+        field(SXST, "+/-0V4")
+        field(SVST, "+/-0V2")
+	field(VAL,  "0")
+        field(DISV, "1")
+        field(SDIS, "${UUT}:${SITE}:ACTIVE")	
+	field(FLNK, "${UUT}:${SITE}:GAIN:${CH}:s PP")
+}
+
+record(waveform, "${UUT}:${SITE}:GAIN:${CH}:X") {
+        field(DTYP, "Soft Channel")
+        field(NELM, "${nchanp1}")
+        field(FTVL, "UCHAR")
+        field(DESC, "set gain per chan by ordinal")
+}
+
+record(calcout, "${UUT}:${SITE}:GAIN:${CH}:s") {
+        field(CALC, "1")
+        field(OOPT, "Every Time")
+        field(DOPT, "Use CALC")
+        field(OUT, "${UUT}:${SITE}:GAIN:RDIS PP")
+        field(FLNK, "${UUT}:${SITE}:GAIN:fan1 PP")
+}
+
+record(bo, "${UUT}:${SITE}:GAIN:RDIS") {
+        field(DTYP, "Soft Channel")
+        field(ZNAM, "ENABLE")
+        field(ONAM, "DISABLE")
+        field(DESC, "Global gain readback disable")
+        field(PINI, "YES")
+        field(VAL,  "1")
+}
+
+record(dfanout, "${UUT}:${SITE}:GAIN:fan1") {
+	field(DOL,  "${UUT}:${SITE}:GAIN:${CH}")
+	field(OMSL, "closed_loop")
+	field(FLNK, "${UUT}:${SITE}:GAIN:fan2 PP")
+}
+
+record(dfanout, "${UUT}:${SITE}:GAIN:fan2") {
+	field(DOL,  "${UUT}:${SITE}:GAIN:${CH}")
+	field(OMSL, "closed_loop")
+	field(FLNK, "${UUT}:${SITE}:GAIN:fan3 PP")
+}
+
+record(dfanout, "${UUT}:${SITE}:GAIN:fan3") {
+	field(DOL,  "${UUT}:${SITE}:GAIN:${CH}")
+	field(OMSL, "closed_loop")
+	field(FLNK, "${UUT}:${SITE}:GAIN:fan4 PP")
+}
+record(dfanout, "${UUT}:${SITE}:GAIN:fan4") {
+	field(DOL,  "${UUT}:${SITE}:GAIN:${CH}")
+	field(OMSL, "closed_loop")
+	field(FLNK, "${UUT}:${SITE}:GAIN_CHANGES PP")
+}
+
+record (calc, "${UUT}:${SITE}:GAIN_CHANGES") {
+	field(INPA, "${UUT}:${SITE}:GAIN_CHANGES")
+	field(CALC, "A+1")
+}
