@@ -47,7 +47,7 @@ static void task_runner(void *drvPvt)
 
 /** abstract base class with Judgement common definitions. Use Judgement::factory() to instantiate a concrete class */
 acq400Judgement::acq400Judgement(const char* portName, int _nchan, int _nsam, const char* _site_channels, int _bursts_per_buffer):
-	asynPortDriver(portName,
+	acq400_asynPortDriver(portName,
 /* maxAddr */		_nchan+1,    /* nchan from 0 + ADDR_WIN_ALL */
 /* Interface mask */    asynEnumMask|asynInt32Mask|asynFloat64Mask|asynInt8ArrayMask|asynInt16ArrayMask|asynInt32ArrayMask|asynDrvUserMask,
 /* Interrupt mask */	asynEnumMask|asynInt32Mask|asynFloat64Mask|asynInt8ArrayMask|asynInt16ArrayMask|asynInt32ArrayMask,
@@ -252,6 +252,7 @@ void acq400Judgement::task()
 {
 	task_get_params();
 
+	//@@TODO: Throttle NFG EpicsTime diff in seconds! Switch to XRM method.
 	int throttle = ::getenv_default("acq400Judgement_THROTTLE_HZ", 0);
 	double throttle_s = 1.0/throttle;
 	unsigned update = 0;
