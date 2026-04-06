@@ -25,6 +25,8 @@ acq400_asynPortDriver::acq400_asynPortDriver(const char *portName, int maxAddr, 
 	createParam(PS_UPDATES, asynParamInt32,	&P_UPDATES);
 	createParam(PS_TS_USEC, asynParamInt64,	&P_TS_USEC);
 	createParam(PS_MON_RL,	asynParamInt32, &P_MON_RL);
+
+	eventId = epicsEventCreate(epicsEventEmpty);
 }
 
 asynStatus acq400_asynPortDriver::gip(int pnum, int* pram)

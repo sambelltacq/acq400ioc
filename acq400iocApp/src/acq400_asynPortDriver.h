@@ -25,6 +25,8 @@ protected:
 
 	asynStatus gsp(int pnum, int maxchar, char* str);
 
+	epicsEventId eventId;
+
 	int P_RUNSTOP;
 	int P_UPDATES;
 	int P_TS_USEC;
