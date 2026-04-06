@@ -37,7 +37,7 @@ done
 echo acq400JudgementConfigure\(J1, ${NCHAN}, ${nsam}, ${WSZ}, \"${SITEC}\", ${BURSTS_PER_BUFFER}, ${NDMA}\)
 PRAMS="UUT=${HOST},PORT=J1,ADDR=0,TIMEOUT=0,NCHAN=${NCHAN},NCHAN1=$((NCHAN+1))"
 echo dbLoadRecords\(\"db/judgementCommon.db\",\"${PRAMS},S1=${S1},MAXCODE=${MAXCODE},MM1=$((MAXCODE-1))\"\)
-echo dbLoadRecords\(\"db/acq400_asyn_base.db\",\"${PRAMS}\"\)
+echo dbLoadRecords\(\"db/acq400_asyn_base.db\",\"${PRAMS},FUN=JDG\"\)
 echo dbLoadRecords\(\"db/asynRecord.db\",\"P=${HOST}:,R=asyn:J1,PORT=J1,ADDR=0,OMAX=80,IMAX=80,TB3=0,TIB0=0\"\)
 echo dbLoadRecords\(\"db/asynRecord.db\",\"P=${HOST}:,R=asyn:J1,PORT=J1,ADDR=3,OMAX=80,IMAX=80,TB3=0,TIB0=0\"\)
 
@@ -75,3 +75,4 @@ done
 cprams="UUT=${HOST},SITE=JDG,SIG=CHX,CTRMAX=999999,DTC=1"
 dblr '"db/_counter.db","'${cprams},lname=BURST'"'
 
+echo "dbpf ${HOST}:JDG:RUNSTOP 1" >> /tmp/st_post.cmd

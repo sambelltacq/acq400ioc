@@ -51,6 +51,9 @@ protected:
 		}
 		//gip(P_MON_RL, &mrl);
 		void newData(int mrl);
+		epicsTimeStamp get_et0() {
+			return et0;
+		}
 	};
 	int mrl_param;
 public:

@@ -115,7 +115,7 @@ protected:
 	const int fail_mask_len;  /* number of elements in FAIL_MASK32 */
 	epicsInt32* FAIL_MASK32;
 	epicsInt32 sample_count;
-	epicsTimeStamp t0, t1;
+	epicsTimeStamp t0;
 	unsigned clock_count[2];			     /* previous, current */
 	epicsInt32 burst_count;
 	epicsFloat64 sample_time;

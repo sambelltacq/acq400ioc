@@ -1,3 +1,4 @@
+
 record(longin, "${UUT}:JDG:BN")
 {
 	field(PINI, "0")
