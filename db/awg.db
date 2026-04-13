@@ -7,11 +7,48 @@ record (longin, "${UUT}:${SITE}:AWG:LENGTH") {
 }
 
 record (longout, "${UUT}:${SITE}:AWG:BURSTLEN") {
+	field(DTYP, "Soft Channel")
+	field(DISV, "1")
+	field(SDIS, "${UUT}:${SITE}:RUN")
+	field(DRVL, "0")
+	field(DRVH, "16777215")
+	field(FLNK, "${UUT}:${SITE}:AWG:BURSTLEN:w PP")
+}
+
+record (longout, "${UUT}:${SITE}:AWG:BURSTLEN:w") {
 	field(DTYP, "stream")
 	field(OUT, "@awg.proto setBurstLen ${SPORT}")
-	field(FLNK, "${UUT}:${SITE}:AWG:BURSTMODE")
+
 	field(DRVL, "0")
-	field(DRVH, "1048576")
+	field(DRVH, "16777215")
+
+	field(DISV, "1")
+	field(SDIS, "${UUT}:${SITE}:AWG:BURSTLEN:s.PACT")
+	field(DOL,  "${UUT}:${SITE}:AWG:BURSTLEN PP")
+	field(OMSL, "closed_loop")
+
+	field(FLNK, "${UUT}:${SITE}:AWG:BURSTMODE PP")
+}
+
+record (longin, "${UUT}:${SITE}:AWG:BURSTLEN:r") {
+	field(DTYP, "stream")
+	field(SCAN, "5 second")
+
+	field(DRVL, "0")
+	field(DRVH, "16777215")
+
+	field(INP, "@awg.proto getBurstLen ${SPORT}")
+	field(FLNK, "${UUT}:${SITE}:AWG:BURSTLEN:s")
+}
+
+record (longout, "${UUT}:${SITE}:AWG:BURSTLEN:s") {
+	field(DTYP, "Soft Channel")
+	field(DRVL, "0")
+	field(DRVH, "16777215")
+
+	field(DOL,  "${UUT}:${SITE}:AWG:BURSTLEN:r NPP")
+	field(OMSL, "closed_loop")
+	field(OUT,  "${UUT}:${SITE}:AWG:BURSTLEN PP")
 }
 record (calcout, "${UUT}:${SITE}:AWG:BURSTMODE") {
 	field(INPA, "${UUT}:${SITE}:AWG:BURSTLEN")

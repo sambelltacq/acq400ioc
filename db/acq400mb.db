@@ -12,9 +12,9 @@ record(stringin, "${UUT}:0:DISTRIBUTOR:SITES") {
 }
 
 record(longin, "${UUT}:0:DISTRIBUTOR:S1") {
-	field(DTYP,  "stream")
-	field(INP,   "@acq400mb.proto getDistributorS1 ${SPORT2}")
-	field(SCAN,  "I/O Intr")		
+        field(DTYP,  "Soft Channel")
+	field(VAL,   "${distI}")
+	field(PINI,  "YES")
 }
 
 record(mbbi, "${UUT}:0:DISTRIBUTOR:COMMS") {

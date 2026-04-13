@@ -13,7 +13,7 @@ setGain {
 
 getGain {
         out "gain\$1";
-        in "%{M10-10|M5-5|M2.5-2.5|0-10|0-5}";
+        in "%#{BUSY=15|M10-10=0|M5-5|M2.5-2.5|0-10|0-5}";
         @replytimeout {
                 disconnect;
                 wait 2000;
@@ -24,5 +24,10 @@ getGain {
 getScale {
         out "scale\$1";
         in "%f";
+}
+
+getAdcResolution {
+        out "acq426_adc_resolution";
+        in "%d";
 }
 

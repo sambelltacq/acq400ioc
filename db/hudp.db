@@ -207,13 +207,37 @@ record(calc, "${UUT}:${SITE}:HUDP:TX:ENABLED") {
 	field(CALC, "A!=0 && B==1 && C!=0")	
 }
 
-record(mbbo, "${UUT}:${SITE}:HUDP:UDP:DATA_SRC") {
-	field(DTYP, "stream")
-	field(OUT,  "@hudp.proto setUdpDataSrc ${SPORT}")
-	field(NOBT, "2")
-	field(ZRST, "AGG")
-	field(ONST, "COMMSA")
-	field(TWST, "COMMSB")
+record(bo, "${UUT}:${SITE}:HUDP:UDP:DATA_SRC") {
+	field(DTYP, "Soft Channel")
+	field(ZNAM, "AGG")
+	field(ONAM, "DIST")
+        field(FLNK, "${UUT}:${SITE}:HUDP:UDP:DATA_SRC:w PP")
 }
 
+record(bo, "${UUT}:${SITE}:HUDP:UDP:DATA_SRC:w") {
+        field(DTYP, "stream")
+        field(OUT,  "@hudp.proto setUdpDataSrc ${SPORT}")
+        field(ZNAM, "AGG")
+        field(ONAM, "DIST")
+        field(DISV, "1")
+        field(SDIS, "${UUT}:${SITE}:HUDP:UDP:DATA_SRC:s.PACT")
+        field(OMSL, "closed_loop")
+        field(DOL,  "${UUT}:${SITE}:HUDP:UDP:DATA_SRC PP")
+}
+record(bi, "${UUT}:${SITE}:HUDP:UDP:DATA_SRC:r") {
+        field(DTYP, "stream")
+        field(INP,  "@hudp.proto getUdpDataSrc ${SPORT}")
+        field(ZNAM, "AGG")
+        field(ONAM, "DIST")
+        field(SCAN, "2 second")
+        field(FLNK, "${UUT}:${SITE}:HUDP:UDP:DATA_SRC:s")
+}
+record(bo, "${UUT}:${SITE}:HUDP:UDP:DATA_SRC:s") {
+        field(DTYP, "Soft Channel")
+        field(ZNAM, "AGG")
+        field(ONAM, "DIST")
+        field(DOL, "${UUT}:${SITE}:HUDP:UDP:DATA_SRC:r NPP")
+        field(OMSL, "closed_loop")
+        field(OUT, "${UUT}:${SITE}:HUDP:UDP:DATA_SRC PP") 
+}
  	

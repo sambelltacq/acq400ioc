@@ -50,7 +50,7 @@ setCtrlEnum {
 }
 
 getCtrlEnum {
-	out "ctrl";
+	out "ctrl_rst_sta";
 	in "%{0|9|1}";
 }
 
@@ -88,5 +88,10 @@ setDiscoIdx {
 setUdpDataSrc {
 	out "udp_data_src %d";
 	in "";
+}
+
+getUdpDataSrc {
+        out "udp_data_src";
+        in "%d";
 }
 

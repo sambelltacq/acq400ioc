@@ -25,9 +25,9 @@ int maxblen; 		assign maxblen 		to "{uut}:0:MAXBLEN";
 int blen;    		assign blen 		to "{uut}:0:BLEN";
 int bpb;     		assign bpb		to "{uut}:0:BPB";
 int ssb;		assign ssb		to "{uut}:0:SSB";
-int rtm_translen; 	assign rtm_translen 	to "{uut}:1:RTM_TRANSLEN";		monitor rtm_translen;
-int rgm;		assign rgm 		to "{uut}:1:RGM";			monitor rgm;
 int optimise_bufferlen;	assign optimise_bufferlen to "{uut}:0:OPTIMISE_BUFFERLEN";
+int rtm_translen; 	assign rtm_translen 	to "{uut}:{site}:RTM_TRANSLEN";		monitor rtm_translen;
+int rgm;		assign rgm 		to "{uut}:{site}:RGM";			monitor rgm;
 
 
 #define PNAME		"rtm_buffer_mon "

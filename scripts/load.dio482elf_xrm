@@ -4,6 +4,7 @@ HOST=$1
 site=$2
 source ./scripts/record_support.sh
 
+echo "# load.dio482elf_xrm $site"
 
 HSS="UUT=${HOST},SITE=${site},SPORT=S${site}C"
 

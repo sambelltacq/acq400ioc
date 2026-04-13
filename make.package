@@ -2,20 +2,7 @@
 # xl- excluding libraries. Libs are assumed to be preloaded, eg with .ovl
 
 DC="$(date +%y%m%d%H%M)"
-ISXL=0
-if [ "x$1" = "xxl" ]; then
-	ISXL=1
-	git branch | grep xl$
-	if [ $? -eq 0 ]; then
-		echo on xl branch, build xl
-		ISXL=1
-	else
-		echo WARNING NOT on xl branch
-	fi
-elif [ "$(basename $(dirname $PWD))" = "ACQ400_ESW_TOP" ]; then
-	ISXL=1
-	echo "ACQ400_ESW_TOP detected, ISXL set $ISXL"
-fi
+ISXL=1
 
 [ $ISXL -eq 1 ] && DC="xl_$(date +%y%m%d%H%M)"
 SEQ=40
@@ -93,7 +80,7 @@ if [ "$BR" = "epics7" ]; then
 	BC=$GS
 else
 	echo building branch $BR
-	BC="${BR}_${GS}"
+	BC="${BR//\//-}_${GS}"
 fi
 RN=${SEQ}-acq400ioc-${BC}${DC}.tgz
 tar cvzf release/$RN -C opkg .

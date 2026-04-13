@@ -7,10 +7,7 @@
 // acq1001_064:1:AI:TW:01:V
 // acq1001_064:1:AI:WF:01:V
 
- 
-
-
-program calmon426
+program calmon428
 option +r;
 
 int adc_cal_mode; assign adc_cal_mode to "{uut}:{site}:ADC_CAL";
@@ -19,11 +16,11 @@ int adc_cal_mode0;
 
 int readback_disable; assign readback_disable to "";
 
-float ext_eslo[33]; 	assign ext_eslo to "{uut}:{site}:AI:CAL:ESLO";
-float ext_eoff[33]; 	assign ext_eoff to "{uut}:{site}:AI:CAL:EOFF";
+float ext_eslo[17]; 	assign ext_eslo to "{uut}:{site}:AI:CAL:ESLO";
+float ext_eoff[17]; 	assign ext_eoff to "{uut}:{site}:AI:CAL:EOFF";
 
-float eslo[33];		assign eslo to {};	// index from 1
-float eoff[33]; 	assign eoff to {};
+float eslo[17];		assign eslo to {};	// index from 1
+float eoff[17]; 	assign eoff to {};
 
 int has_ch_gains;	assign has_ch_gains to "{uut}:{site}:HAS_CH_GAINS";
 int data32;		assign data32 to "{uut}:{site}:data32";
@@ -31,7 +28,7 @@ int data32;		assign data32 to "{uut}:{site}:data32";
 int gain_changes;	assign gain_changes to "";
 int gain_changes0;
 
-string gains[33];	assign gains to {};	/* "${UUT}:${SITE}:GAIN:${CH}" */
+int gains[17];		assign gains to {};	/* "${UUT}:${SITE}:GAIN:${CH}.RVAL" */
 
 char* doc;
 char fname[80];
@@ -46,39 +43,24 @@ int verbose;
 int rdis_permanent = 0;
 
 
-unsigned char all_x[33]; assign all_x to "{uut}:{site}:GAIN:ALL:X"; monitor all_x;         // index from 1
+unsigned char all_x[17]; assign all_x to "{uut}:{site}:GAIN:ALL:X"; monitor all_x;         // index from 1
 unsigned char all_x0 = 0;       // monitor change to all_x[0]
 
-int gain_vals[33];		assign gain_vals to {};	/* "${UUT}:${SITE}:GAIN:${CH}" */
+int gain_vals[17];		assign gain_vals to {};	/* "${UUT}:${SITE}:GAIN:${CH}" */
 int rdis; assign rdis to "{uut}:{site}:GAIN:RDIS";
 int rdis0;
-
+int status1;
+int status2;
 
 
 %{
 #include <stdlib.h>
-#include <string.h>
 
 extern void* acq400_openDoc(const char* docfile, int* nchan);
 extern int acq400_getChannel(void *prv, int ch, const char* sw, float* eslo, float* eoff, int nocal);
 extern int acq400_isData32(void* prv);
 extern int acq400_isCalibrated(void* prv);
 extern int acq400_cal_ll_check_success(int site, int gains[], int nchan);
-
-/* driver uses these labels */
-char* dlabels[] = { "M10-10", "M5-5", "M2.5-2.5",
- 		    "0-10", "0-5", "0-50-12.5", "M12.5-12.5", "0-20", "M20-20",
-		    "0-25", "M25-25", "0-40", "M40-40"
-};
-
-/* @@todo: automate this: we will need to visit for ER!
- * pvget -v -M json acq2106_130:1:GAIN:30
-acq2106_130:1:GAIN:30 {"value":{"index":0,"choices":["+/-10V","+/-5V","+/-2V5"]},"alarm":{"severity":0,"status":0,"message":""},"timeStamp":{"secondsPastEpoch":1762172691,"nanoseconds":650795684,"userTag":0},"display":{"description":""}}
- *
- */
-char * elabels[20] = { "+/-10V","+/-5V","+/-2V5" };
-
-
 }%
 
 
@@ -86,7 +68,7 @@ char * elabels[20] = { "+/-10V","+/-5V","+/-2V5" };
 ss calmon {
 	state init {
 		when() {
-			printf("calmon426 R1000 site:%s\n", site);
+			printf("calmon428 R1000 site:%s\n", site);
 			pvGet(has_ch_gains);
 			uut = macValueGet("uut"); 
 			if (macValueGet("site") != 0){
@@ -108,7 +90,7 @@ ss calmon {
 		
 		when(doc != 0){
 			int ch;
-			for (ch = 1; ch <= nchan; ++ch){
+			for (ch = 1; ch <= nchan; ++ch){				
 				snprintf(pvname, 80, "%s:%s:AI:CH:%02d", uut, site, ch);						
 				snprintf(pvfield, 100, "%s.%s", pvname, "ESLO");
 				pvAssign(eslo[ch], pvfield);
@@ -119,7 +101,7 @@ ss calmon {
 				if (verbose && ch==1) printf("assign %s\n",pvfield);
 				
 				if (has_ch_gains){
-					snprintf(pvname, 80, "%s:%s:GAIN:%02d", uut, site, ch);
+					snprintf(pvname, 80, "%s:%s:GAIN:%02d.RVAL", uut, site, ch);
 					pvAssign(gains[ch], pvname);
 					//pvGet(gains[ch]);
 				}
@@ -156,7 +138,8 @@ ss calmon {
 					}
 				}
 				
-				for (ch = 1; ch <= nchan; ++ch){					
+				for (ch = 1; ch <= nchan; ++ch){
+					char skey[2] = {};
 					if (has_ch_gains){
 						int rc = pvGet(gains[ch], SYNC);
 						if (rc != pvStatOK){
@@ -165,19 +148,18 @@ ss calmon {
 							if (rc != pvStatOK){
 								printf("ERROR: pvGet() ch:%d not OK %d\n", ch, rc);
 							}else{
-								printf("NOTE: pvGet() ch:%d OK on retry value %s\n", ch, gains[ch]);
+								printf("NOTE: pvGet() ch:%d OK on retry value %d\n", ch, gains[ch]);
 							}
 						}
 					}
-					if (strlen(gains[ch]) == 0){					
-						printf("ERROR: gain[%d] has null\n", ch);
-						continue;
+					if (gains[ch] < 0 || gains[ch] > 9){
+						printf("ERROR: gain out of range %d\n", gains[ch]);
 					}					
-
-					if (acq400_getChannel(doc, ch, gains[ch], &eslo[ch], &eoff[ch], adc_cal_mode==1) == 1){
+					skey[0] = gains[ch]+'0';
+					if (acq400_getChannel(doc, ch, skey, &eslo[ch], &eoff[ch], adc_cal_mode==1) == 1){
 						if (ch==1 || verbose > 1){
-							printf("site:%s ch:%2d g:%s eslo:%.6e eoff:%.6e\n",
-										site, ch, gains[ch], eslo[ch], eoff[ch]);
+							printf("site:%s g:%d ch:%2d eslo:%.6e eoff:%.6e\n", 
+										site, gains[ch], ch, eslo[ch], eoff[ch]);
 						}
 						if (scale){
 							eslo[ch] *= scale;
@@ -186,13 +168,21 @@ ss calmon {
 						pvPut(eoff[ch]);
                                                 
 						ext_eslo[ch] = eslo[ch];
-						ext_eoff[ch] = eoff[ch];				}else{
-						printf("ERROR calmon426 site:%s ch:%d key:%s return from acq400_getChannel()\n",
-								site, ch, gains[ch]);
+						ext_eoff[ch] = eoff[ch];
+						if (has_ch_gains && ch == 1){
+							ext_eslo[0] = ext_eoff[0] = 1+gains[1];
+						}						
+					}else{
+						printf("ERROR calmon428 site:%s ch:%d key:%s return from acq400_getChannel()\n", site, ch, skey);
 					}
 				}
-				pvPut(ext_eslo);
-				pvPut(ext_eoff);
+			        status1 = pvPut(ext_eslo, SYNC);
+                                status2 = pvPut(ext_eoff, SYNC);
+
+                                printf("\n--- SNL ARRAY DEBUG ---\n");
+                                printf("ext_eslo[1] is currently: %f\n", ext_eslo[1]);
+                                printf("pvPut(ext_eslo) returned status: %d (pvStatOK is %d)\n", status1, pvStatOK);
+                                printf("-----------------------\n\n");
 			}else{
 				printf("make_change: STUB\n");
 			}
@@ -208,8 +198,7 @@ ss calmon {
 					pvGet(gains[ch], SYNC);
 				}
 			}
-		}
-		/* @@todo no check
+		}		
 		when(has_ch_gains == 0 || acq400_cal_ll_check_success(*site-'0', gains, nchan) == 0){
 			if (has_ch_gains && rdis_permanent == 0){
 				readback_disable = 0;
@@ -221,13 +210,6 @@ ss calmon {
 		when() {
 			if (verbose) printf("check_success => wait_and_retry\n");
 		} state wait_and_retry
-		*/
-		when(delay(1)) {
-			if (has_ch_gains && rdis_permanent == 0){
-				readback_disable = 0;
-				pvPut(readback_disable);
-			}
-		} state wait_change
 	}
 	
 	state wait_and_retry {
@@ -241,9 +223,6 @@ ss calmon {
 	}
 	
 	state wait_change {
-		entry {
-			if (verbose) printf("wait_change\n");
-		}
 		when(adc_cal_mode != adc_cal_mode0 || gain_changes != gain_changes0){
 			if (adc_cal_mode != adc_cal_mode0){
 				printf("cal mode changed=>%d\n", adc_cal_mode);

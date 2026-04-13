@@ -32,12 +32,12 @@ getInstDI {
 }
 
 get_DI32 {
-	out "DI32";
+	out "di_snoop";
 	in "%x"
 }
 
 get_DI32_4x8 {
-	out "DI32";
+	out "di_snoop";
 	in "0x%(\$1:BYTE4.RVAL)!2x%(\$1:BYTE3.RVAL)!2x%(\$1:BYTE2.RVAL)!2x%(\$1:BYTE1.RVAL)!2x";
 }
 

@@ -61,10 +61,22 @@ setAbort {
     	in;
 }
 
+setAwgRgm {
+	out "awg_rtm %d";
+	in;
+}
+getAwgRgm {
+	out "awg_rtm";
+	in "%d";
+}
 setBurstLen {
-    	out "rtm %d";   
-    	in;
     	out "rtm_translen %d";
+    	in;
+}
+
+getBurstLen {
+	out "rtm_translen";
+	in "%d";
 }
 
 getPushBuf {

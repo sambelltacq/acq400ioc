@@ -131,6 +131,9 @@ see /mnt/local/sysconfig/acq400.sh, uncomment one of:
 #ACQ400_JUDGEMENT="1024 d1"
 # Rapid Scope, 4096 points, internal trigger to 2Hz
 #ACQ400_JUDGEMENT="4096 d1"
+
+# in case of overloading:
+#export acq400_Judgement_NCHAN_MAX=N
 # for normal streaming, leave all ACQ400_JUDGEMENT above commented out
 ```
 ## The goal is to have a single setting to change all, but there are other specialist ttweaks available in /mnt/local/sysconfig/epics.sh

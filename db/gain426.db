@@ -2,23 +2,15 @@
 
 record (mbbo, "${UUT}:${SITE}:GAIN:${CH}")	{
 	field(DTYP, "Soft Channel")
-	field(NOBT, "3")	
+	field(NOBT, "2")
 	field(ZRST, "+/-10V")
 	field(ONST, "+/-5V")
 	field(TWST, "+/-2V5")
-	field(THST, "0-10V")
-	field(FRST, "0-5V")
-	field(FVST, "")
-	field(SXST, "")
-	field(SVST, "")
+	field(THST, "")
         field(ZRVL, "0")
         field(ONVL, "1")
         field(TWVL, "2")
         field(THVL, "3")
-        field(FRVL, "4")
-        field(FVVL, "5")
-        field(SXVL, "6")
-        field(SVVL, "7")
         field(DISV, "1")
         field(SDIS, "${UUT}:${SITE}:ACTIVE")
         field(FLNK, "${UUT}:${SITE}:GAIN:${CH}:w PP")	
@@ -52,7 +44,7 @@ record(fanout, "${UUT}:0:ACTIVE:f"){
 record (mbbi, "${UUT}:${SITE}:GAIN:${CH}:r") {
 	field(DTYP, "stream")
 	field(INP,  "@acq426.proto getGain(${IX}) ${SPORT}")
-	field(NOBT, "3")	
+	field(NOBT, "4")
         field(ZRST, "+/-10V")
         field(ONST, "+/-5V")
         field(TWST, "+/-2V5")
@@ -61,6 +53,7 @@ record (mbbi, "${UUT}:${SITE}:GAIN:${CH}:r") {
         field(FVST, "")
         field(SXST, "")
         field(SVST, "")
+        field(FFST, "BUSY")
 	field(SCAN, "5 second")
 	
 	field(DISV, "1")
@@ -89,7 +82,7 @@ record (mbbo, "${UUT}:${SITE}:GAIN:${CH}:s") {
 record(calc, "${UUT}:${SITE}:GAIN:${CH}_f") {
 	field(INPA, "${UUT}:${SITE}:GAIN:${CH}")
 # todo how to handle unipolar?	
-	field(CALC, "A==1? 10: A==2? 5: 0")
+	field(CALC, "A==1? 10: A==2? 5: 2.5")
 }
 
 # and set the volts range in all associated WF records..

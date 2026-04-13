@@ -22,9 +22,32 @@ record (mbbo, "${UUT}:${SITE}:GAIN:${CH}") {
 	field(VAL,  "0")
         field(DISV, "1")
         field(SDIS, "${UUT}:${SITE}:ACTIVE")	
-	field(FLNK, "${UUT}:${SITE}:GAIN:fan1")    	
+        field(FLNK, "${UUT}:${SITE}:GAIN:s")
 }
 
+record(waveform, "${UUT}:${SITE}:GAIN:${CH}:X") {
+        field(DTYP, "Soft Channel")
+        field(NELM, "${nchanp1}")
+        field(FTVL, "UCHAR")
+        field(DESC, "set gain per chan by ordinal")
+}
+
+record(calcout, "${UUT}:${SITE}:GAIN:${CH}:s") {
+        field(CALC, "1")
+        field(OOPT, "Every Time")
+        field(DOPT, "Use CALC")
+        field(OUT, "${UUT}:${SITE}:GAIN:RDIS PP")
+        field(FLNK, "${UUT}:${SITE}:GAIN:fan1")
+}
+
+record(bo, "${UUT}:${SITE}:GAIN:RDIS") {
+        field(DTYP, "Soft Channel")
+        field(ZNAM, "ENABLE")
+        field(ONAM, "DISABLE")
+        field(DESC, "Global gain readback disable")
+        field(PINI, "YES")
+        field(VAL,  "1")
+}
 
 record(dfanout, "${UUT}:${SITE}:GAIN:fan1") {
 	field(DOL,  "${UUT}:${SITE}:GAIN:${CH}")

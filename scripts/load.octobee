@@ -1,0 +1,14 @@
+#!/bin/sh
+
+host=${1}
+site=${2}
+
+if [ -z $host ] || [ -z $site ]; then
+	echo "# load.octobee FAIL $host $site"
+	exit 1
+fi
+echo "# load.octobee $HOST $host $site"
+source ./scripts/mtype.sh
+./scripts/load.qen ${host} ${site} $MT_OCTOBEE
+
+

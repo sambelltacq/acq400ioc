@@ -24,20 +24,25 @@ fi
 
 SITEC=
 DELIM=
+adc_sites=
 for s in $(echo $sites | tr , \  ); do
-        SITEC="$SITEC$DELIM$(get.site $s active_chan)"
-        DELIM=,
+        is_adc=$(get.site $s is_adc | awk '{ print $1 }')
+        if [ $is_adc -eq 1 ]; then
+                SITEC="$SITEC$DELIM$(get.site $s active_chan)"
+                DELIM=,
+                adc_sites="$adc_sites $s"
+        fi
 done
 
 echo acq400JudgementConfigure\(J1, ${NCHAN}, ${nsam}, ${WSZ}, \"${SITEC}\", ${BURSTS_PER_BUFFER}, ${NDMA}\)
 PRAMS="UUT=${HOST},PORT=J1,ADDR=0,TIMEOUT=0,NCHAN=${NCHAN},NCHAN1=$((NCHAN+1))"
-echo dbLoadRecords\(\"db/judgementCommon.db\",\"${PRAMS},MAXCODE=${MAXCODE},MM1=$((MAXCODE-1))\"\)
+echo dbLoadRecords\(\"db/judgementCommon.db\",\"${PRAMS},S1=${S1},MAXCODE=${MAXCODE},MM1=$((MAXCODE-1))\"\)
 echo dbLoadRecords\(\"db/asynRecord.db\",\"P=${HOST}:,R=asyn:J1,PORT=J1,ADDR=0,OMAX=80,IMAX=80,TB3=0,TIB0=0\"\)
 echo dbLoadRecords\(\"db/asynRecord.db\",\"P=${HOST}:,R=asyn:J1,PORT=J1,ADDR=3,OMAX=80,IMAX=80,TB3=0,TIB0=0\"\)
 
 
 ix=0
-eval $(get.site 0 aggregator)
+#eval $(get.site 0 aggregator)
 
 WIN_R_LIM=${WIN_R_LIM:-3}
 [ -e /tmp/st_internals.sh ] && source /tmp/st_internals.sh
@@ -45,7 +50,7 @@ ES_SPREAD=${ES_SPREAD:-1}
 
 nsam2=$((nsam-WIN_R_LIM-ES_SPREAD))
 
-for site in $(echo $sites | tr , \  ); do
+for site in $adc_sites; do
         sitem1=$((site-1))
 	echo dbLoadRecords\(\"db/judgementCommonSite.db\",\"${PRAMS},SITE=${site},SITEM1=${sitem1}\"\)
 

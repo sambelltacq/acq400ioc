@@ -16,6 +16,7 @@ MT_ACQ425F=A5
 MT_ACQ426=C
 MT_ACQ427=7
 MT_ACQ427F=A7
+MT_ACQ428=D
 MT_ACQ436=6D
 MT_ACQ437=6
 MT_ACQ465=A
@@ -36,12 +37,15 @@ MT_RAD_CELF=69
 MT_AO428=6A
 MT_DIO482=6B
 MT_WER_CELF=70
+MT_OCTOBEE=74
 MT_DIO482TD=7A
 MT_DIO482TD_PG=7B
+MT_DIO482ELF_XRM=7C
 MT_ACQ494=B
 MT_DIO422=71
 MT_DI460=72
 MT_DIO_5CH=73
+MT_ACQ1102DIO4=75
 
 MTV_DIO482_PPW="7A E"
 
@@ -94,47 +98,65 @@ nameFromMT() {
 	$MT_AO428)		echo "ao428elf";;
 	$MT_DIO482TD)   echo "dio482td";;
 	$MT_DIO482TD_PG) echo "dio482td_pg";;
+	$MT_DIO482ELF_XRM) echo "dio482elf_xrm";;
 	$MT_ACQ494)     echo "acq494fmc";;
 	$MT_DIO422)     echo "dio422elf";;
 	$MT_DI460)      echo "di460elf";;
+	$MT_ACQ1102DIO4) echo "acq1102dio4";;
 	# no default	
 	esac					
 }
 
 hasInput() {
 case $(nameFromMT $1) in
-	acq*|bolo*) echo "yes";;
-	*) echo "no";;
+	acq*|bolo*)
+	       echo "yes";;
+	*)
+	       echo "no";;
 	esac	
 }
 hasOutput() {
 	mt=$(echo $1 | sed -e s/^0//)
 	case $mt in
-	$MT_DIO432|$MT_DIO432P|$MT_DIO482TD|$MT_DIO482TD_PG|$MT_DIO482|$MT_AO420|$MT_AO422|$MT_AO4220|$MT_AO424|$MT_AO428|$MT_ACQ436|$MT_DIO422) echo "yes";;
-	*) echo "no";;
+	$MT_DIO432|$MT_DIO432P|$MT_DIO482TD|\
+	$MT_DIO482TD_PG|$MT_DIO482|$MT_DIO482ELF_XRM|\
+	$MT_DIO422|MT_ACQ1102DIO4|\
+	$MT_AO420|$MT_AO422|$MT_AO4220|\
+	$MT_AO424|$MT_AO428|$MT_ACQ436)
+	       echo "yes";;
+	*)
+	       echo "no";;
 	esac
 }
 
 isDIO() {
 	mt=$(echo $1 | sed -e s/^0//)
 	case $mt in
-	$MT_DIO432|$MT_DIO432P|$MT_DIO482TD|$MT_DIO482TD_PG|$MT_DIO482) echo "yes";;
-	*) echo "no";;
+        $MT_DIO432|$MT_DIO432P|$MT_DIO482TD|\
+        $MT_DIO482TD_PG|$MT_DIO482|$MT_DIO482ELF_XRM|\
+        $MT_DIO422|MT_ACQ1102DIO4)	
+	       echo "yes";;
+	*)
+	       echo "no";;
 	esac
 }
 
 isACQ43x() {
 	mt=$(echo $1 | sed -e s/^0//)
 	case $mt in
-	$MT_ACQ430|$MT_ACQ435|$MT_ACQ436|$MT_ACQ437) echo "yes";;
-	*) echo "no";;
+	$MT_ACQ430|$MT_ACQ435|$MT_ACQ436|$MT_ACQ437)
+	       echo "yes";;
+	*)
+	       echo "no";;
 	esac
 }
 
 hasNACC_BYPASS() {
 	mt=$(echo $1 | sed -e s/^0//)
 	case $mt in
-	$MT_ACQ423|$MT_ACQ424|$MT_ACQ425|$MT_ACQ435) echo "yes";;
-	*) echo "no";;
+	$MT_ACQ423|$MT_ACQ424|$MT_ACQ425|$MT_ACQ435)
+	       echo "yes";;
+	*)
+	       echo "no";;
 	esac
 }

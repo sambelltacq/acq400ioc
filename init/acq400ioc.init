@@ -1,5 +1,6 @@
 #!/bin/sh
 
+export IOCSH_PS1="acq400-epics>"
 ETOP=/usr/local/epics
 STCMD=/tmp/st.cmd
 PIDF=/var/run/acq400ioc.pid
@@ -8,6 +9,7 @@ LOG=/var/log/epics.log
 NICE=10
 LG="logger -t acq400ioc.init"
 RL=/tmp/records.dbl
+CP=$(get-port-from-service acq4xx-epics-console)
 
 
 if [ -f /etc/profile.d/epics.sh ]; then
@@ -77,16 +79,12 @@ make_stcmd() {
 			source $file
 		fi 
 	done
-	cat - >> /tmp/st.cmd <<EOF
+	cat - >> ${STCMD} <<EOF
 dbLoadRecords("db/local-aliases.db","UUT=${HOST}")
 iocInit()	
-dbl > /tmp/records.dbl
-seqShow > /tmp/records.dbl.done
+dbl > ${RL}
+seqShow > ${RL}.done
 EOF
-	touch /dev/shm/AI
-	if [ -x /usr/local/epics/scripts/${MB_MODEL}_init.sh ]; then
-		/usr/local/epics/scripts/${MB_MODEL}_init.sh create
-	fi
 }
 
 make_aliases_loop() {
@@ -106,7 +104,7 @@ bump()
 
 start_ioc() {
 	/usr/local/bin/procServ \
-		-c ${ETOP} -p $PIDF -L $LOG 2222 \
+		-c ${ETOP} -p $PIDF -L $LOG $CP \
 		/bin/nice -n $NICE ${ACQ400IOC} ${STCMD}
 	while [ ! -r $PIDF ]; do
 		usleep 10000
@@ -168,7 +166,7 @@ restart() {
 	wait_ioc_records_loaded
 	stop_ioc
 	nice /usr/local/init/acq400ioc.init make_epics_knobs
-        [ -e /etc/acq400/0/gain_all_x ] && start_gain_all_x_svc&
+        [ "x$GAIN_ALL_X" = "xy" ] && [ -e /etc/acq400/0/gain_all_x ] && start_gain_all_x_svc&
 
 	[ "x$IOC_GLOBAL_ALIAS_PFX" != "x" ] && make_aliases $IOC_GLOBAL_ALIAS_PFX
 	cat /tmp/st_final.cmd >> /tmp/st.cmd

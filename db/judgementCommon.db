@@ -43,7 +43,6 @@ record (calc, "${UUT}:JDG:MASK_PCT:c")
 	field(FLNK, "${UUT}:JDG:MASK_FROM_DATA:w PP")	
 }
 
-# warning: assumes site 1. 
 record(longout, "${UUT}:1:ES_SPREAD:w") {
         field(DTYP, "asynInt32")
         field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))ES_SPREAD")
@@ -51,10 +50,10 @@ record(longout, "${UUT}:1:ES_SPREAD:w") {
         field(LOPR, "1")
         field(HOPR, "4")
         field(OMSL, "closed_loop")
-        field(DOL,  "${UUT}:1:ES_SPREAD")
+        field(DOL,  "${UUT}:${S1}:ES_SPREAD")
 }
 
-record(longin, "${UUT}:1:ES_SPREAD") {
+record(longin, "${UUT}:${S1}:ES_SPREAD") {
         field(FLNK, "${UUT}:1:ES_SPREAD:w")
 }
 

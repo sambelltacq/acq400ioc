@@ -1,5 +1,5 @@
 record(bi, "${UUT}:${SITE}:HAS_RGM") {
-	field(DESC, "Site had Repeating Gate Mode")
+	field(DESC, "Site has Repeating Gate Mode")
 	field(DTYP, "Soft Channel")
 	field(VAL,  "${HAS_RGM}")
 	field(PINI, "YES")
