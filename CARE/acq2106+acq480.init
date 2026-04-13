@@ -72,7 +72,6 @@ done
 
 set.site 0 acq480_force_training 1
 set.site 0 SIG:CLK_MB:SET 0
-caput ${IOC_HOST}:1:INTCLK_HZ $FREQHZ
 
 deltaF() {
 	echo $(get.site 0 SIG:CLK_MB:FREQ) $FREQHZ 100000 | \

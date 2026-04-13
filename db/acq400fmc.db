@@ -7,17 +7,6 @@ record (bi, "${UUT}:${SITE}:RUN") {
 	field(PINI, "YES")		
 }
 
-record (longout, "${UUT}:${SITE}:INTCLK_HZ") {
-	field(DTYP, "Soft Channel")
-	field(PINI, "YES")
-	field(VAL,  "500000")
-	field(DESC, "Internal FCLK [Hz]")
-	field(LOPR, "10000")
-	field(HOPR, "${MAXHZ}")
-	field(EGU,  "Hz")
-	field(DISA, "1")
-}
-
 record (longin, "${UUT}:${SITE}:SHOT") {
 	field(DTYP, "longinAcqHost")
 	field(INP,  "@/dev/acq400.${SITE}.knobs/shot")
