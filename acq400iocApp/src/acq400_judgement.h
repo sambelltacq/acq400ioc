@@ -9,6 +9,7 @@
 #define ACQ400IOCAPP_SRC_ACQ400_JUDGEMENT_H_
 
 #include "asynPortDriver.h"
+#include "acq400_asynPortDriver.h"
 
 #define PS_NCHAN 		"NCHAN"				/* asynInt32, 		r/o */
 #define PS_NSAM			"NSAM"				/* asynInt32,       r/o */
@@ -42,7 +43,7 @@ enum UPDATE {
 	UPDATE_ALWAYS
 };
 
-class acq400Judgement: public asynPortDriver {
+class acq400Judgement: public acq400_asynPortDriver {
 public:
 	virtual asynStatus readInt8Array(asynUser *pasynUser, epicsInt8 *value,
 			size_t nElements, size_t *nIn);
@@ -114,7 +115,7 @@ protected:
 	const int fail_mask_len;  /* number of elements in FAIL_MASK32 */
 	epicsInt32* FAIL_MASK32;
 	epicsInt32 sample_count;
-	epicsTimeStamp t0, t1;
+	epicsTimeStamp t0;
 	unsigned clock_count[2];			     /* previous, current */
 	epicsInt32 burst_count;
 	epicsFloat64 sample_time;

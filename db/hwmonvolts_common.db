@@ -11,8 +11,10 @@ record(ai, "${UUT}:SYS:vccaux") {
         field(LOPR, "0")
         field(LOW,  "1.75")
         field(HIGH, "1.85")  
-        field(PREC, "3")      
+        field(PREC, "3")
 }
+
+alias("${UUT}:SYS:vccaux", "${UUT}:SYS:VCCAUX")
 
 record(ai, "${UUT}:SYS:vccbram") {
         field(DTYP, "dsSysfsAi")
@@ -27,9 +29,10 @@ record(ai, "${UUT}:SYS:vccbram") {
         field(LOPR, "0")
         field(LOW,  "0.95")
         field(HIGH, "1.05")
-        field(PREC, "3")             
+        field(PREC, "3")
 }
 
+alias("${UUT}:SYS:vccbram", "${UUT}:SYS:VCCBRAM")
 
 record(ai, "${UUT}:SYS:vccint") {
         field(DTYP, "dsSysfsAi")
@@ -44,6 +47,7 @@ record(ai, "${UUT}:SYS:vccint") {
         field(LOPR, "0")
         field(LOW,  "0.95")
         field(HIGH, "1.05")
-        field(PREC, "3")                   
+        field(PREC, "3")
 }
 
+alias("${UUT}:SYS:vccint", "${UUT}:SYS:VCCINT")

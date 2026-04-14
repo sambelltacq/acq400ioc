@@ -1,0 +1,49 @@
+record(bo, "${UUT}:${FUN}:RUNSTOP")
+{
+	field(PINI, "YES")
+	field(DTYP, "asynInt32")
+	field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))RUNSTOP")
+	field(SCAN, "Passive")
+	field(ZNAM, "STOP")
+	field(ONAM, "RUN")
+	field(VAL,  "0")
+}
+record(longin, "${UUT}:${FUN}:UPDATES")
+{
+	field(PINI, "NO")
+	field(DTYP, "asynInt32")
+	field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))UPDATES")
+	field(SCAN, "I/O Intr")
+	field(TSE,  "-2")
+}
+
+record(int64in, "${UUT}:${FUN}:TS_USEC")
+{
+	field(PINI, "NO")
+	field(DTYP, "asynInt64")
+	field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))TS_USEC")
+	field(SCAN, "I/O Intr")
+	field(TSE,  "-2")
+}
+
+record(mbbo, "${UUT}:${FUN}:MON_RL")
+{
+	field(DTYP, "asynInt32")
+	field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))MON_RL")
+	field(NOBT, "3")
+	field(ZRST, "DIS_MON")
+	field(ONST, "LIM_1Hz")
+	field(TWST, "LIM_2Hz")
+	field(THST, "LIM_5Hz")
+	field(FRST, "LIM_10Hz")
+	field(FVST, "LIM_NOLIM")
+	field(ZRVL, "0")
+	field(ONVL, "1")
+	field(TWVL, "2")
+	field(THVL, "3")
+	field(FRVL, "4")
+	field(FVVL, "5")
+	field(DESC, "${FUN}MONITOR RATE LIMIT")
+	field(PINI, "YES")
+	field(VAL,  "5")
+}

@@ -66,6 +66,8 @@ record(bi, "${UUT}:${chan}:AGGREGATOR:SPAD:EN:r") {
 	field(ONAM, "1")
 }
 
+alias("${UUT}:${chan}:AGGREGATOR:SPAD:EN:r", "${UUT}:${chan}:AGGREGATOR:SPAD:EN:R")
+
 record(calc, "${UUT}:${chan}:AGGREGATOR:SPAD:LEN") {
 	field(INPA, "${UUT}:${chan}:AGGREGATOR:SPAD:EN:r")
 	field(INPB, "${UUT}:0:SPAD:LEN:r")

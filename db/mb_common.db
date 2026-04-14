@@ -62,6 +62,9 @@ record(mbbo, "${UUT}:0:SPAD:MODE:s") {
 record(mbbi, "${UUT}:0:SPAD:LEN:r") {
 
 }
+
+alias("${UUT}:0:SPAD:LEN:r", "${UUT}:0:SPAD:LEN:R")
+
 record(mbbi, "${UUT}:0:SPAD:DISEL:r") {
 
 }

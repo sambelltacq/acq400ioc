@@ -79,6 +79,7 @@ acq400ioc_LIBS += reccaster
 
 # acq400ioc_registerRecordDeviceDriver.cpp derives from acq400ioc.dbd
 acq400ioc_SRCS += acq400ioc_registerRecordDeviceDriver.cpp
+acq400ioc_SRCS += acq400_asynPortDriver.cpp
 acq400ioc_SRCS += acq400_judgement.cpp
 acq400ioc_SRCS += dac_step.cpp
 acq400ioc_SRCS += SlowmonDriver.cpp

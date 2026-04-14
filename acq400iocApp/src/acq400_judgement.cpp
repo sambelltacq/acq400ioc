@@ -47,7 +47,7 @@ static void task_runner(void *drvPvt)
 
 /** abstract base class with Judgement common definitions. Use Judgement::factory() to instantiate a concrete class */
 acq400Judgement::acq400Judgement(const char* portName, int _nchan, int _nsam, const char* _site_channels, int _bursts_per_buffer):
-	asynPortDriver(portName,
+	acq400_asynPortDriver(portName,
 /* maxAddr */		_nchan+1,    /* nchan from 0 + ADDR_WIN_ALL */
 /* Interface mask */    asynEnumMask|asynInt32Mask|asynFloat64Mask|asynInt8ArrayMask|asynInt16ArrayMask|asynInt32ArrayMask|asynDrvUserMask,
 /* Interrupt mask */	asynEnumMask|asynInt32Mask|asynFloat64Mask|asynInt8ArrayMask|asynInt16ArrayMask|asynInt32ArrayMask,
@@ -62,10 +62,8 @@ acq400Judgement::acq400Judgement(const char* portName, int _nchan, int _nsam, co
 	sample_delta_ns(0),
 	fill_requested(false)
 {
-	clock_count[0] = clock_count[1] = 0;
 	memset(&t0, 0, sizeof(t0));
-	memset(&t1, 0, sizeof(t1));
-
+	clock_count[0] = clock_count[1] = 0;
 	asynStatus status = asynSuccess;
 
 	createParam(PS_NCHAN,               asynParamInt32,         	&P_NCHAN);
@@ -250,11 +248,12 @@ void acq400Judgement::task_get_params()
 
 void acq400Judgement::task()
 {
-	task_get_params();
 
-	int throttle = ::getenv_default("acq400Judgement_THROTTLE_HZ", 0);
-	double throttle_s = 1.0/throttle;
-	unsigned update = 0;
+	fprintf(stderr, "%s 01\n", FN);
+	epicsEventWait(eventId);
+
+	task_get_params();
+	MonitorRateLimit rateLimit;
 
 	int fc = open("/dev/acq400.0.bq", O_RDONLY);
 	assert(fc >= 0);
@@ -267,31 +266,23 @@ void acq400Judgement::task()
 		return;
 	}
 
-	epicsTimeGetCurrent(&t0);
-
+	unsigned update = 0;
 	while((ib = getBufferId(fc)) >= 0){
-		epicsTimeGetCurrent(&t1);
-		if (throttle){
-			if (epicsTimeDiffLessThan(t1, t0, throttle_s)){
-				continue;
-			}else{
-				++update;
-				if (acq400Judgement::verbose){
-					fprintf(stderr, "%s update %d period %.3f\n", __FUNCTION__, update, throttle_s);
-				}
+		rateLimit.newData(mrl_param);
+		t0 = rateLimit.get_et0();
+		if (rateLimit.goAhead()){
+			const int blen = nsam*nchan;
+			++update;
+
+			for (int ii = 0; ii < bursts_per_buffer; ++ii){
+				handle_burst(ib*bursts_per_buffer, ii*blen);
+			}
+
+			if (fill_requested){
+				fill_request_task();
+				fill_requested = false;
 			}
 		}
-		const int blen = nsam*nchan;
-
-		for (int ii = 0; ii < bursts_per_buffer; ++ii){
-			handle_burst(ib*bursts_per_buffer, ii*blen);
-		}
-
-		if (fill_requested){
-			fill_request_task();
-			fill_requested = false;
-		}
-		t0 = t1;
 	}
 	printf("%s:%s: exit on getBufferId failure\n", driverName, __FUNCTION__);
 }
@@ -958,7 +949,11 @@ public:
 	    status = pasynManager->getAddr(pasynUser, &addr);
 	    if(status!=asynSuccess) return status;
 
-	    if (function == P_MASK_FROM_DATA) {
+	    if (function == P_RUNSTOP) {
+		if (value) epicsEventSignal(eventId);
+	    }else if (function == P_MON_RL){
+		    mrl_param = value;
+	    }else if (function == P_MASK_FROM_DATA) {
 		    if (value){
 			    fill_masks(pasynUser, (ETYPE*)Buffer::the_buffers[ib]->getBase(), (ETYPE)value*SCALE);
 		    }else{

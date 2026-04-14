@@ -33,6 +33,8 @@ record(calcout, "${UUT}:${SITE}:SIG:${lname}:nzcount") {
 	field(FLNK, "${UUT}:${SITE}:SIG:${lname}:rawc64")
 }
 
+alias("${UUT}:${SITE}:SIG:${lname}:nzcount", "${UUT}:${SITE}:SIG:${lname}:NZCOUNT")
+
 record(calc, "${UUT}:${SITE}:SIG:${lname}:rawc64") {
 	field(INPA, "${UUT}:${SITE}:SIG:${lname}:rawcount")
 	field(INPB, "${UUT}:${SITE}:SIG:${lname}:rawc64.LA")
