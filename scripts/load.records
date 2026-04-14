@@ -240,7 +240,7 @@ make_AI_TR_records() {
 
 get_sites() {
         SITES=$(awk '{ print $2 }' <$1 | sed -e s'/,/ /g')
-        if [ -z $SITES ] || [ "$SITES" = "0" ] || [ "$SITES" = "none" ]; then
+        if [ -z "$SITES" ] || [ "$SITES" = "0" ] || [ "$SITES" = "none" ]; then
                 return 1
         fi
 
