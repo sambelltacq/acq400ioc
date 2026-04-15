@@ -240,7 +240,7 @@ make_AI_TR_records() {
 
 get_sites() {
         SITES=$(awk '{ print $2 }' <$1 | sed -e s'/,/ /g')
-        if [ -z $SITES ] || [ "$SITES" = "0" ] || [ "$SITES" = "none" ]; then
+        if [ -z "$SITES" ] || [ "$SITES" = "0" ] || [ "$SITES" = "none" ]; then
                 return 1
         fi
 
@@ -626,7 +626,7 @@ load_400() {
         *)      ;;
         esac
 
-        if [ is_adc != "scaler" ]; then
+        if [ "$is_adc" != "scaler" ]; then
                 if [ -e ${esite}/num_pg ]; then
                         will_load_dio482pg=$(cat ${esite}/num_pg)
                 else
