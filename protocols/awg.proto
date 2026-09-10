@@ -57,7 +57,6 @@ setOneShot {
 
 setAwgSoftTrigger {
 	out "awg SOFT_TRIGGER=%d";
-	in;
 }
 
 getAwgSoftTrigger {
